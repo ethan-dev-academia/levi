@@ -1,0 +1,37 @@
+{
+  "id": "hero",
+  "width": 16,
+  "height": 18,
+  "worldHeight": 1.7,
+  "palette": {
+    "k": "#1a1410",
+    "h": "#5a3a1e",
+    "s": "#e0b08a",
+    "e": "#111111",
+    "t": "#3d6b9e",
+    "T": "#2c4f78",
+    "b": "#6b4a2a",
+    "p": "#4a4038",
+    "B": "#2a1f18"
+  },
+  "rows": [
+    "......kkkk......",
+    ".....khhhhk.....",
+    "....khhhhhhk....",
+    "....khsssshk....",
+    "....ksessesk....",
+    "....kssssssk....",
+    ".....kssssk.....",
+    "....kkTttTkk....",
+    "...ktTttttTtk...",
+    "..kstTttttTtsk..",
+    "..ksktbbbbtksk..",
+    "...kkTttttTkk...",
+    "....kppppppk....",
+    "....kppkkppk....",
+    "....kpk..kpk....",
+    "....kpk..kpk....",
+    "...kBBk..kBBk...",
+    "...kkkk..kkkk..."
+  ]
+}

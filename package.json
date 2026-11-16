@@ -1,0 +1,14 @@
+{
+  "name": "levi",
+  "private": true,
+  "type": "module",
+  "workspaces": ["shared", "client"],
+  "scripts": {
+    "dev": "npm run dev -w @levi/client",
+    "build": "npm run build -w @levi/client",
+    "typecheck": "tsc -p shared --noEmit && tsc -p client --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
