@@ -1,0 +1,8 @@
+{
+  "id": "signpost",
+  "name": "Signpost",
+  "model": "prop-signpost",
+  "solid": true,
+  "readable": true,
+  "category": "signage"
+}

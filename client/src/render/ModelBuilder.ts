@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import type { FacetRing, ModelDef, PartRole } from "@levi/shared";
+import { resolvePartColor, type FacetRing, type ModelDef, type ModelPalette, type PartRole } from "@levi/shared";
 
 export interface BuiltModel {
   /** Origin at the feet, facing +Z. */
@@ -16,15 +16,15 @@ const DEG = Math.PI / 180;
  * from the previous one so the wall is all triangles (antiprism), plus flat
  * caps on open ends. Flat-shaded by the material.
  */
-export function facetGeometry(sides: number, rings: readonly FacetRing[]): THREE.BufferGeometry {
+export function facetGeometry(sides: number, rings: readonly FacetRing[], twist = true, phaseDeg = 0): THREE.BufferGeometry {
   const pos: number[] = [];
   const idx: number[] = [];
   const step = (Math.PI * 2) / sides;
 
   rings.forEach(([y, rx, rz], r) => {
-    const twist = (r % 2) * step * 0.5;
+    const offset = (twist ? (r % 2) * step * 0.5 : 0) + phaseDeg * DEG;
     for (let s = 0; s < sides; s++) {
-      const a = s * step + twist;
+      const a = s * step + offset;
       pos.push(Math.sin(a) * rx, y, Math.cos(a) * rz);
     }
   });
@@ -32,9 +32,13 @@ export function facetGeometry(sides: number, rings: readonly FacetRing[]): THREE
 
   for (let r = 0; r < rings.length - 1; r++) {
     // Even ring → next ring is offset by +half step; odd ring → by −half step.
-    const fwd = r % 2 === 0;
+    // Untwisted prisms split each quad the same way as the "forward" case.
+    const fwd = !twist || r % 2 === 0;
     for (let s = 0; s < sides; s++) {
-      if (fwd) {
+      if (!twist) {
+        idx.push(v(r, s), v(r, s + 1), v(r + 1, s));
+        idx.push(v(r + 1, s), v(r, s + 1), v(r + 1, s + 1));
+      } else if (fwd) {
         idx.push(v(r, s), v(r, s + 1), v(r + 1, s));
         idx.push(v(r + 1, s), v(r, s + 1), v(r + 1, s + 1));
       } else {
@@ -68,8 +72,9 @@ export function facetGeometry(sides: number, rings: readonly FacetRing[]): THREE
 /**
  * Turn a ModelDef into a Three.js hierarchy.
  * Each part = joint Group (pos/rot) → Mesh (offset). Materials shared per colour.
+ * `palette` overrides the model's colour slots (e.g. an NPC's outfit).
  */
-export function buildModel(def: ModelDef): BuiltModel {
+export function buildModel(def: ModelDef, palette?: ModelPalette): BuiltModel {
   const root = new THREE.Group();
   root.name = `model:${def.id}`;
   const scaled = new THREE.Group();
@@ -86,13 +91,15 @@ export function buildModel(def: ModelDef): BuiltModel {
     joint.name = part.id;
     joint.position.set(...part.pos);
     joint.rotation.set(part.rot[0] * DEG, part.rot[1] * DEG, part.rot[2] * DEG);
+    joint.scale.setScalar(part.scale);
 
-    let mat = materials.get(part.color);
+    const color = resolvePartColor(part.color, def.palette, palette);
+    let mat = materials.get(color);
     if (!mat) {
-      mat = new THREE.MeshLambertMaterial({ color: part.color, flatShading: true });
-      materials.set(part.color, mat);
+      mat = new THREE.MeshLambertMaterial({ color, flatShading: true });
+      materials.set(color, mat);
     }
-    const geom = facetGeometry(part.sides, part.rings);
+    const geom = facetGeometry(part.sides, part.rings, part.twist, part.phase);
     geometries.push(geom);
     const mesh = new THREE.Mesh(geom, mat);
     mesh.position.set(...part.offset);

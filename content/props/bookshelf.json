@@ -1,0 +1,8 @@
+{
+  "id": "bookshelf",
+  "name": "Bookshelf",
+  "model": "prop-bookshelf",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

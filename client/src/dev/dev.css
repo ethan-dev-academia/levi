@@ -117,3 +117,19 @@
   border-radius: 4px;
 }
 .dev-region-meta { margin: 4px 0; font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* Build mode */
+.dev-tabs { margin-bottom: 8px; }
+.dev-storey { align-self: center; text-align: center; font-size: 12px; color: #d8c79a; }
+.dev-building { display: flex; flex-direction: column; gap: 6px; }
+.dev-build .dev-empty { margin: 4px 0 6px; }
+.dev-props textarea {
+  width: 100%;
+  resize: vertical;
+  background: #0f1116;
+  color: #e8e1cf;
+  border: 1px solid #3a3550;
+  padding: 6px;
+  font: 12px/1.4 system-ui, sans-serif;
+}
+.dev-props .dev-grid .dev-btn { font-size: 11px; padding-left: 2px; padding-right: 2px; }

@@ -3,8 +3,11 @@
  * in main.ts, so none of this (nor dev.css) exists in a production bundle.
  */
 import "./dev.css";
-import { getTerrainHeight, nearestWalkableCell, type Region, type Vec2 } from "@levi/shared";
+import { DIR_VEC, getTerrainHeight, nearestWalkableCell, stairCells, type CellRect, type Dir, type Region, type Vec2 } from "@levi/shared";
 import { BrushCursor } from "./BrushCursor.js";
+import { BuildOverlay } from "./BuildOverlay.js";
+import { BuildPanel } from "./BuildPanel.js";
+import { BuildTool, propFacing, type Edge, type Side } from "./BuildTool.js";
 import { DevPanel } from "./DevPanel.js";
 import { FreeCamera } from "./FreeCamera.js";
 import { RegionOverlay } from "./RegionOverlay.js";
@@ -17,8 +20,42 @@ const BRUSH_COLORS: Record<string, number> = {
   raise: 0x8fe39a, lower: 0xff8a6b, smooth: 0x8ecbff, flatten: 0xffe14a, set: 0xffe14a, paint: 0xffffff, walk: 0xff4a4a, void: 0x7ad7ff, region: 0xb89cff,
 };
 
+const OPPOSITE: Record<Side, Dir> = { n: "s", s: "n", e: "w", w: "e" };
+const MAX_RUN = 64;
+
+/** The cell edge nearest to a ground point. */
+function edgeAt(x: number, z: number): Edge {
+  const cx = Math.floor(x), cz = Math.floor(z);
+  const fx = x - cx, fz = z - cz;
+  const d = [fz, 1 - fz, fx, 1 - fx];
+  const i = d.indexOf(Math.min(...d));
+  if (i === 0) return { axis: "x", x: cx, z: cz };
+  if (i === 1) return { axis: "x", x: cx, z: cz + 1 };
+  if (i === 2) return { axis: "z", x: cx, z: cz };
+  return { axis: "z", x: cx + 1, z: cz };
+}
+
+/** Straight run of edges from `a` towards the cursor, along a's axis. */
+function edgeRun(a: Edge, x: number, z: number): Edge[] {
+  const to = a.axis === "x" ? Math.floor(x) : Math.floor(z);
+  const from = a.axis === "x" ? a.x : a.z;
+  const lo = Math.max(Math.min(from, to), from - MAX_RUN);
+  const hi = Math.min(Math.max(from, to), from + MAX_RUN);
+  const out: Edge[] = [];
+  for (let i = lo; i <= hi; i++) out.push(a.axis === "x" ? { axis: "x", x: i, z: a.z } : { axis: "z", x: a.x, z: i });
+  return out;
+}
+
+function cellRect(a: { cx: number; cz: number }, b: { cx: number; cz: number }): CellRect {
+  return { cx0: Math.min(a.cx, b.cx), cz0: Math.min(a.cz, b.cz), cx1: Math.max(a.cx, b.cx), cz1: Math.max(a.cz, b.cz) };
+}
+
 export function mountDevTools(ctx: DevContext): void {
   const sculptor = new TerrainSculptor(ctx);
+  const builder = new BuildTool(ctx);
+  const buildPanel = new BuildPanel(builder, ctx.propDefs);
+  const buildOverlay = new BuildOverlay();
+  ctx.scene.add(buildOverlay.group);
   const cursor = new BrushCursor();
   ctx.scene.add(cursor.line);
   const overlay = new RegionOverlay(ctx.data.hm, () => ctx.data.def.waterLevel);
@@ -33,8 +70,13 @@ export function mountDevTools(ctx: DevContext): void {
       : Math.max(getTerrainHeight(ctx.data.hm, x, z), ctx.data.def.waterLevel);
 
   const save = (): void => {
-    sculptor.save().then(
-      (msg) => ctx.chat.add(`[dev] ${msg}`, "system"),
+    const buildingsDirty = builder.dirty;
+    sculptor.save(buildingsDirty ? builder.file() : undefined).then(
+      (msg) => {
+        if (buildingsDirty) builder.dirty = false;
+        panel.refresh();
+        ctx.chat.add(`[dev] ${msg}`, "system");
+      },
       (e: unknown) => ctx.chat.add(`[dev] ${String(e)}`, "system"),
     );
   };
@@ -43,13 +85,22 @@ export function mountDevTools(ctx: DevContext): void {
   let setFreeCam: (on: boolean) => void = () => {};
   const FLY_SPEED = 30;
 
+  let mode: "terrain" | "build" = "terrain";
   const panel = new DevPanel(
     ctx.stage,
     sculptor,
+    buildPanel,
     {
       toggleFreeCam: () => setFreeCam(!freeCam.isActive),
       setFlySpeed: (v) => (freeCam.speed = v),
-      undo: () => sculptor.undo(),
+      undo: () => (mode === "build" ? builder.undo() : sculptor.undo()),
+      canUndo: () => (mode === "build" ? builder.canUndo : sculptor.canUndo),
+      hasUnsaved: () => sculptor.hasUnsaved || builder.dirty,
+      // Runs inside the panel constructor: only touch what's already declared.
+      setMode: (m) => {
+        mode = m;
+        cursor.hide();
+      },
       save,
       setSpawnHere: () => {
         sculptor.setSpawn(ctx.sim.player);
@@ -75,7 +126,11 @@ export function mountDevTools(ctx: DevContext): void {
   sculptor.onChange = () => {
     panel.refresh();
     overlay.rebuild(ctx.data.def.regions);
+    // Foundations follow the terrain under them.
+    if (ctx.data.buildings.size > 0) ctx.buildings.rebuildAll();
+    if (ctx.data.buildings.props.length > 0) ctx.props.rebuild();
   };
+  builder.onChange = () => panel.refresh();
 
   // --- Input ----------------------------------------------------------------
   const ndc = { x: 0, y: 0, over: false, moved: true };
@@ -87,6 +142,60 @@ export function mountDevTools(ctx: DevContext): void {
     ndc.moved = true;
   };
   let regionDrag: { start: Vec2; end: Vec2 } | null = null;
+  // Build mode: a box drag (room/floor/erase) or an edge run (wall/door/window).
+  let buildDrag: { kind: "rect"; start: { cx: number; cz: number } } | { kind: "edges"; start: Edge } | null = null;
+  let buildAt: (Vec2 & { y: number }) | null = null;
+  const groundY = (x: number, z: number): number => ctx.data.buildings.groundHeight(ctx.data.hm, x, z);
+  /** Cursor on the edit plane: the selected building's storey, else the ground. */
+  const buildPick = (): (Vec2 & { y: number }) | null => {
+    if (!ndc.over) return null;
+    const planeY = builder.settings.storey > 0 ? builder.editPlaneY() : null;
+    if (planeY !== null) {
+      const p = ctx.buildings.pickFloor(ctx.camera, ndc.x, ndc.y, planeY);
+      return p ? { x: p.x, z: p.z, y: planeY } : null;
+    }
+    const hit = ctx.picker.pick(ndc.x, ndc.y);
+    return hit ? { ...hit, y: groundY(hit.x, hit.z) } : null;
+  };
+  const cameraSide = (x: number, z: number): Side => {
+    const dx = ctx.camera.position.x - x, dz = ctx.camera.position.z - z;
+    return Math.abs(dx) > Math.abs(dz) ? (dx > 0 ? "e" : "w") : dz > 0 ? "s" : "n";
+  };
+  const cellOf = (p: Vec2): { cx: number; cz: number } => ({ cx: Math.floor(p.x), cz: Math.floor(p.z) });
+  const finishBuildDrag = (): void => {
+    const d = buildDrag;
+    buildDrag = null;
+    // Re-pick at the release point: the per-frame cursor can lag a fast drag.
+    const at = buildPick() ?? buildAt;
+    if (!d || !at) return;
+    const t = builder.settings.tool;
+    let msg = "";
+    if (d.kind === "rect") {
+      const r = cellRect(d.start, cellOf(at));
+      if (t === "erase") msg = builder.erase(r);
+      else if (t === "floor") {
+        const preset = builder.settings.preset;
+        builder.settings.preset = "floor";
+        msg = builder.placeRoom(r, cameraSide((r.cx0 + r.cx1 + 1) / 2, (r.cz0 + r.cz1 + 1) / 2));
+        builder.settings.preset = preset;
+      } else msg = builder.placeRoom(r, cameraSide((r.cx0 + r.cx1 + 1) / 2, (r.cz0 + r.cz1 + 1) / 2));
+    } else {
+      msg = builder.paintEdges(edgeRun(d.start, at.x, at.z), t === "door" ? "door" : t === "window" ? "window" : "wall");
+    }
+    if (msg) report(msg);
+  };
+  const onBuildDown = (): void => {
+    const hit = buildPick();
+    buildAt = hit;
+    if (!hit) return;
+    const t = builder.settings.tool;
+    const c = cellOf(hit);
+    if (t === "room" || t === "floor" || t === "erase") buildDrag = { kind: "rect", start: c };
+    else if (t === "wall" || t === "door" || t === "window") buildDrag = { kind: "edges", start: edgeAt(hit.x, hit.z) };
+    else if (t === "stairs" || t === "ladder") report(builder.placeStair(c.cx, c.cz, t, OPPOSITE[cameraSide(hit.x, hit.z)]));
+    else if (t === "prop") report(builder.placeProp(c.cx, c.cz));
+    else report(builder.pick(c.cx, c.cz));
+  };
   const rectOf = (a: Vec2, b: Vec2): Region["bounds"] => ({
     x0: Math.floor(Math.min(a.x, b.x)), z0: Math.floor(Math.min(a.z, b.z)),
     x1: Math.ceil(Math.max(a.x, b.x)), z1: Math.ceil(Math.max(a.z, b.z)),
@@ -102,6 +211,11 @@ export function mountDevTools(ctx: DevContext): void {
   ctx.canvas.addEventListener("pointerdown", (e) => {
     updateNdc(e);
     if (e.button !== 0 || !panel.visible) return;
+    if (mode === "build") {
+      ctx.canvas.setPointerCapture(e.pointerId);
+      onBuildDown();
+      return;
+    }
     const hit = pickCursor();
     if (!hit) return;
     ctx.canvas.setPointerCapture(e.pointerId);
@@ -110,6 +224,8 @@ export function mountDevTools(ctx: DevContext): void {
   });
   ctx.canvas.addEventListener("pointerup", (e) => {
     if (e.button !== 0) return;
+    updateNdc(e);
+    if (buildDrag) finishBuildDrag();
     if (sculptor.isStroking) sculptor.endStroke();
     if (regionDrag) {
       const b = rectOf(regionDrag.start, regionDrag.end);
@@ -167,14 +283,23 @@ export function mountDevTools(ctx: DevContext): void {
       setFreeCam(false);
     }
   });
-  ctx.keys.bind("BracketLeft", () => panel.visible && (sculptor.settings.radius = Math.max(1, sculptor.settings.radius - 1)));
-  ctx.keys.bind("BracketRight", () => panel.visible && (sculptor.settings.radius = Math.min(40, sculptor.settings.radius + 1)));
+  ctx.keys.bind("BracketLeft", () => {
+    if (!panel.visible) return;
+    if (mode === "build") builder.rotateProp();
+    else sculptor.settings.radius = Math.max(1, sculptor.settings.radius - 1);
+  });
+  ctx.keys.bind("BracketRight", () => {
+    if (!panel.visible) return;
+    if (mode === "build") builder.rotateProp();
+    else sculptor.settings.radius = Math.min(40, sculptor.settings.radius + 1);
+  });
 
   window.addEventListener("keydown", (e) => {
     if (!(e.ctrlKey || e.metaKey) || !panel.visible) return;
     if (e.code === "KeyZ") {
       e.preventDefault();
-      sculptor.undo();
+      if (mode === "build") builder.undo();
+      else sculptor.undo();
     } else if (e.code === "KeyS") {
       e.preventDefault();
       save();
@@ -182,14 +307,23 @@ export function mountDevTools(ctx: DevContext): void {
   });
 
   window.addEventListener("beforeunload", (e) => {
-    if (sculptor.hasUnsaved) e.preventDefault();
+    if (sculptor.hasUnsaved || builder.dirty) e.preventDefault();
   });
 
   // --- Per frame -----------------------------------------------------------------
   ctx.onFrame((dt) => {
     panel.setCoords(ctx.sim.player.x, ctx.sim.player.z);
-    overlay.group.visible = panel.visible;
+    overlay.group.visible = panel.visible && mode === "terrain";
+    const building = panel.visible && mode === "build";
+    buildOverlay.group.visible = building;
+    if (!building) buildDrag = null;
+    ctx.buildings.editView = building ? { building: builder.settings.selected, storey: builder.settings.storey } : null;
     if (!panel.visible) return;
+    if (building) {
+      cursor.hide();
+      updateBuildPreview();
+      return;
+    }
     const camMoved = camPos.distanceToSquared(ctx.camera.position) > 1e-6;
     camPos.copy(ctx.camera.position);
     if (ndc.moved || camMoved || !sculptor.isStroking || !brushAt) {
@@ -217,5 +351,38 @@ export function mountDevTools(ctx: DevContext): void {
     }
   });
 
-  ctx.chat.add("[dev] Dev tools loaded. Press F1 for the Terrain Sculptor.", "system");
+  function updateBuildPreview(): void {
+    const hit = buildPick();
+    buildAt = hit ?? buildAt;
+    if (!hit) {
+      buildOverlay.clearShape();
+      return;
+    }
+    const c = cellOf(hit);
+    const planeY = builder.settings.storey > 0 ? builder.editPlaneY() : null;
+    buildOverlay.setGrid(c.cx, c.cz, planeY !== null ? () => planeY : groundY);
+    const t = builder.settings.tool;
+    const wallH = builder.selected?.floorHeight ?? 2.6;
+    buildOverlay.setColor(t === "erase" ? 0xff5a4a : t === "select" ? 0xb89cff : 0xffe14a);
+    const y = buildDrag?.kind === "rect" ? (planeY ?? groundY(buildDrag.start.cx + 0.5, buildDrag.start.cz + 0.5)) : hit.y;
+    if (t === "room" || t === "floor" || t === "erase") {
+      const r = buildDrag?.kind === "rect" ? cellRect(buildDrag.start, c) : cellRect(c, c);
+      buildOverlay.setRect(r, y, t === "room" && builder.settings.preset !== "floor" ? wallH : 0);
+    } else if (t === "wall" || t === "door" || t === "window") {
+      const edges = buildDrag?.kind === "edges" ? edgeRun(buildDrag.start, hit.x, hit.z) : [edgeAt(hit.x, hit.z)];
+      buildOverlay.setEdges(edges, y, t === "door" ? 2.05 : wallH);
+    } else if (t === "prop") {
+      buildOverlay.setCells([[c.cx, c.cz]], y, propFacing(builder.settings.rot));
+    } else if (t === "stairs" || t === "ladder") {
+      const dir = OPPOSITE[cameraSide(hit.x, hit.z)];
+      const cells = stairCells({ id: "p", kind: t, x: c.cx, z: c.cz, dir, length: t === "ladder" ? 1 : 3, from: 0, to: 1 });
+      buildOverlay.setCells(cells, y, DIR_VEC[dir]);
+    } else {
+      const info = ctx.data.buildings.containing(c.cx, c.cz);
+      if (info) buildOverlay.setRect(info.bounds, y, 0.4);
+      else buildOverlay.clearShape();
+    }
+  }
+
+  ctx.chat.add("[dev] Dev tools loaded. Press F1 for the Terrain Sculptor and Building tools.", "system");
 }

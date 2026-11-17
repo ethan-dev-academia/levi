@@ -1,0 +1,8 @@
+{
+  "id": "table",
+  "name": "Table",
+  "model": "prop-table",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

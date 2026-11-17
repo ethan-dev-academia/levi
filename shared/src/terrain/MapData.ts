@@ -1,3 +1,6 @@
+import { BuildingIndex } from "../building/BuildingIndex.js";
+import type { Building } from "../schemas/building.js";
+import type { PropInstance } from "../schemas/prop.js";
 import { chunkKey, type MapChunk, type MapDef } from "../schemas/map.js";
 import { bytesToBase64, decodeBytes, decodeHeights, encodeHeights, quantizeHeight } from "./codec.js";
 import { Heightmap } from "./Heightmap.js";
@@ -29,8 +32,10 @@ export class MapData {
   readonly holes: Uint8Array;
   readonly chunksX: number;
   readonly chunksZ: number;
+  /** Buildings placed on this map (stored in buildings.json, not chunks). */
+  readonly buildings: BuildingIndex;
 
-  constructor(public def: MapDef) {
+  constructor(public def: MapDef, buildings: readonly Building[] = [], props: readonly PropInstance[] = []) {
     const heights = new Float32Array((def.cols + 1) * (def.rows + 1)).fill(quantizeHeight(def.baseHeight));
     this.hm = new Heightmap(def.cols, def.rows, def.cellSize, heights);
     this.paint = new Uint8Array(def.cols * def.rows);
@@ -38,6 +43,7 @@ export class MapData {
     this.holes = new Uint8Array(def.cols * def.rows);
     this.chunksX = def.cols / def.chunkCells;
     this.chunksZ = def.rows / def.chunkCells;
+    this.buildings = new BuildingIndex(buildings, def.cellSize, props);
   }
 
   isHole(cx: number, cz: number): boolean {
@@ -122,8 +128,13 @@ export class MapData {
   }
 }
 
-export function loadMapData(def: MapDef, chunks: readonly MapChunk[]): MapData {
-  const data = new MapData(def);
+export function loadMapData(
+  def: MapDef,
+  chunks: readonly MapChunk[],
+  buildings: readonly Building[] = [],
+  props: readonly PropInstance[] = [],
+): MapData {
+  const data = new MapData(def, buildings, props);
   for (const c of chunks) data.applyChunk(c);
   return data;
 }

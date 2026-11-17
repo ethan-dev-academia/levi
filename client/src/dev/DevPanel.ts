@@ -1,18 +1,9 @@
 import { TERRAIN_MATERIALS, WALK_AUTO, WALK_BLOCKED, WALK_FORCED, type Region, type WalkOverride } from "@levi/shared";
+import type { BuildPanel } from "./BuildPanel.js";
+import { h } from "./dom.js";
 import type { SculptTool, TerrainSculptor } from "./TerrainSculptor.js";
 
-type Child = Node | string;
-
-function h<K extends keyof HTMLElementTagNameMap>(
-  tag: K,
-  props: Partial<HTMLElementTagNameMap[K]> & { className?: string } = {},
-  ...children: Child[]
-): HTMLElementTagNameMap[K] {
-  const el = document.createElement(tag);
-  Object.assign(el, props);
-  el.append(...children);
-  return el;
-}
+export type DevMode = "terrain" | "build";
 
 const TOOLS: ReadonlyArray<[SculptTool, string]> = [
   ["raise", "Raise"], ["lower", "Lower"], ["smooth", "Smooth"], ["flatten", "Flatten"],
@@ -28,6 +19,9 @@ const REGION_KINDS: ReadonlyArray<Region["kind"]> = ["island", "sky", "zone"];
 
 export interface DevPanelActions {
   undo(): void;
+  canUndo(): boolean;
+  hasUnsaved(): boolean;
+  setMode(mode: DevMode): void;
   save(): void;
   setSpawnHere(): void;
   setWaterLevel(level: number): void;
@@ -52,10 +46,15 @@ export class DevPanel {
   private readonly regionList: HTMLElement;
   private readonly liftInput: HTMLInputElement;
   private readonly seabedInput: HTMLInputElement;
+  private readonly title: HTMLElement;
+  private readonly terrainSection: HTMLElement;
+  private readonly modeButtons = new Map<DevMode, HTMLButtonElement>();
+  private _mode: DevMode = "terrain";
 
   constructor(
     host: HTMLElement,
     private readonly sculptor: TerrainSculptor,
+    private readonly buildPanel: BuildPanel,
     private readonly actions: DevPanelActions,
     waterLevel: number,
     flySpeed: number,
@@ -97,10 +96,16 @@ export class DevPanel {
       },
     }, "Ocean outside regions");
 
-    this.root = h(
-      "aside",
-      { id: "dev-panel", hidden: true },
-      h("header", {}, h("h2", {}, "Dev · Terrain"), this.status),
+    this.title = h("h2", {}, "Dev · Terrain");
+    const tabs = h("div", { className: "dev-grid cols-2 dev-tabs" });
+    for (const [mode, label] of [["terrain", "Terrain"], ["build", "Build"]] as const) {
+      const b = h("button", { className: "dev-btn", onclick: () => this.setMode(mode) }, label);
+      this.modeButtons.set(mode, b);
+      tabs.append(b);
+    }
+    this.terrainSection = h(
+      "section",
+      {},
       toolGrid,
       this.slider("Radius", 1, 40, 1, s.radius, (v) => (s.radius = v)),
       this.slider("Strength", 0.2, 20, 0.1, s.strength, (v) => (s.strength = v)),
@@ -110,18 +115,40 @@ export class DevPanel {
       this.regionList,
       h("div", { className: "dev-field" }, "Float lift (+Y)", this.liftInput),
       h("div", { className: "dev-field" }, sinkBtn, this.seabedInput),
-      h("h3", {}, "Camera"),
-      h("div", { className: "dev-grid cols-2" }, this.freeCamBtn),
-      this.slider("Fly speed", 5, 150, 5, flySpeed, (v) => actions.setFlySpeed(v)),
       h("h3", {}, "Map"),
       h("div", { className: "dev-field" }, "Water level", this.waterInput),
       h("div", { className: "dev-field" }, this.coords, h("button", { className: "dev-btn", onclick: () => actions.setSpawnHere() }, "Set spawn here")),
+    );
+    this.root = h(
+      "aside",
+      { id: "dev-panel", hidden: true },
+      h("header", {}, this.title, this.status),
+      tabs,
+      this.terrainSection,
+      buildPanel.root,
+      h("h3", {}, "Camera"),
+      h("div", { className: "dev-grid cols-2" }, this.freeCamBtn),
+      this.slider("Fly speed", 5, 150, 5, flySpeed, (v) => actions.setFlySpeed(v)),
       h("h3", {}, "File"),
       h("div", { className: "dev-grid cols-2" }, this.undoBtn, h("button", { className: "dev-btn primary", onclick: () => actions.save() }, "Save")),
       this.hint(),
     );
     host.appendChild(this.root);
     this.selectTool(s.tool);
+    this.setMode("terrain");
+  }
+
+  get mode(): DevMode {
+    return this._mode;
+  }
+
+  setMode(mode: DevMode): void {
+    this._mode = mode;
+    for (const [m, b] of this.modeButtons) b.classList.toggle("active", m === mode);
+    this.terrainSection.hidden = mode !== "terrain";
+    this.buildPanel.root.hidden = mode !== "build";
+    this.title.textContent = mode === "terrain" ? "Dev · Terrain" : "Dev · Build";
+    this.actions.setMode(mode);
     this.refresh();
   }
 
@@ -143,10 +170,11 @@ export class DevPanel {
 
   /** Reflect sculptor dirty/undo state and the region list. */
   refresh(): void {
-    const unsaved = this.sculptor.hasUnsaved;
+    const unsaved = this.actions.hasUnsaved();
     this.status.textContent = unsaved ? "Unsaved changes" : "Saved";
     this.status.classList.toggle("unsaved", unsaved);
-    this.undoBtn.disabled = !this.sculptor.canUndo;
+    this.undoBtn.disabled = !this.actions.canUndo();
+    this.buildPanel.refresh();
     if (document.activeElement !== this.waterInput) this.waterInput.value = String(this.sculptor.waterLevel);
     this.renderRegions();
   }
@@ -267,7 +295,8 @@ export class DevPanel {
     return h(
       "div",
       { className: "dev-hint" },
-      k("LMB"), " sculpt · ", k("RMB"), " walk · ", k("Ctrl"), "+", k("RMB"), " teleport", h("br"),
+      k("LMB"), " sculpt / build · ", k("RMB"), " walk · ", k("Ctrl"), "+", k("RMB"), " teleport", h("br"),
+      "Build: rooms/sheds open towards the camera · stairs climb away from it", h("br"),
       k("["), k("]"), " radius · ", k("Ctrl"), "+", k("Z"), " undo · ", k("Ctrl"), "+", k("S"), " save · ", k("F1"), " close", h("br"),
       "Free cam: ", k("W"), k("A"), k("S"), k("D"), " fly · ", k("Q"), k("E"), " down/up · ", k("Shift"), " fast · ", k("RMB"), " look · wheel dolly",
     );

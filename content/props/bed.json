@@ -1,0 +1,8 @@
+{
+  "id": "bed",
+  "name": "Bed",
+  "model": "prop-bed",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

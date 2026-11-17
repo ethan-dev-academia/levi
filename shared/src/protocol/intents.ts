@@ -30,15 +30,29 @@ export const UseItemIntentSchema = z.object({
   slot: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
 }) satisfies z.ZodType<{ type: "useItem"; slot: ItemSlot }>;
 
+/**
+ * Climb a building's stairs/ladder one storey. `dir` is a preference (which
+ * half was clicked); the server picks the direction actually possible from
+ * the player's storey and walks them there first.
+ */
+export const ClimbIntentSchema = z.object({
+  type: z.literal("climb"),
+  building: z.string().regex(/^[a-z0-9_-]+$/).max(64),
+  stair: z.string().regex(/^[a-z0-9_-]+$/).max(64),
+  dir: z.enum(["up", "down"]),
+});
+
 export const IntentSchema = z.discriminatedUnion("type", [
   MoveIntentSchema,
   StopIntentSchema,
   CastIntentSchema,
   UseItemIntentSchema,
+  ClimbIntentSchema,
 ]);
 
 export type MoveIntent = z.infer<typeof MoveIntentSchema>;
 export type StopIntent = z.infer<typeof StopIntentSchema>;
 export type CastIntent = z.infer<typeof CastIntentSchema>;
 export type UseItemIntent = z.infer<typeof UseItemIntentSchema>;
+export type ClimbIntent = z.infer<typeof ClimbIntentSchema>;
 export type Intent = z.infer<typeof IntentSchema>;

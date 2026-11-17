@@ -1,0 +1,8 @@
+{
+  "id": "stool",
+  "name": "Stool",
+  "model": "prop-stool",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

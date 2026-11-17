@@ -1,8 +1,10 @@
 import type * as THREE from "three";
-import type { MapData, Vec2, WalkGrid } from "@levi/shared";
+import type { MapData, PropDef, Vec2, WalkGrid } from "@levi/shared";
 import type { LocalSim } from "../game/LocalSim.js";
 import type { Keyboard } from "../input/Keyboard.js";
 import type { TerrainPicker } from "../input/TerrainPicker.js";
+import type { BuildingLayer } from "../render/BuildingLayer.js";
+import type { PropLayer } from "../render/PropLayer.js";
 import type { MapImage } from "../render/MapImage.js";
 import type { ChunkedTerrain } from "../render/TerrainMesh.js";
 import type { TerrainTopology } from "../render/TerrainTopology.js";
@@ -31,6 +33,9 @@ export interface DevContext {
   keys: Keyboard;
   sim: LocalSim;
   chat: ChatBox;
+  buildings: BuildingLayer;
+  props: PropLayer;
+  propDefs: ReadonlyMap<string, PropDef>;
   onFrame(cb: (dt: number) => void): void;
   setCameraOverride(override: CameraOverride | null): void;
   /** Regions were added/edited/removed: refresh clouds etc. */

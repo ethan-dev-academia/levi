@@ -9,8 +9,8 @@
   "waterLevel": 0,
   "maxStep": 0.9,
   "spawn": {
-    "x": 530.5,
-    "z": 364.5
+    "x": 537.74,
+    "z": 364.63
   },
   "chunks": [
     "10_2",
@@ -18,6 +18,7 @@
     "10_4",
     "10_5",
     "10_6",
+    "11_7",
     "5_2",
     "5_3",
     "5_4",
@@ -46,8 +47,8 @@
   ],
   "regions": [
     {
-      "id": "halcyon",
-      "name": "Halcyon Reach",
+      "id": "falcons-landing",
+      "name": "Falcon's Landing",
       "kind": "sky",
       "bounds": {
         "x0": 362,

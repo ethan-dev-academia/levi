@@ -19,8 +19,13 @@ export class ClickMarker {
     this.mesh.visible = false;
   }
 
-  show(hm: Heightmap, x: number, z: number): void {
-    placeOnGround(this.mesh, hm, x, z, 0.06);
+  /** On the terrain, or flat at `y` (building floors). */
+  show(hm: Heightmap, x: number, z: number, y?: number): void {
+    if (y === undefined) placeOnGround(this.mesh, hm, x, z, 0.06);
+    else {
+      this.mesh.position.set(x, y + 0.06, z);
+      this.mesh.quaternion.identity();
+    }
     this.age = 0;
     this.mesh.visible = true;
   }

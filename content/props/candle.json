@@ -1,0 +1,8 @@
+{
+  "id": "candle",
+  "name": "Candle stand",
+  "model": "prop-candle",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

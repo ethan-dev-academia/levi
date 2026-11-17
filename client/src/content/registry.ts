@@ -1,4 +1,4 @@
-import { ModelDefSchema, SpriteDefSchema, type ModelDef, type SpriteDef } from "@levi/shared";
+import { ModelDefSchema, PropDefSchema, SpriteDefSchema, type ModelDef, type PropDef, type SpriteDef } from "@levi/shared";
 import type { z } from "zod";
 
 /**
@@ -8,6 +8,7 @@ import type { z } from "zod";
  */
 const spriteFiles = import.meta.glob<unknown>("../../../content/sprites/*.json", { eager: true, import: "default" });
 const modelFiles = import.meta.glob<unknown>("../../../content/models/*.json", { eager: true, import: "default" });
+const propFiles = import.meta.glob<unknown>("../../../content/props/*.json", { eager: true, import: "default" });
 
 function loadAll<T extends { id: string }>(
   kind: string,
@@ -29,13 +30,19 @@ function loadAll<T extends { id: string }>(
 export interface ContentRegistry {
   sprites: ReadonlyMap<string, SpriteDef>;
   models: ReadonlyMap<string, ModelDef>;
+  props: ReadonlyMap<string, PropDef>;
 }
 
 export function loadContent(): ContentRegistry {
-  return {
+  const reg = {
     sprites: loadAll("sprite", spriteFiles, SpriteDefSchema),
     models: loadAll("model", modelFiles, ModelDefSchema),
+    props: loadAll("prop", propFiles, PropDefSchema),
   };
+  for (const p of reg.props.values()) {
+    if (!reg.models.has(p.model)) throw new Error(`[content] prop "${p.id}" uses unknown model "${p.model}"`);
+  }
+  return reg;
 }
 
 export function getOrThrow<T>(registry: ReadonlyMap<string, T>, id: string, kind: string): T {

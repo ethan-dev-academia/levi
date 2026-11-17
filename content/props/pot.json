@@ -1,0 +1,8 @@
+{
+  "id": "pot",
+  "name": "Clay pot",
+  "model": "prop-pot",
+  "solid": true,
+  "readable": false,
+  "category": "storage"
+}

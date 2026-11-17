@@ -8,6 +8,8 @@ export const PART_ROLES = [
   "torso", "head",
   "armL", "armR", "forearmL", "forearmR",
   "legL", "legR", "shinL", "shinR",
+  /** Feet: their lowest points are kept above the terrain. */
+  "footL", "footR",
 ] as const;
 export type PartRole = (typeof PART_ROLES)[number];
 
@@ -21,10 +23,14 @@ export const FacetRingSchema = z.tuple([n, n.nonnegative(), n.nonnegative()]);
  *
  *   sides 3–4 → shards / spikes      sides 5–7 → limbs, torso, head
  */
+const HEX = z.string().regex(/^#[0-9a-fA-F]{6}$/);
+const SLOT = /^[a-zA-Z][a-zA-Z0-9]*$/;
+
 export const ModelPartSchema = z.object({
   id: z.string().min(1),
   parent: z.string().optional(),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  /** Either a literal "#rrggbb" or "$slot", resolved through the model palette. */
+  color: z.union([HEX, z.string().regex(/^\$[a-zA-Z][a-zA-Z0-9]*$/)]),
   sides: z.number().int().min(3).max(16).default(6),
   /** Bottom → top. At least two rings. */
   rings: z.array(FacetRingSchema).min(2),
@@ -34,6 +40,15 @@ export const ModelPartSchema = z.object({
   offset: vec3.default([0, 0, 0]),
   /** Euler degrees, XYZ order. */
   rot: vec3.default([0, 0, 0]),
+  /**
+   * Antiprism twist between rings (the faceted look). Off = straight prism,
+   * e.g. boxes: sides 4, phase 45, rx/rz = half-size × √2.
+   */
+  twist: z.boolean().default(true),
+  /** Rotates the ring's corners (degrees) before scaling by rx/rz. */
+  phase: z.number().finite().default(0),
+  /** Uniform scale of this joint and everything attached to it. */
+  scale: z.number().positive().default(1),
   role: z.enum(PART_ROLES).optional(),
 });
 
@@ -42,11 +57,19 @@ export const ModelDefSchema = z
   .object({
     id: z.string().min(1),
     scale: z.number().positive().default(1),
+    /**
+     * Named colour slots (skin, hair, top, ...). Characters sharing one body
+     * differ only by palette overrides, so NPCs reuse a base model.
+     */
+    palette: z.record(z.string().regex(SLOT), HEX).default({}),
     parts: z.array(ModelPartSchema).min(1),
   })
   .superRefine((m, ctx) => {
     const seen = new Set<string>();
     for (const p of m.parts) {
+      if (p.color.startsWith("$") && !(p.color.slice(1) in m.palette)) {
+        ctx.addIssue({ code: "custom", message: `part "${p.id}": unknown palette slot "${p.color}"` });
+      }
       if (seen.has(p.id)) ctx.addIssue({ code: "custom", message: `duplicate part id "${p.id}"` });
       if (p.parent && !seen.has(p.parent)) {
         ctx.addIssue({ code: "custom", message: `part "${p.id}": parent "${p.parent}" must be declared earlier` });
@@ -58,3 +81,11 @@ export const ModelDefSchema = z
 export type FacetRing = z.infer<typeof FacetRingSchema>;
 export type ModelPart = z.infer<typeof ModelPartSchema>;
 export type ModelDef = z.infer<typeof ModelDefSchema>;
+export type ModelPalette = Readonly<Record<string, string>>;
+
+/** Resolve a part colour against the model palette plus optional overrides. */
+export function resolvePartColor(color: string, palette: ModelPalette, overrides?: ModelPalette): string {
+  if (!color.startsWith("$")) return color;
+  const slot = color.slice(1);
+  return overrides?.[slot] ?? palette[slot] ?? "#ff00ff";
+}

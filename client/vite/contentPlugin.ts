@@ -5,6 +5,17 @@ import type { Plugin, ResolvedConfig } from "vite";
 import { CONTENT_ID, SaveMapRequestSchema, chunkKey } from "../../shared/src/schemas/map.js";
 
 const MAX_BODY_BYTES = 64 * 1024 * 1024;
+
+/** Readable but compact: [x, z] tile pairs and each wall stay on one line (diff-friendly). */
+function formatBuildings(file: unknown): string {
+  return JSON.stringify(file, null, 1)
+    .replace(/\[\s+(-?\d+),\s+(-?\d+)\s+\]/g, "[$1,$2]")
+    .replace(
+      /\{\s+("x": -?\d+),\s+("z": -?\d+),\s+("axis": "[xz]"),\s+("kind": "\w+")(,\s+"material": "\w+")?\s+\}/g,
+      (_m, x: string, z: string, axis: string, kind: string, mat?: string) =>
+        `{${x}, ${z}, ${axis}, ${kind}${mat ? `, ${mat.replace(/^,\s+/, "")}` : ""}}`,
+    );
+}
 const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 
 /**
@@ -74,7 +85,7 @@ export function contentPlugin(contentRoot: string): Plugin {
     }
     if (!parsed.success) return reply(400, { error: parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`) });
 
-    const { map, chunks, removed } = parsed.data;
+    const { map, chunks, removed, buildings } = parsed.data;
     if (!CONTENT_ID.test(map.id)) return reply(400, { error: "bad map id" });
     const dir = path.join(root, "maps", map.id);
     const chunkDir = path.join(dir, "chunks");
@@ -86,6 +97,7 @@ export function contentPlugin(contentRoot: string): Plugin {
       const f = path.join(chunkDir, `${key}.json`);
       if (inside(f)) await fs.rm(f, { force: true });
     }
+    if (buildings) await writeAtomic(path.join(dir, "buildings.json"), `${formatBuildings(buildings)}\n`);
     await writeAtomic(path.join(dir, "map.json"), `${JSON.stringify(map, null, 2)}\n`);
     reply(200, { ok: true, written: chunks.length, removed: removed.length });
   }

@@ -1,0 +1,133 @@
+{
+ "id": "prop-bed",
+ "scale": 1,
+ "palette": {
+  "wood": "#8a5a35",
+  "trim": "#5b3a22",
+  "light": "#a77a4c",
+  "sheet": "#ddd3bd",
+  "blanket": "#8e3a2b"
+ },
+ "parts": [
+  {
+   "id": "frame",
+   "color": "$wood",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "rings": [
+    [
+     0,
+     0.6223,
+     0.6788
+    ],
+    [
+     0.32,
+     0.6223,
+     0.6788
+    ]
+   ]
+  },
+  {
+   "id": "head",
+   "color": "$trim",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0,
+    -0.46
+   ],
+   "rings": [
+    [
+     0,
+     0.6505,
+     0.0566
+    ],
+    [
+     0.7,
+     0.6505,
+     0.0566
+    ]
+   ]
+  },
+  {
+   "id": "mattress",
+   "color": "$sheet",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0.32,
+    0.02
+   ],
+   "rings": [
+    [
+     0,
+     0.5798,
+     0.6223
+    ],
+    [
+     0.12,
+     0.5798,
+     0.6223
+    ]
+   ]
+  },
+  {
+   "id": "blanket",
+   "color": "$blanket",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0.38,
+    0.21
+   ],
+   "rings": [
+    [
+     0,
+     0.6081,
+     0.3677
+    ],
+    [
+     0.09,
+     0.6081,
+     0.3677
+    ]
+   ]
+  },
+  {
+   "id": "pillow",
+   "color": "$sheet",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0.44,
+    -0.3
+   ],
+   "rings": [
+    [
+     0,
+     0.4243,
+     0.1414
+    ],
+    [
+     0.08,
+     0.4243,
+     0.1414
+    ]
+   ]
+  }
+ ]
+}

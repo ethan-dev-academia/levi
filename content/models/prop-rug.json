@@ -1,0 +1,82 @@
+{
+ "id": "prop-rug",
+ "scale": 1,
+ "palette": {
+  "edge": "#6e2c2a",
+  "field": "#a8493a",
+  "motif": "#d8b36a"
+ },
+ "parts": [
+  {
+   "id": "edge",
+   "color": "$edge",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0,
+    0.0
+   ],
+   "rings": [
+    [
+     0,
+     0.6788,
+     0.6788
+    ],
+    [
+     0.02,
+     0.6788,
+     0.6788
+    ]
+   ]
+  },
+  {
+   "id": "field",
+   "color": "$field",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "pos": [
+    0.0,
+    0.02,
+    0.0
+   ],
+   "rings": [
+    [
+     0,
+     0.5657,
+     0.5657
+    ],
+    [
+     0.01,
+     0.5657,
+     0.5657
+    ]
+   ]
+  },
+  {
+   "id": "motif",
+   "color": "$motif",
+   "sides": 4,
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rings": [
+    [
+     0.03,
+     0.22,
+     0.22
+    ],
+    [
+     0.036,
+     0.22,
+     0.22
+    ]
+   ],
+   "twist": false
+  }
+ ]
+}

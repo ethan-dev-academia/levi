@@ -1,0 +1,8 @@
+{
+  "id": "chair",
+  "name": "Chair",
+  "model": "prop-chair",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

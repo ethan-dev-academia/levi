@@ -78,7 +78,7 @@ export function nearestWalkableCell(
   return null;
 }
 
-/** True if the straight segment a→b only crosses walkable cells (grid DDA). */
+/** True if the straight segment a→b crosses only walkable cells and no walls (grid DDA). */
 export function lineWalkable(grid: WalkGrid, a: Vec2, b: Vec2): boolean {
   const cs = grid.cellSize;
   let cx = Math.floor(a.x / cs);
@@ -95,16 +95,18 @@ export function lineWalkable(grid: WalkGrid, a: Vec2, b: Vec2): boolean {
   let tMaxZ = stepZ > 0 ? ((cz + 1) * cs - a.z) / dz : stepZ < 0 ? (cz * cs - a.z) / dz : Infinity;
 
   const maxSteps = Math.abs(ex - cx) + Math.abs(ez - cz) + 2;
+  if (!grid.isWalkable(cx, cz)) return false;
   for (let i = 0; i <= maxSteps; i++) {
-    if (!grid.isWalkable(cx, cz)) return false;
     if (cx === ex && cz === ez) return true;
     if (tMaxX < tMaxZ) {
+      if (!grid.canStep(cx, cz, stepX, 0)) return false;
       cx += stepX; tMaxX += tDeltaX;
     } else if (tMaxZ < tMaxX) {
+      if (!grid.canStep(cx, cz, 0, stepZ)) return false;
       cz += stepZ; tMaxZ += tDeltaZ;
     } else {
-      // Exactly through a corner: forbid squeezing between two blocked cells.
-      if (!grid.isWalkable(cx + stepX, cz) || !grid.isWalkable(cx, cz + stepZ)) return false;
+      // Exactly through a corner: both L-routes must be open.
+      if (!grid.canStep(cx, cz, stepX, stepZ)) return false;
       cx += stepX; cz += stepZ; tMaxX += tDeltaX; tMaxZ += tDeltaZ;
     }
   }
@@ -151,17 +153,15 @@ export function findPath(grid: WalkGrid, from: Vec2, to: Vec2, opts: PathOptions
     expansions++;
     if (cur === goalId) { bestId = cur; break; }
 
-    const cx = cur % grid.cols;
-    const cz = (cur - cx) / grid.cols;
+    const { cx, cz } = grid.cellAt(cur);
     const h = octile(cx, cz, goal.cx, goal.cz);
     if (h < bestH) { bestH = h; bestId = cur; }
 
     for (const [dx, dz, cost] of DIRS) {
       const nx = cx + dx;
       const nz = cz + dz;
-      if (!grid.isWalkable(nx, nz)) continue;
-      // No corner cutting on diagonals.
-      if (dx !== 0 && dz !== 0 && (!grid.isWalkable(cx + dx, cz) || !grid.isWalkable(cx, cz + dz))) continue;
+      // Walkable target, no wall in between, no corner cutting on diagonals.
+      if (!grid.canStep(cx, cz, dx, dz)) continue;
       const nid = grid.index(nx, nz);
       if (closed[nid] === gen) continue;
       const ng = g[cur]! + cost;
@@ -181,8 +181,8 @@ export function findPath(grid: WalkGrid, from: Vec2, to: Vec2, opts: PathOptions
   if (cells.length === 0) return [];
 
   const raw: Vec2[] = cells.map((id) => {
-    const cx = id % grid.cols;
-    return grid.cellCenter(cx, (id - cx) / grid.cols);
+    const c = grid.cellAt(id);
+    return grid.cellCenter(c.cx, c.cz);
   });
   if (bestId === goalId) raw[raw.length - 1] = finalPoint;
 

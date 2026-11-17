@@ -1,0 +1,8 @@
+{
+  "id": "sign",
+  "name": "Sign",
+  "model": "prop-sign",
+  "solid": true,
+  "readable": true,
+  "category": "signage"
+}

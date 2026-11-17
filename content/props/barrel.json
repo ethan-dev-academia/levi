@@ -1,0 +1,8 @@
+{
+  "id": "barrel",
+  "name": "Barrel",
+  "model": "prop-barrel",
+  "solid": true,
+  "readable": false,
+  "category": "storage"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "crate",
+  "name": "Crate",
+  "model": "prop-crate",
+  "solid": true,
+  "readable": false,
+  "category": "storage"
+}

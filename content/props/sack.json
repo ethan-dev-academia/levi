@@ -1,0 +1,8 @@
+{
+  "id": "sack",
+  "name": "Sack",
+  "model": "prop-sack",
+  "solid": true,
+  "readable": false,
+  "category": "storage"
+}

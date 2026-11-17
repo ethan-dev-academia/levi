@@ -1,0 +1,8 @@
+{
+  "id": "bench",
+  "name": "Bench",
+  "model": "prop-bench",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

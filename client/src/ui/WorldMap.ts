@@ -168,11 +168,14 @@ export class WorldMap {
     for (const r of this.regions()) {
       const [rx0, rz0] = toScreen({ x: r.bounds.x0, z: r.bounds.z0 });
       const [rx1, rz1] = toScreen({ x: r.bounds.x1, z: r.bounds.z1 });
-      ctx.setLineDash([6, 4]);
-      ctx.strokeStyle = r.kind === "sky" ? "rgba(255,255,255,0.55)" : "rgba(196,164,101,0.6)";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(rx0, rz0, rx1 - rx0, rz1 - rz0);
-      ctx.setLineDash([]);
+      // Sky islands are framed by their cloud bank; only ground zones get a border.
+      if (r.kind !== "sky") {
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = "rgba(196,164,101,0.6)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(rx0, rz0, rx1 - rx0, rz1 - rz0);
+        ctx.setLineDash([]);
+      }
       ctx.lineWidth = 3;
       ctx.strokeStyle = "#000";
       ctx.fillStyle = "#f2d48a";

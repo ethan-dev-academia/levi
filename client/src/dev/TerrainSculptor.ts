@@ -6,6 +6,7 @@ import {
   regionCellRect,
   sinkOutsideRegions,
   WALK_BLOCKED,
+  type BuildingsFile,
   type CellRect,
   type MapChunk,
   type MapDef,
@@ -211,6 +212,7 @@ export class TerrainSculptor {
   private refreshTopology(): void {
     const changed = this.ctx.topo.recompute(this.ctx.data.def.chunkCells);
     this.ctx.terrain.rebuildChunks(changed);
+    this.ctx.mapImage.refreshClouds();
   }
 
   private fullRect(): CellRect {
@@ -354,7 +356,7 @@ export class TerrainSculptor {
 
   // --- Persistence ----------------------------------------------------------------
 
-  async save(): Promise<string> {
+  async save(buildings?: BuildingsFile): Promise<string> {
     const { data } = this.ctx;
     const chunks: MapChunk[] = [];
     const removed: string[] = [];
@@ -370,6 +372,7 @@ export class TerrainSculptor {
     // Only send removals for files that actually exist.
     const existing = new Set(data.def.chunks);
     const body: SaveMapRequest = { map: def, chunks, removed: removed.filter((k) => existing.has(k)) };
+    if (buildings) body.buildings = buildings;
 
     const res = await fetch("/__dev/save-map", {
       method: "POST",
@@ -382,6 +385,7 @@ export class TerrainSculptor {
     this.dirty.clear();
     this.defDirty = false;
     this.onChange?.();
-    return `Saved ${data.def.id}: ${chunks.length} chunk(s) written, ${body.removed.length} removed.`;
+    const b = buildings ? `, ${buildings.buildings.length} building(s), ${buildings.props.length} prop(s)` : "";
+    return `Saved ${data.def.id}: ${chunks.length} chunk(s) written, ${body.removed.length} removed${b}.`;
   }
 }

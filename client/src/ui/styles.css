@@ -338,3 +338,43 @@ html, body {
 
 #tab-content .kv { display: flex; justify-content: space-between; gap: 8px; }
 #tab-content .kv b { color: var(--text); font-weight: 500; }
+
+/* --- Read popup (signs, notes) ------------------------------------------ */
+.read-popup {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  width: min(440px, calc(100% - 32px));
+  padding: 18px 22px 14px;
+  background: linear-gradient(180deg, #e9dcbc, #d8c69c);
+  color: #2e2416;
+  border: 1px solid var(--brass-dim);
+  box-shadow: 0 0 0 3px #2a2116, 0 10px 30px rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+.read-popup[hidden] { display: none; }
+.read-popup h3 {
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  color: #4a3519;
+}
+.read-popup p {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  font-size: 15px;
+  user-select: text;
+}
+.read-close {
+  float: right;
+  padding: 3px 12px;
+  font: 600 12px var(--sans);
+  color: var(--text);
+  background: #3a2e1d;
+  border: 1px solid var(--brass-dim);
+  cursor: pointer;
+}
+.read-close:hover { border-color: var(--brass); }

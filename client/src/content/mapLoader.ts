@@ -1,4 +1,4 @@
-import { MapChunkSchema, MapDefSchema, loadMapData, type MapChunk, type MapData } from "@levi/shared";
+import { BuildingsFileSchema, MapChunkSchema, MapDefSchema, loadMapData, type MapChunk, type MapData } from "@levi/shared";
 
 async function fetchJson(url: string): Promise<unknown> {
   const res = await fetch(url, { cache: "no-store" });
@@ -6,12 +6,13 @@ async function fetchJson(url: string): Promise<unknown> {
   return res.json();
 }
 
-/** Fetch a designed map: metadata + every authored chunk, schema-validated. */
+/** Fetch a designed map: metadata + every authored chunk + buildings, schema-validated. */
 export async function loadMap(id: string): Promise<MapData> {
   const base = `/content/maps/${encodeURIComponent(id)}`;
   const def = MapDefSchema.parse(await fetchJson(`${base}/map.json`));
   const chunks: MapChunk[] = await Promise.all(
     def.chunks.map(async (key) => MapChunkSchema.parse(await fetchJson(`${base}/chunks/${key}.json`))),
   );
-  return loadMapData(def, chunks);
+  const buildings = BuildingsFileSchema.parse(await fetchJson(`${base}/buildings.json`));
+  return loadMapData(def, chunks, buildings.buildings, buildings.props);
 }

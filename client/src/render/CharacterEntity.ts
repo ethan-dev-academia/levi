@@ -1,12 +1,24 @@
 import * as THREE from "three";
-import { getTerrainHeight, type Heightmap, type ModelDef } from "@levi/shared";
+import type { ModelDef, ModelPalette } from "@levi/shared";
 import { buildModel, type BuiltModel } from "./ModelBuilder.js";
-import { placeOnGround } from "./terrainAlign.js";
 
 const TURN_RATE = 14; // higher = snappier facing
 const STRIDE = 2.6; // radians of gait phase per world unit travelled
 const LEG_SWING = 0.65;
 const ARM_SWING = 0.55;
+
+const tmp = new THREE.Vector3();
+
+/**
+ * Every vertex of a foot mesh. Feet are tiny (~20 verts), and checking all of
+ * them catches the toe tipping down mid-stride as well as the sole.
+ */
+function soleVertices(geom: THREE.BufferGeometry): THREE.Vector3[] {
+  const pos = geom.getAttribute("position");
+  const out: THREE.Vector3[] = [];
+  for (let i = 0; i < pos.count; i++) out.push(new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i)));
+  return out;
+}
 
 /**
  * A 3D primitive-built character standing on the terrain, with a
@@ -21,9 +33,15 @@ export class CharacterEntity {
   private idleTime = 0;
   private lastX = NaN;
   private lastZ = NaN;
+  /** Sole vertices of each foot mesh (mesh-local), checked against the ground. */
+  private readonly soles: Array<{ mesh: THREE.Object3D; points: THREE.Vector3[] }> = [];
 
-  constructor(def: ModelDef) {
-    this.model = buildModel(def);
+  constructor(def: ModelDef, palette?: ModelPalette) {
+    this.model = buildModel(def, palette);
+    for (const role of ["footL", "footR"] as const) {
+      const mesh = this.model.joints[role]?.children[0];
+      if (mesh instanceof THREE.Mesh) this.soles.push({ mesh, points: soleVertices(mesh.geometry) });
+    }
     const geom = new THREE.CircleGeometry(0.42, 16);
     geom.rotateX(-Math.PI / 2);
     this.shadow = new THREE.Mesh(
@@ -36,7 +54,8 @@ export class CharacterEntity {
     scene.add(this.model.root, this.shadow);
   }
 
-  update(hm: Heightmap, x: number, z: number, dirX: number, dirZ: number, dt: number): void {
+  /** `heightAt` = the surface the character stands on (terrain, or a building floor). */
+  update(heightAt: (x: number, z: number) => number, x: number, z: number, dirX: number, dirZ: number, dt: number): void {
     const moved = Number.isNaN(this.lastX) ? 0 : Math.hypot(x - this.lastX, z - this.lastZ);
     this.lastX = x;
     this.lastZ = z;
@@ -57,7 +76,8 @@ export class CharacterEntity {
     const root = this.model.root;
     const swing = Math.sin(this.phase) * this.gait;
     const bob = Math.abs(Math.cos(this.phase)) * 0.05 * this.gait;
-    root.position.set(x, getTerrainHeight(hm, x, z) + bob, z);
+    const ground = heightAt(x, z);
+    root.position.set(x, ground + bob, z);
     root.rotation.y = this.yaw;
 
     const j = this.model.joints;
@@ -81,8 +101,23 @@ export class CharacterEntity {
       j.torso.scale.y = 1 + Math.sin(this.idleTime * 2.2) * 0.012 * (1 - this.gait);
     }
     if (j.head) j.head.rotation.x = -0.06 * this.gait;
+    root.position.y += this.groundPenetration(heightAt);
 
-    placeOnGround(this.shadow, hm, x, z);
+    this.shadow.position.set(x, ground + 0.04, z);
+  }
+
+  /** How far the lowest sole point sits below the terrain under it (≥ 0). */
+  private groundPenetration(heightAt: (x: number, z: number) => number): number {
+    if (this.soles.length === 0) return 0;
+    this.model.root.updateMatrixWorld(true);
+    let deepest = 0;
+    for (const { mesh, points } of this.soles) {
+      for (const p of points) {
+        tmp.copy(p).applyMatrix4(mesh.matrixWorld);
+        deepest = Math.max(deepest, heightAt(tmp.x, tmp.z) - tmp.y);
+      }
+    }
+    return deepest;
   }
 
   dispose(): void {

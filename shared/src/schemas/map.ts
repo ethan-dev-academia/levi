@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BuildingsFileSchema } from "./building.js";
 
 const finite = z.number().finite();
 
@@ -79,6 +80,8 @@ export const SaveMapRequestSchema = z.object({
   chunks: z.array(MapChunkSchema),
   /** Chunk keys that are back to pristine and should be deleted. */
   removed: z.array(z.string().regex(CHUNK_KEY)),
+  /** Whole buildings file, when buildings changed. */
+  buildings: BuildingsFileSchema.optional(),
 });
 
 export type MapDef = z.infer<typeof MapDefSchema>;
