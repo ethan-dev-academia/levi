@@ -1,6 +1,8 @@
 import * as THREE from "three";
-import type { CellRect, MapData, WalkGrid } from "@levi/shared";
+import { valueNoise2, type CellRect, type MapData, type WalkGrid } from "@levi/shared";
 import { cellColor, WATER_COLOR } from "./terrainPalette.js";
+
+const SKY = new THREE.Color(0xc9dbe6);
 
 /**
  * 1px-per-cell top-down image of the map with hillshading. Shared by the
@@ -46,7 +48,10 @@ export class MapImage {
     for (let cz = cz0; cz <= cz1; cz++) {
       for (let cx = cx0; cx <= cx1; cx++) {
         const avg = (hm.vertex(cx, cz) + hm.vertex(cx + 1, cz + 1)) / 2;
-        if (avg <= def.waterLevel + 0.15) {
+        if (this.data.holes[cz * def.cols + cx] === 1) {
+          // Void: pale sky, so floating islands read as floating on the map.
+          col.copy(SKY).offsetHSL(0, 0, (valueNoise2(cx * 0.08, cz * 0.08, 5) - 0.5) * 0.05);
+        } else if (avg <= def.waterLevel + 0.15) {
           col.copy(WATER_COLOR).offsetHSL(0, 0, -Math.min(1, (def.waterLevel - avg + 0.15) / 4) * 0.12);
         } else {
           cellColor(this.data, this.walk, cx, cz, col);

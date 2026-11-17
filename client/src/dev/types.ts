@@ -5,6 +5,7 @@ import type { Keyboard } from "../input/Keyboard.js";
 import type { TerrainPicker } from "../input/TerrainPicker.js";
 import type { MapImage } from "../render/MapImage.js";
 import type { ChunkedTerrain } from "../render/TerrainMesh.js";
+import type { TerrainTopology } from "../render/TerrainTopology.js";
 import type { ChatBox } from "../ui/ChatBox.js";
 
 /** Takes over the camera from the player orbit while active (dev free cam). */
@@ -23,6 +24,7 @@ export interface DevContext {
   data: MapData;
   walk: WalkGrid;
   terrain: ChunkedTerrain;
+  topo: TerrainTopology;
   water: THREE.Object3D;
   mapImage: MapImage;
   picker: TerrainPicker;
@@ -31,4 +33,6 @@ export interface DevContext {
   chat: ChatBox;
   onFrame(cb: (dt: number) => void): void;
   setCameraOverride(override: CameraOverride | null): void;
+  /** Regions were added/edited/removed: refresh clouds etc. */
+  onRegionsChanged(): void;
 }

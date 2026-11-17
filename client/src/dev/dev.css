@@ -101,3 +101,19 @@
   border-radius: 3px;
 }
 .dev-coords { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+.dev-empty { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 4px 0; }
+.dev-regions { display: flex; flex-direction: column; gap: 6px; }
+.dev-region { padding: 6px; background: #12151b; border: 1px solid #2a2f39; border-radius: 5px; }
+.dev-region-row { display: grid; grid-template-columns: 1fr 72px; gap: 4px; }
+.dev-region-row input,
+.dev-region-row select {
+  min-width: 0;
+  padding: 3px 5px;
+  font: inherit;
+  color: var(--text);
+  background: #0f1116;
+  border: 1px solid #2f3540;
+  border-radius: 4px;
+}
+.dev-region-meta { margin: 4px 0; font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; }

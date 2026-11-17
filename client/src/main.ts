@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { buildWalkGrid, getTerrainHeight, lerp, type AbilitySlot, type ItemSlot } from "@levi/shared";
+import { buildWalkGrid, getTerrainHeight, lerp, regionAt, type AbilitySlot, type ItemSlot, type Region } from "@levi/shared";
 import { OrbitCamera } from "./camera/OrbitCamera.js";
 import { loadMap } from "./content/mapLoader.js";
 import { getOrThrow, loadContent } from "./content/registry.js";
@@ -11,9 +11,11 @@ import { TerrainPicker } from "./input/TerrainPicker.js";
 import { LocalIntentSink } from "./net/IntentSink.js";
 import { CharacterEntity } from "./render/CharacterEntity.js";
 import { ClickMarker } from "./render/ClickMarker.js";
+import { Clouds } from "./render/Clouds.js";
 import { MapImage } from "./render/MapImage.js";
 import { renderPortrait } from "./render/portrait.js";
 import { ChunkedTerrain, createWater } from "./render/TerrainMesh.js";
+import { TerrainTopology } from "./render/TerrainTopology.js";
 import { WorldRenderer } from "./render/WorldRenderer.js";
 import type { CameraOverride } from "./dev/types.js";
 import { ChatBox } from "./ui/ChatBox.js";
@@ -41,8 +43,10 @@ async function boot(): Promise<void> {
   const content = loadContent();
   const heroModel = getOrThrow(content.models, "hero", "model");
   const data = await loadMap(START_MAP);
-  const { hm, def } = data;
+  // `data.def` is read live everywhere below: dev undo can replace it.
+  const { hm } = data;
   const walk = buildWalkGrid(data);
+  const topo = new TerrainTopology(data);
   const mapImage = new MapImage(data, walk);
 
   // --- UI -----------------------------------------------------------
@@ -75,9 +79,11 @@ async function boot(): Promise<void> {
   const stage = el("stage", HTMLElement);
   const canvas = el("viewport", HTMLCanvasElement);
   const world = new WorldRenderer(canvas);
-  const terrain = new ChunkedTerrain(data, walk);
-  const water = createWater(hm, def.waterLevel);
-  world.scene.add(terrain.group, water);
+  const terrain = new ChunkedTerrain(data, walk, topo);
+  const water = createWater(hm, data.def.waterLevel);
+  const clouds = new Clouds();
+  clouds.rebuild(data.def.regions);
+  world.scene.add(terrain.group, water, clouds.group);
 
   const hero = new CharacterEntity(heroModel);
   hero.addTo(world.scene);
@@ -86,10 +92,11 @@ async function boot(): Promise<void> {
   world.scene.add(marker.mesh);
 
   const orbit = new OrbitCamera(world.camera, hm);
-  const picker = new TerrainPicker(world.camera, hm);
+  const cs = data.def.cellSize;
+  const picker = new TerrainPicker(world.camera, hm, (x, z) => !data.isHole(Math.floor(x / cs), Math.floor(z / cs)));
 
   // --- Simulation + intent pipeline ---------------------------------
-  const sim = new LocalSim(walk, def.spawn, { message: (t) => chat.add(t) });
+  const sim = new LocalSim(walk, data.def.spawn, { message: (t) => chat.add(t) });
   const intents = new LocalIntentSink((i) => sim.apply(i));
 
   const moveTo = (x: number, z: number, showMarker: boolean): void => {
@@ -107,10 +114,16 @@ async function boot(): Promise<void> {
   });
 
   const minimap = new Minimap(el("minimap", HTMLCanvasElement), mapImage, (w) => moveTo(w.x, w.z, true));
-  const worldMap = new WorldMap(stage, mapImage, def.name, {
-    onWalk: (w) => moveTo(w.x, w.z, true),
-    ...(import.meta.env.DEV ? { onTeleport: (w: { x: number; z: number }) => sim.teleport(w.x, w.z) } : {}),
-  });
+  const worldMap = new WorldMap(
+    stage,
+    mapImage,
+    data.def.name,
+    {
+      onWalk: (w) => moveTo(w.x, w.z, true),
+      ...(import.meta.env.DEV ? { onTeleport: (w: { x: number; z: number }) => sim.teleport(w.x, w.z) } : {}),
+    },
+    () => data.def.regions,
+  );
 
   const aimPoint = () => picker.pick(pointer.lastNdc.x, pointer.lastNdc.y) ?? { x: sim.player.x, z: sim.player.z };
   const keys = new Keyboard();
@@ -142,11 +155,22 @@ async function boot(): Promise<void> {
   if (import.meta.env.DEV) {
     const dev = await import("./dev/index.js");
     dev.mountDevTools({
-      stage, canvas, scene: world.scene, camera: world.camera, data, walk, terrain, water, mapImage, picker, keys, sim, chat,
+      stage, canvas, scene: world.scene, camera: world.camera, data, walk, terrain, topo, water, mapImage, picker, keys, sim, chat,
       onFrame: (cb) => frameHooks.push(cb),
       setCameraOverride: (o) => (cameraOverride = o),
+      onRegionsChanged: () => clouds.rebuild(data.def.regions),
     });
   }
+
+  // --- Region tracking ----------------------------------------------
+  let currentRegion: Region | null = null;
+  const trackRegion = (x: number, z: number): void => {
+    const r = regionAt(data.def.regions, x, z);
+    if (r?.id !== currentRegion?.id) {
+      currentRegion = r;
+      if (r) chat.add(`You arrive at ${r.name}.`, "system");
+    }
+  };
 
   // --- Loop ---------------------------------------------------------
   const focus = new THREE.Vector3();
@@ -171,6 +195,8 @@ async function boot(): Promise<void> {
 
       hero.update(hm, x, z, p.dirX, p.dirZ, dt);
       marker.update(dt);
+      clouds.update(dt);
+      trackRegion(x, z);
       for (const hook of frameHooks) hook(dt);
 
       const dest = sim.destination();

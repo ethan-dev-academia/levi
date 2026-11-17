@@ -1,17 +1,22 @@
 import {
   chunkKey,
   computeWalkRegion,
+  floatRegion,
   getTerrainHeight,
+  regionCellRect,
+  sinkOutsideRegions,
   WALK_BLOCKED,
   type CellRect,
   type MapChunk,
+  type MapDef,
+  type Region,
   type SaveMapRequest,
   type Vec2,
   type WalkOverride,
 } from "@levi/shared";
 import type { DevContext } from "./types.js";
 
-export type SculptTool = "raise" | "lower" | "smooth" | "flatten" | "set" | "paint" | "walk";
+export type SculptTool = "raise" | "lower" | "smooth" | "flatten" | "set" | "paint" | "walk" | "void" | "region";
 
 export interface SculptSettings {
   tool: SculptTool;
@@ -25,6 +30,14 @@ export interface SculptSettings {
   material: number;
   /** Override for "walk". */
   walkMode: WalkOverride;
+  /** "void" tool: true = cut a hole, false = fill it back in. */
+  voidCut: boolean;
+}
+
+interface UndoEntry {
+  chunks: Map<string, MapChunk>;
+  /** Map-level settings (regions, base/water height) before the edit. */
+  def?: MapDef;
 }
 
 const MAX_UNDO = 60;
@@ -39,8 +52,8 @@ function falloff(d: number, r: number): number {
 
 /**
  * Edits MapData in place and keeps every derived view in sync: walk grid,
- * terrain chunks, map image. Tracks dirty chunks for saving, plus per-stroke
- * undo snapshots (chunk-granular).
+ * terrain chunks, topology (floating islands), map image. Tracks dirty
+ * chunks for saving, plus chunk-granular undo.
  */
 export class TerrainSculptor {
   readonly settings: SculptSettings = {
@@ -50,13 +63,14 @@ export class TerrainSculptor {
     setHeight: 2,
     material: 1,
     walkMode: WALK_BLOCKED,
+    voidCut: true,
   };
   readonly dirty = new Set<string>();
   defDirty = false;
   onChange: (() => void) | null = null;
 
   private stroke: { backup: Map<string, MapChunk>; flattenTo: number } | null = null;
-  private readonly undoStack: Array<Map<string, MapChunk>> = [];
+  private readonly undoStack: UndoEntry[] = [];
 
   constructor(private readonly ctx: DevContext) {}
 
@@ -68,7 +82,7 @@ export class TerrainSculptor {
     return this.undoStack.length > 0;
   }
 
-  // --- Strokes --------------------------------------------------------
+  // --- Brush strokes -----------------------------------------------------
 
   beginStroke(at: Vec2): void {
     this.stroke = { backup: new Map(), flattenTo: getTerrainHeight(this.ctx.data.hm, at.x, at.z) };
@@ -76,8 +90,8 @@ export class TerrainSculptor {
 
   endStroke(): void {
     if (this.stroke && this.stroke.backup.size > 0) {
-      this.undoStack.push(this.stroke.backup);
-      if (this.undoStack.length > MAX_UNDO) this.undoStack.shift();
+      this.pushUndo({ chunks: this.stroke.backup });
+      this.refreshTopology();
     }
     this.stroke = null;
     this.onChange?.();
@@ -87,11 +101,12 @@ export class TerrainSculptor {
     return this.stroke !== null;
   }
 
-  /** Apply the active tool at `at` for `dt` seconds. */
+  /** Apply the active brush at `at` for `dt` seconds. */
   apply(at: Vec2, dt: number): void {
     if (!this.stroke) return;
-    const s = this.settings;
-    if (s.tool === "paint" || s.tool === "walk") this.applyCells(at);
+    const t = this.settings.tool;
+    if (t === "region") return; // handled by the region drag in dev/index
+    if (t === "paint" || t === "walk" || t === "void") this.applyCells(at);
     else this.applyHeights(at, dt);
   }
 
@@ -147,7 +162,7 @@ export class TerrainSculptor {
   private applyCells(at: Vec2): void {
     const { data } = this.ctx;
     const { def } = data;
-    const { tool, radius: r, material, walkMode } = this.settings;
+    const { tool, radius: r, material, walkMode, voidCut } = this.settings;
     const cs = def.cellSize;
     const cx0 = Math.max(0, Math.floor((at.x - r) / cs));
     const cz0 = Math.max(0, Math.floor((at.z - r) / cs));
@@ -155,8 +170,8 @@ export class TerrainSculptor {
     const cz1 = Math.min(def.rows - 1, Math.floor((at.z + r) / cs));
     if (cx1 < cx0 || cz1 < cz0) return;
 
-    const layer = tool === "paint" ? data.paint : data.walkOverride;
-    const value = tool === "paint" ? material : walkMode;
+    const layer = tool === "paint" ? data.paint : tool === "walk" ? data.walkOverride : data.holes;
+    const value = tool === "paint" ? material : tool === "walk" ? walkMode : voidCut ? 1 : 0;
     const region: CellRect = { cx0, cz0, cx1, cz1 };
     let changed = false;
 
@@ -173,8 +188,8 @@ export class TerrainSculptor {
   }
 
   /** Save pre-edit state of every chunk this stroke is about to touch. */
-  private snapshot(region: CellRect): void {
-    const backup = this.stroke?.backup;
+  private snapshot(region: CellRect, into?: Map<string, MapChunk>): void {
+    const backup = into ?? this.stroke?.backup;
     if (!backup) return;
     for (const [kx, kz] of this.ctx.data.chunksTouching(region)) {
       const key = chunkKey(kx, kz);
@@ -192,32 +207,65 @@ export class TerrainSculptor {
     for (const [kx, kz] of data.chunksTouching(region)) this.dirty.add(chunkKey(kx, kz));
   }
 
-  // --- Undo / map settings -----------------------------------------------
+  /** Floating/underside info is global; recompute after a stroke, rebuild what changed. */
+  private refreshTopology(): void {
+    const changed = this.ctx.topo.recompute(this.ctx.data.def.chunkCells);
+    this.ctx.terrain.rebuildChunks(changed);
+  }
+
+  private fullRect(): CellRect {
+    const { def } = this.ctx.data;
+    return { cx0: 0, cz0: 0, cx1: def.cols - 1, cz1: def.rows - 1 };
+  }
+
+  private pushUndo(entry: UndoEntry): void {
+    this.undoStack.push(entry);
+    if (this.undoStack.length > MAX_UNDO) this.undoStack.shift();
+  }
+
+  // --- Undo -------------------------------------------------------------------
 
   undo(): void {
-    const snap = this.undoStack.pop();
-    if (!snap) return;
-    const n = this.ctx.data.def.chunkCells;
+    const entry = this.undoStack.pop();
+    if (!entry) return;
+    const { data } = this.ctx;
+    if (entry.def) {
+      data.def = entry.def;
+      this.ctx.water.position.y = entry.def.waterLevel;
+      this.defDirty = true;
+      this.ctx.onRegionsChanged();
+    }
+    const n = data.def.chunkCells;
     let region: CellRect | null = null;
-    for (const chunk of snap.values()) {
-      this.ctx.data.applyChunk(chunk);
+    for (const chunk of entry.chunks.values()) {
+      data.applyChunk(chunk);
       const r = { cx0: chunk.kx * n, cz0: chunk.kz * n, cx1: chunk.kx * n + n - 1, cz1: chunk.kz * n + n - 1 };
       region = region
         ? { cx0: Math.min(region.cx0, r.cx0), cz0: Math.min(region.cz0, r.cz0), cx1: Math.max(region.cx1, r.cx1), cz1: Math.max(region.cz1, r.cz1) }
         : r;
     }
-    if (region) this.afterEdit(region);
+    if (entry.def) {
+      // Map-level settings changed (water/base height): everything re-derives.
+      this.afterEdit(this.fullRect());
+      this.ctx.terrain.rebuildAll();
+    } else if (region) {
+      this.afterEdit(region);
+    }
+    this.refreshTopology();
     this.onChange?.();
   }
 
+  // --- Map-level operations -------------------------------------------------
+
   setWaterLevel(level: number): void {
     const { data, walk, terrain, mapImage, water } = this.ctx;
+    this.pushUndo({ chunks: new Map(), def: structuredClone(data.def) });
     data.def.waterLevel = level;
     water.position.y = level;
-    const all: CellRect = { cx0: 0, cz0: 0, cx1: data.def.cols - 1, cz1: data.def.rows - 1 };
-    computeWalkRegion(walk, data, all);
+    computeWalkRegion(walk, data, this.fullRect());
+    this.refreshTopology();
     terrain.rebuildAll();
-    mapImage.redraw(all);
+    mapImage.redraw(this.fullRect());
     this.defDirty = true;
     this.onChange?.();
   }
@@ -228,7 +276,83 @@ export class TerrainSculptor {
     this.onChange?.();
   }
 
-  // --- Persistence --------------------------------------------------------
+  // --- Regions -------------------------------------------------------------------
+
+  get regions(): readonly Region[] {
+    return this.ctx.data.def.regions;
+  }
+
+  get waterLevel(): number {
+    return this.ctx.data.def.waterLevel;
+  }
+
+  addRegion(bounds: Region["bounds"]): Region {
+    const { def } = this.ctx.data;
+    this.pushUndo({ chunks: new Map(), def: structuredClone(def) });
+    let n = def.regions.length + 1;
+    while (def.regions.some((r) => r.id === `region-${n}`)) n++;
+    const region: Region = { id: `region-${n}`, name: `Region ${n}`, kind: "island", bounds };
+    def.regions.push(region);
+    this.regionsChanged();
+    return region;
+  }
+
+  updateRegion(id: string, patch: Partial<Pick<Region, "name" | "kind">>): void {
+    const r = this.ctx.data.def.regions.find((x) => x.id === id);
+    if (!r) return;
+    Object.assign(r, patch);
+    this.regionsChanged();
+  }
+
+  deleteRegion(id: string): void {
+    const { def } = this.ctx.data;
+    this.pushUndo({ chunks: new Map(), def: structuredClone(def) });
+    def.regions = def.regions.filter((r) => r.id !== id);
+    this.regionsChanged();
+  }
+
+  /** Lift a region's land into the sky and cut void around it. */
+  floatRegion(id: string, lift: number): string {
+    const { data } = this.ctx;
+    const region = data.def.regions.find((r) => r.id === id);
+    if (!region) return "No such region.";
+    const rect = regionCellRect(data, region);
+    const backup = new Map<string, MapChunk>();
+    this.snapshot(rect, backup);
+    this.pushUndo({ chunks: backup, def: structuredClone(data.def) });
+
+    const res = floatRegion(data, rect, lift);
+    region.kind = "sky";
+    region.altitude = Math.round((data.def.waterLevel + lift) * 10) / 10;
+    this.afterEdit(rect);
+    this.refreshTopology();
+    this.regionsChanged();
+    return `Floated "${region.name}" +${lift}: ${res.landCells} land cells lifted, ${res.voidCells} cells cut to void.`;
+  }
+
+  /** Everything outside all regions becomes ocean floor at `seabed`. */
+  sinkOutsideRegions(seabed: number): string {
+    const { data } = this.ctx;
+    const backup = new Map<string, MapChunk>();
+    this.snapshot(this.fullRect(), backup);
+    this.pushUndo({ chunks: backup, def: structuredClone(data.def) });
+
+    sinkOutsideRegions(data, seabed);
+    this.afterEdit(this.fullRect());
+    this.refreshTopology();
+    this.ctx.terrain.rebuildAll();
+    this.defDirty = true;
+    this.onChange?.();
+    return `Everything outside ${data.def.regions.length} region(s) is now ocean (floor ${seabed}).`;
+  }
+
+  private regionsChanged(): void {
+    this.defDirty = true;
+    this.ctx.onRegionsChanged();
+    this.onChange?.();
+  }
+
+  // --- Persistence ----------------------------------------------------------------
 
   async save(): Promise<string> {
     const { data } = this.ctx;
@@ -243,8 +367,10 @@ export class TerrainSculptor {
     for (const k of removed) authored.delete(k);
     for (const c of chunks) authored.add(chunkKey(c.kx, c.kz));
     const def = { ...data.def, chunks: [...authored].sort() };
+    // Only send removals for files that actually exist.
+    const existing = new Set(data.def.chunks);
+    const body: SaveMapRequest = { map: def, chunks, removed: removed.filter((k) => existing.has(k)) };
 
-    const body: SaveMapRequest = { map: def, chunks, removed };
     const res = await fetch("/__dev/save-map", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -256,6 +382,6 @@ export class TerrainSculptor {
     this.dirty.clear();
     this.defDirty = false;
     this.onChange?.();
-    return `Saved ${data.def.id}: ${chunks.length} chunk(s) written, ${removed.length} removed.`;
+    return `Saved ${data.def.id}: ${chunks.length} chunk(s) written, ${body.removed.length} removed.`;
   }
 }

@@ -25,6 +25,8 @@ export class MapData {
   readonly paint: Uint8Array;
   /** WALK_* per cell. */
   readonly walkOverride: Uint8Array;
+  /** 1 = void: no ground at all (sky-island edges, chasms). Never walkable. */
+  readonly holes: Uint8Array;
   readonly chunksX: number;
   readonly chunksZ: number;
 
@@ -33,8 +35,14 @@ export class MapData {
     this.hm = new Heightmap(def.cols, def.rows, def.cellSize, heights);
     this.paint = new Uint8Array(def.cols * def.rows);
     this.walkOverride = new Uint8Array(def.cols * def.rows);
+    this.holes = new Uint8Array(def.cols * def.rows);
     this.chunksX = def.cols / def.chunkCells;
     this.chunksZ = def.rows / def.chunkCells;
+  }
+
+  isHole(cx: number, cz: number): boolean {
+    if (cx < 0 || cz < 0 || cx >= this.def.cols || cz >= this.def.rows) return false;
+    return this.holes[cz * this.def.cols + cx] === 1;
   }
 
   /** Chunks whose vertex/cell ranges touch a cell rect (vertex edges are shared). */
@@ -56,6 +64,7 @@ export class MapData {
     const heights = decodeHeights(c.heights, v * v);
     const paint = decodeBytes(c.paint, n * n, "paint");
     const walk = decodeBytes(c.walk, n * n, "walk");
+    const holes = c.holes ? decodeBytes(c.holes, n * n, "holes") : new Uint8Array(n * n);
     const vx0 = c.kx * n;
     const vz0 = c.kz * n;
     for (let z = 0; z < v; z++) {
@@ -65,6 +74,7 @@ export class MapData {
       const row = (vz0 + z) * this.def.cols + vx0;
       this.paint.set(paint.subarray(z * n, z * n + n), row);
       this.walkOverride.set(walk.subarray(z * n, z * n + n), row);
+      this.holes.set(holes.subarray(z * n, z * n + n), row);
     }
   }
 
@@ -74,6 +84,7 @@ export class MapData {
     const heights = new Float32Array(v * v);
     const paint = new Uint8Array(n * n);
     const walk = new Uint8Array(n * n);
+    const holes = new Uint8Array(n * n);
     const vx0 = kx * n;
     const vz0 = kz * n;
     for (let z = 0; z < v; z++) {
@@ -83,8 +94,11 @@ export class MapData {
       const row = (vz0 + z) * this.def.cols + vx0;
       paint.set(this.paint.subarray(row, row + n), z * n);
       walk.set(this.walkOverride.subarray(row, row + n), z * n);
+      holes.set(this.holes.subarray(row, row + n), z * n);
     }
-    return { kx, kz, heights: encodeHeights(heights), paint: bytesToBase64(paint), walk: bytesToBase64(walk) };
+    const chunk: MapChunk = { kx, kz, heights: encodeHeights(heights), paint: bytesToBase64(paint), walk: bytesToBase64(walk) };
+    if (holes.some((h) => h !== 0)) chunk.holes = bytesToBase64(holes);
+    return chunk;
   }
 
   /** True if the chunk is indistinguishable from a fresh flat map. */
@@ -101,7 +115,7 @@ export class MapData {
     for (let z = 0; z < n; z++) {
       const row = (vz0 + z) * this.def.cols + vx0;
       for (let x = 0; x < n; x++) {
-        if (this.paint[row + x] !== 0 || this.walkOverride[row + x] !== 0) return false;
+        if (this.paint[row + x] !== 0 || this.walkOverride[row + x] !== 0 || this.holes[row + x] !== 0) return false;
       }
     }
     return true;

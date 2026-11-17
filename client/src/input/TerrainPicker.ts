@@ -14,9 +14,14 @@ export class TerrainPicker {
   private readonly ndc = new THREE.Vector2();
   private readonly p = new THREE.Vector3();
 
+  /**
+   * `isSolid(x, z)` lets rays pass through void cells (sky-island gaps) so a
+   * click past an island's edge lands on the sea below, not on thin air.
+   */
   constructor(
     private readonly camera: THREE.Camera,
     private readonly hm: Heightmap,
+    private readonly isSolid: (x: number, z: number) => boolean = () => true,
   ) {}
 
   /** ndc in [-1, 1]. Returns null if the ray never meets the terrain. */
@@ -27,7 +32,7 @@ export class TerrainPicker {
 
     const above = (t: number): boolean => {
       this.p.copy(direction).multiplyScalar(t).add(origin);
-      return this.p.y > getTerrainHeight(this.hm, this.p.x, this.p.z);
+      return this.p.y > getTerrainHeight(this.hm, this.p.x, this.p.z) || !this.isSolid(this.p.x, this.p.z);
     };
     if (!above(0)) return null;
 

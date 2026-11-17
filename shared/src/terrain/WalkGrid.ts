@@ -45,7 +45,7 @@ export class WalkGrid {
 
 /** Auto rule: underwater or too steep = blocked. Painted overrides win. */
 export function computeWalkRegion(grid: WalkGrid, data: MapData, r: CellRect): void {
-  const { hm, def, walkOverride } = data;
+  const { hm, def, walkOverride, holes } = data;
   const cx0 = Math.max(0, r.cx0);
   const cz0 = Math.max(0, r.cz0);
   const cx1 = Math.min(def.cols - 1, r.cx1);
@@ -53,6 +53,7 @@ export function computeWalkRegion(grid: WalkGrid, data: MapData, r: CellRect): v
   for (let cz = cz0; cz <= cz1; cz++) {
     for (let cx = cx0; cx <= cx1; cx++) {
       const i = cz * def.cols + cx;
+      if (holes[i] === 1) { grid.cells[i] = 0; continue; } // void: nothing to stand on
       const o = walkOverride[i];
       if (o === WALK_BLOCKED) { grid.cells[i] = 0; continue; }
       if (o === WALK_FORCED) { grid.cells[i] = 1; continue; }

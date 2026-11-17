@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import { getTerrainHeight, type Heightmap } from "@levi/shared";
 
 const SEGMENTS = 72;
 
@@ -21,14 +20,15 @@ export class BrushCursor {
     this.line.material.color.setHex(hex);
   }
 
-  update(hm: Heightmap, x: number, z: number, radius: number): void {
+  /** `heightAt` should return the visible surface (water level over void). */
+  update(heightAt: (x: number, z: number) => number, x: number, z: number, radius: number): void {
     const p = this.positions;
     for (let i = 0; i < SEGMENTS; i++) {
       const a = (i / SEGMENTS) * Math.PI * 2;
       const px = x + Math.cos(a) * radius;
       const pz = z + Math.sin(a) * radius;
       p[i * 3] = px;
-      p[i * 3 + 1] = getTerrainHeight(hm, px, pz) + 0.08;
+      p[i * 3 + 1] = heightAt(px, pz) + 0.08;
       p[i * 3 + 2] = pz;
     }
     this.line.geometry.attributes["position"]!.needsUpdate = true;

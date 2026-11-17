@@ -8,6 +8,7 @@ export * from "./terrain/codec.js";
 export * from "./terrain/MapData.js";
 export * from "./terrain/WalkGrid.js";
 export * from "./terrain/materials.js";
+export * from "./terrain/islands.js";
 export * from "./nav/pathfind.js";
 export * from "./sim/movement.js";
 export * from "./protocol/constants.js";
