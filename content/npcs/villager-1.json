@@ -1,0 +1,39 @@
+{
+  "id": "villager-1",
+  "name": "Ivy",
+  "title": "Villager",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d9a582",
+    "hair": "#1f1712",
+    "top": "#9a6a42",
+    "topTrim": "#7a5232",
+    "legs": "#4e5866",
+    "boots": "#3b2a1d",
+    "belt": "#3b2a1d"
+  },
+  "scale": 1.01,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Morning!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

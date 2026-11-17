@@ -1,0 +1,39 @@
+{
+  "id": "smith-2",
+  "name": "Kade",
+  "title": "Smith",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#1f1712",
+    "top": "#6b5a48",
+    "topTrim": "#4a3e30",
+    "legs": "#3b2a1d",
+    "boots": "#2a211a",
+    "belt": "#6b4528"
+  },
+  "scale": 1.03,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Good steel takes patience. And coal.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

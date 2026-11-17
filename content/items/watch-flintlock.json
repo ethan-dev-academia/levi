@@ -1,0 +1,19 @@
+{
+  "id": "watch-flintlock",
+  "name": "Flintlock of the Watch",
+  "kind": "weapon",
+  "icon": "gun",
+  "color": "#8a8f99",
+  "description": "Loud, slow and honest. Issued to the Landing's lookouts.",
+  "slot": "weapon",
+  "weaponType": "gun",
+  "tier": 2,
+  "rarity": "uncommon",
+  "requires": {
+    "ranger": 5
+  },
+  "stats": {
+    "attackDamage": 12,
+    "critMultiplier": 0.25
+  }
+}

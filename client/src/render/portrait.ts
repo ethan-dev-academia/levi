@@ -1,12 +1,12 @@
 import * as THREE from "three";
-import type { ModelDef } from "@levi/shared";
+import type { ModelDef, ModelPalette } from "@levi/shared";
 import { buildModel } from "./ModelBuilder.js";
 
 /**
  * Render a one-off head-and-shoulders portrait of a model into a 2D canvas.
  * Uses a short-lived offscreen renderer, then releases its GL context.
  */
-export function renderPortrait(def: ModelDef, target: HTMLCanvasElement): void {
+export function renderPortrait(def: ModelDef, target: HTMLCanvasElement, palette?: ModelPalette, yaw = -0.45): void {
   const { width, height } = target;
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
   renderer.setSize(width, height, false);
@@ -17,8 +17,8 @@ export function renderPortrait(def: ModelDef, target: HTMLCanvasElement): void {
   key.position.set(1, 1.5, 2);
   scene.add(key);
 
-  const model = buildModel(def);
-  model.root.rotation.y = -0.45;
+  const model = buildModel(def, palette);
+  model.root.rotation.y = yaw;
   scene.add(model.root);
 
   const box = new THREE.Box3().setFromObject(model.root);

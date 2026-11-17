@@ -1,0 +1,39 @@
+{
+  "id": "farmer-4",
+  "name": "Perrin",
+  "title": "Farmer",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#a06e4a",
+    "hair": "#4a2f1d",
+    "top": "#a8742e",
+    "topTrim": "#7e5420",
+    "legs": "#4e5866",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.06,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Soil's thin up here, but it's honest.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

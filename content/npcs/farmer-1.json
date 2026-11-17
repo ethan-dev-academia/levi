@@ -1,0 +1,39 @@
+{
+  "id": "farmer-1",
+  "name": "Aldo",
+  "title": "Farmer",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#b9835f",
+    "hair": "#1f1712",
+    "top": "#7a8a3a",
+    "topTrim": "#5a6a2a",
+    "legs": "#5a4a3a",
+    "boots": "#3b2a1d",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.93,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Soil's thin up here, but it's honest.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

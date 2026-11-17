@@ -1,0 +1,15 @@
+{
+  "id": "linen-hood",
+  "name": "Linen Hood",
+  "kind": "armour",
+  "icon": "helm",
+  "color": "#e8e0c8",
+  "description": "Light cloth that does not dull the flow of light.",
+  "slot": "head",
+  "style": "mage",
+  "stats": {
+    "armour": 1,
+    "magicDamage": 1,
+    "manaRegen": 0.2
+  }
+}

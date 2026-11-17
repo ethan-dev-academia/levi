@@ -1,0 +1,39 @@
+{
+  "id": "fisher-2",
+  "name": "Lark",
+  "title": "Fisher",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#8e3b1f",
+    "top": "#4a5a6b",
+    "topTrim": "#384652",
+    "legs": "#4e5866",
+    "boots": "#2e221a",
+    "belt": "#6b4528"
+  },
+  "scale": 0.9,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Caught a cloud once. Tasted of rain.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

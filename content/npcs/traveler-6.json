@@ -1,0 +1,39 @@
+{
+  "id": "traveler-6",
+  "name": "Bryn",
+  "title": "Traveler",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#4a2f1d",
+    "top": "#5d4a6b",
+    "topTrim": "#46385a",
+    "legs": "#4a3f35",
+    "boots": "#2a211a",
+    "belt": "#6b4528"
+  },
+  "scale": 0.99,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Have you seen the clouds from the edge? Unsettling.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

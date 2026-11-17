@@ -1,0 +1,11 @@
+{
+  "id": "worn-map",
+  "name": "Worn Map",
+  "description": "A hand-drawn map of the Landing. One spot below the cliffs is circled.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "map",
+  "color": "#c9a46a",
+  "value": 1
+}

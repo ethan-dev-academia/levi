@@ -1,0 +1,39 @@
+{
+  "id": "traveler-1",
+  "name": "Moss",
+  "title": "Traveler",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#8a5a3c",
+    "hair": "#8e3b1f",
+    "top": "#6b5a3a",
+    "topTrim": "#4a3e28",
+    "legs": "#5a4a3a",
+    "boots": "#3b2a1d",
+    "belt": "#6b4528"
+  },
+  "scale": 0.96,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Long road up here. Longer down, I'd guess.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

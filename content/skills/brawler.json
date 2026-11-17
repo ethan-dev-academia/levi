@@ -1,0 +1,315 @@
+{
+  "style": "brawler",
+  "name": "Path of the Oath",
+  "blurb": "A promise kept with steel. Brawlers spend Energy and fight up close with daggers and swords.",
+  "skills": [
+    {
+      "id": "oathstrike",
+      "name": "Oathstrike",
+      "cost": 8,
+      "cooldown": 5,
+      "cast": {
+        "kind": "line",
+        "range": 3.2,
+        "width": 1.4,
+        "damage": 16,
+        "scaling": "attack",
+        "ratio": 0.9,
+        "pierce": true
+      },
+      "description": "Hold to aim, release to cut forward in a short straight line, hitting every enemy in its path.",
+      "lore": "Swear it, then mean it.",
+      "tier": 1
+    },
+    {
+      "id": "gleaming-lunge",
+      "name": "Gleaming Lunge",
+      "cost": 14,
+      "cooldown": 6,
+      "cast": {
+        "kind": "line",
+        "range": 4,
+        "width": 1.0,
+        "damage": 16,
+        "scaling": "attack",
+        "ratio": 0.9,
+        "pierce": true
+      },
+      "description": "Lunge forward, striking everything in a short line.",
+      "lore": "",
+      "tier": 2,
+      "requires": []
+    },
+    {
+      "id": "twin-verdict",
+      "name": "Twin Verdict",
+      "cost": 12,
+      "cooldown": 5,
+      "cast": {
+        "kind": "multi",
+        "range": 1.8,
+        "count": 2,
+        "damage": 10,
+        "scaling": "attack",
+        "ratio": 0.6
+      },
+      "description": "Two quick strikes on your target.",
+      "lore": "",
+      "tier": 2,
+      "requires": []
+    },
+    {
+      "id": "bulwark-prayer",
+      "name": "Bulwark Prayer",
+      "cost": 18,
+      "cooldown": 14,
+      "cast": {
+        "kind": "shield",
+        "amount": 50,
+        "duration": 4
+      },
+      "description": "Brace yourself: a shield that absorbs damage.",
+      "lore": "",
+      "tier": 3,
+      "requires": []
+    },
+    {
+      "id": "penance-guard",
+      "name": "Penance Guard",
+      "cost": 18,
+      "cooldown": 14,
+      "cast": {
+        "kind": "shield",
+        "amount": 30,
+        "duration": 3
+      },
+      "description": "A lighter shield; enemies that strike it take damage back.",
+      "lore": "",
+      "tier": 3,
+      "requires": []
+    },
+    {
+      "id": "arc-of-mercy",
+      "name": "Arc of Mercy",
+      "cost": 22,
+      "cooldown": 7,
+      "cast": {
+        "kind": "cone",
+        "range": 2.5,
+        "angle": 60,
+        "damage": 26,
+        "scaling": "attack",
+        "ratio": 1.0
+      },
+      "description": "A wide sweeping cut in front of you.",
+      "lore": "",
+      "tier": 5,
+      "requires": []
+    },
+    {
+      "id": "hallowed-slam",
+      "name": "Hallowed Slam",
+      "cost": 24,
+      "cooldown": 9,
+      "cast": {
+        "kind": "circle",
+        "radius": 2.2,
+        "damage": 22,
+        "scaling": "attack",
+        "ratio": 0.9
+      },
+      "description": "Strike the ground, damaging everything around you.",
+      "lore": "",
+      "tier": 5,
+      "requires": []
+    },
+    {
+      "id": "zealots-rush",
+      "name": "Zealot's Rush",
+      "cost": 20,
+      "cooldown": 10,
+      "cast": {
+        "kind": "dash",
+        "range": 5
+      },
+      "description": "Charge forward toward the cursor.",
+      "lore": "",
+      "tier": 10,
+      "requires": []
+    },
+    {
+      "id": "martyrs-leap",
+      "name": "Martyr's Leap",
+      "cost": 24,
+      "cooldown": 13,
+      "cast": {
+        "kind": "dash",
+        "range": 6,
+        "radius": 1.5,
+        "damage": 12,
+        "scaling": "attack",
+        "ratio": 0.5
+      },
+      "description": "Leap to a point, damaging enemies where you land.",
+      "lore": "",
+      "tier": 10,
+      "requires": []
+    },
+    {
+      "id": "crusade-whirl",
+      "name": "Crusade Whirl",
+      "cost": 35,
+      "cooldown": 16,
+      "cast": {
+        "kind": "aura",
+        "radius": 2.2,
+        "count": 5,
+        "damage": 10,
+        "duration": 2,
+        "scaling": "attack",
+        "ratio": 0.5
+      },
+      "description": "Spin with your blade out, hitting everything around you repeatedly.",
+      "lore": "",
+      "tier": 20,
+      "requires": []
+    },
+    {
+      "id": "brand-of-light",
+      "name": "Brand of Light",
+      "cost": 30,
+      "cooldown": 14,
+      "cast": {
+        "kind": "line",
+        "range": 3,
+        "width": 0.4,
+        "damage": 20,
+        "duration": 6,
+        "scaling": "attack",
+        "ratio": 0.8
+      },
+      "description": "Brand an enemy: your hits on it deal extra damage for 6 seconds.",
+      "lore": "",
+      "tier": 20,
+      "requires": []
+    },
+    {
+      "id": "unbroken-vow",
+      "name": "Unbroken Vow",
+      "cost": 35,
+      "cooldown": 30,
+      "cast": {
+        "kind": "buff",
+        "amount": 40,
+        "duration": 8
+      },
+      "description": "For 8 seconds your armour is increased by 40%.",
+      "lore": "",
+      "tier": 30,
+      "requires": []
+    },
+    {
+      "id": "fervor",
+      "name": "Fervor",
+      "cost": 35,
+      "cooldown": 30,
+      "cast": {
+        "kind": "buff",
+        "amount": 20,
+        "duration": 8
+      },
+      "description": "For 8 seconds: +20% attack damage and faster cooldowns.",
+      "lore": "",
+      "tier": 30,
+      "requires": []
+    },
+    {
+      "id": "cleave-of-saints",
+      "name": "Cleave of Saints",
+      "cost": 50,
+      "cooldown": 22,
+      "cast": {
+        "kind": "charge",
+        "range": 3.5,
+        "angle": 70,
+        "damage": 100,
+        "duration": 1,
+        "scaling": "attack",
+        "ratio": 2.0
+      },
+      "description": "Wind up, then a huge cleave in front of you.",
+      "lore": "",
+      "tier": 40,
+      "requires": []
+    },
+    {
+      "id": "shining-chain",
+      "name": "Shining Chain",
+      "cost": 40,
+      "cooldown": 18,
+      "cast": {
+        "kind": "line",
+        "range": 9,
+        "width": 0.4,
+        "damage": 30,
+        "scaling": "attack",
+        "ratio": 1.0
+      },
+      "description": "Hurl a chain of light that pulls the first enemy to you.",
+      "lore": "",
+      "tier": 40,
+      "requires": []
+    },
+    {
+      "id": "final-benediction",
+      "name": "Final Benediction",
+      "cost": 80,
+      "cooldown": 60,
+      "cast": {
+        "kind": "circle",
+        "radius": 4.5,
+        "damage": 170,
+        "duration": 1,
+        "scaling": "attack",
+        "ratio": 3.0
+      },
+      "description": "Bring your blade down with all your faith. Massive damage around you.",
+      "lore": "",
+      "tier": 50,
+      "requires": []
+    },
+    {
+      "id": "avatar-of-oaths",
+      "name": "Avatar of Oaths",
+      "cost": 70,
+      "cooldown": 75,
+      "cast": {
+        "kind": "buff",
+        "amount": 30,
+        "duration": 10
+      },
+      "description": "For 10 seconds: +30% attack damage and 30% less damage taken.",
+      "lore": "",
+      "tier": 50,
+      "requires": []
+    }
+  ],
+  "secrets": [
+    {
+      "id": "oath-of-the-sundered-sky",
+      "name": "Oath of the Sundered Sky",
+      "cost": 90,
+      "cooldown": 120,
+      "cast": {
+        "kind": "circle",
+        "radius": 5,
+        "damage": 340,
+        "duration": 1,
+        "scaling": "attack",
+        "ratio": 4.2
+      },
+      "description": "Drive your blade into the ground and break the earth around you.",
+      "lore": "A promise so heavy the island remembers it."
+    }
+  ]
+}

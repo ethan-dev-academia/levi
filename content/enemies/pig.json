@@ -1,0 +1,40 @@
+{
+ "id": "pig",
+ "name": "Wild Pig",
+ "level": 3,
+ "model": "enemy-pig",
+ "scale": 1,
+ "stats": {
+  "maxHp": 55,
+  "armour": 4,
+  "moveSpeed": 3.0
+ },
+ "aggroRange": 4,
+ "leashRange": 14,
+ "xp": 15,
+ "respawn": 25,
+ "attacks": [
+  {
+   "id": "charge",
+   "name": "Charge",
+   "shape": "line",
+   "range": 5,
+   "length": 6,
+   "width": 1.4,
+   "windup": 1.1,
+   "damage": 9,
+   "cooldown": 5
+  },
+  {
+   "id": "stomp",
+   "name": "Stomp",
+   "shape": "circle",
+   "anchor": "self",
+   "range": 1.6,
+   "radius": 1.8,
+   "windup": 0.9,
+   "damage": 6,
+   "cooldown": 3
+  }
+ ]
+}

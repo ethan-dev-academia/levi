@@ -1,0 +1,17 @@
+{
+ "id": "training-dummy",
+ "name": "Training Dummy",
+ "level": 1,
+ "model": "enemy-dummy",
+ "scale": 1,
+ "stats": {
+  "maxHp": 100000,
+  "armour": 0,
+  "moveSpeed": 0
+ },
+ "aggroRange": 0,
+ "leashRange": 1,
+ "attacks": [],
+ "xp": 0,
+ "dummy": true
+}

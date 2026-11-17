@@ -1,0 +1,32 @@
+{
+  "id": "falcon-training",
+  "name": "Falcon",
+  "title": "Master of the Three Arts",
+  "location": "Training Grounds",
+  "model": "npc-falcon",
+  "palette": {},
+  "scale": 1.16,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Here, the ground forgives mistakes. Out there, it won't. Pick a weapon.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "looksLike": "falcon"
+}

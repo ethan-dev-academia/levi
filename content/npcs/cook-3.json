@@ -1,0 +1,39 @@
+{
+  "id": "cook-3",
+  "name": "Edrin",
+  "title": "Cook",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#a06e4a",
+    "hair": "#9a958c",
+    "top": "#e8e0c8",
+    "topTrim": "#c9b98a",
+    "legs": "#7a5a3a",
+    "boots": "#2e221a",
+    "belt": "#3b2a1d"
+  },
+  "scale": 1.05,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Fresh bread at dawn, if the oven behaves.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

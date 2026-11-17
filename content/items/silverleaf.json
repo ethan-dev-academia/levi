@@ -1,0 +1,8 @@
+{
+  "id": "silverleaf",
+  "name": "Silverleaf",
+  "kind": "material",
+  "icon": "herb",
+  "color": "#a8c8a0",
+  "description": "A herb that glows faintly in shade."
+}

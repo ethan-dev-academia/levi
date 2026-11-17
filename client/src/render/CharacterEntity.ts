@@ -50,8 +50,8 @@ export class CharacterEntity {
     );
   }
 
-  addTo(scene: THREE.Scene): void {
-    scene.add(this.model.root, this.shadow);
+  addTo(parent: THREE.Object3D): void {
+    parent.add(this.model.root, this.shadow);
   }
 
   /** `heightAt` = the surface the character stands on (terrain, or a building floor). */

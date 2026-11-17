@@ -1,0 +1,35 @@
+{
+  "id": "trainer-bram",
+  "name": "Oathkeeper Bram",
+  "title": "Brawler trainer",
+  "palette": {
+    "skin": "#d8a07a",
+    "hair": "#6b6b6b",
+    "top": "#8e3a32",
+    "topTrim": "#6e2a24",
+    "legs": "#3b3f46",
+    "boots": "#2a211a"
+  },
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Feet apart. Strike like you mean it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

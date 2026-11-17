@@ -1,0 +1,12 @@
+{
+  "id": "dawn-draught",
+  "name": "Dawn Draught",
+  "kind": "consumable",
+  "icon": "potion",
+  "color": "#6aa8f0",
+  "description": "Tastes like cold air at sunrise. Restores mana.",
+  "use": {
+    "kind": "restore",
+    "mana": 40
+  }
+}

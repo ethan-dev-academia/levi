@@ -1,0 +1,16 @@
+{
+  "id": "basic-staff",
+  "name": "Basic Staff",
+  "description": "A plain length of ash with a dull stone set in the head. It hums, faintly.",
+  "kind": "weapon",
+  "slot": "weapon",
+  "weaponType": "staff",
+  "tier": 1,
+  "rarity": "common",
+  "stats": {
+    "magicDamage": 5
+  },
+  "icon": "staff",
+  "color": "#b89a6a",
+  "value": 5
+}

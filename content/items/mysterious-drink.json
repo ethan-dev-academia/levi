@@ -1,0 +1,11 @@
+{
+  "id": "mysterious-drink",
+  "name": "Mysterious Drink",
+  "description": "It swirls on its own. The label has been scratched off.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "bottle",
+  "color": "#7a4ec0",
+  "value": 1
+}

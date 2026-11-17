@@ -1,0 +1,39 @@
+{
+  "id": "fisher-3",
+  "name": "Wynn",
+  "title": "Fisher",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c98e64",
+    "hair": "#9a958c",
+    "top": "#3f6b7a",
+    "topTrim": "#2f5260",
+    "legs": "#4e5866",
+    "boots": "#4a3220",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.97,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Patience is most of it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

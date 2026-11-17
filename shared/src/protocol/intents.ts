@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { COMBAT_STYLES, DISCIPLINES } from "../progression/disciplines.js";
+import { EQUIP_SLOTS } from "../schemas/item.js";
+import { PLAYER_NAME } from "../schemas/player.js";
 import { ABILITY_SLOTS, type ItemSlot } from "./constants.js";
 
 /**
@@ -25,6 +28,9 @@ export const CastIntentSchema = z.object({
   targetId: z.string().max(64).optional(),
 });
 
+/** Auto-attack an enemy (by its spawn id): walk into range, then keep swinging. */
+export const AttackIntentSchema = z.object({ type: z.literal("attack"), enemy: z.string().regex(/^[a-z0-9_-]+$/).max(64) });
+
 export const UseItemIntentSchema = z.object({
   type: z.literal("useItem"),
   slot: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
@@ -42,7 +48,61 @@ export const ClimbIntentSchema = z.object({
   dir: z.enum(["up", "down"]),
 });
 
+/** A bag / hotbar / equipment slot. */
+export const SlotRefSchema = z.discriminatedUnion("area", [
+  z.object({ area: z.literal("inv"), index: z.number().int().min(0).max(19) }),
+  z.object({ area: z.literal("hot"), index: z.number().int().min(0).max(3) }),
+  z.object({ area: z.literal("eq"), slot: z.enum(EQUIP_SLOTS) }),
+]);
+const SKILL_ID = z.string().regex(/^[a-z0-9_-]+$/).max(64);
+
+export const MoveItemIntentSchema = z.object({ type: z.literal("moveItem"), from: SlotRefSchema, to: SlotRefSchema });
+export const EquipIntentSchema = z.object({ type: z.literal("equip"), from: SlotRefSchema });
+export const UnequipIntentSchema = z.object({ type: z.literal("unequip"), slot: z.enum(EQUIP_SLOTS) });
+/** Use whatever is in a slot; tomes also name the discipline to train. */
+export const UseSlotIntentSchema = z.object({ type: z.literal("useSlot"), from: SlotRefSchema, discipline: z.enum(DISCIPLINES).optional() });
+export const UnlockSkillIntentSchema = z.object({ type: z.literal("unlockSkill"), style: z.enum(COMBAT_STYLES), skill: SKILL_ID });
+export const ResetSkillsIntentSchema = z.object({ type: z.literal("resetSkills"), style: z.enum(COMBAT_STYLES) });
+export const SetLoadoutIntentSchema = z.object({
+  type: z.literal("setLoadout"), style: z.enum(COMBAT_STYLES), key: z.enum(ABILITY_SLOTS), skill: SKILL_ID.nullable(),
+});
+/** Take loot from a container prop (index -1 = take all). Server checks you're next to it. */
+export const LootTakeIntentSchema = z.object({
+  type: z.literal("lootTake"),
+  prop: z.string().regex(/^[a-z0-9_-]+$/).max(64),
+  index: z.number().int().min(-1).max(19),
+});
+
+const NPC_SPAWN = z.string().regex(/^[a-z0-9_-]+$/).max(64);
+/** Start talking to an NPC (server checks you're next to it). */
+export const TalkIntentSchema = z.object({ type: z.literal("talk"), npc: NPC_SPAWN });
+/** Continue the conversation: pick a choice (index into the node's options) or -1 = "next". */
+export const TalkNextIntentSchema = z.object({ type: z.literal("talkNext"), option: z.number().int().min(-1).max(5) });
+export const TalkEndIntentSchema = z.object({ type: z.literal("talkEnd") });
+/** Pick up a placed ground item. */
+export const PickupIntentSchema = z.object({ type: z.literal("pickup"), item: NPC_SPAWN });
+/** Pin/unpin a quest on the on-screen tracker (max 2). */
+export const PinQuestIntentSchema = z.object({ type: z.literal("pinQuest"), quest: NPC_SPAWN, pinned: z.boolean() });
+
+export const FriendIntentSchema = z.object({ type: z.enum(["addFriend", "removeFriend"]), name: z.string().regex(PLAYER_NAME) });
+
 export const IntentSchema = z.discriminatedUnion("type", [
+  MoveItemIntentSchema,
+  EquipIntentSchema,
+  UnequipIntentSchema,
+  UseSlotIntentSchema,
+  UnlockSkillIntentSchema,
+  ResetSkillsIntentSchema,
+  SetLoadoutIntentSchema,
+  LootTakeIntentSchema,
+  AttackIntentSchema,
+  TalkIntentSchema,
+  TalkNextIntentSchema,
+  TalkEndIntentSchema,
+  PickupIntentSchema,
+  PinQuestIntentSchema,
+  FriendIntentSchema.extend({ type: z.literal("addFriend") }),
+  FriendIntentSchema.extend({ type: z.literal("removeFriend") }),
   MoveIntentSchema,
   StopIntentSchema,
   CastIntentSchema,

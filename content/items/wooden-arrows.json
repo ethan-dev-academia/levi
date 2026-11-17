@@ -1,0 +1,8 @@
+{
+  "id": "wooden-arrows",
+  "name": "Wooden Arrows",
+  "kind": "ammo",
+  "icon": "arrow",
+  "color": "#a07a4a",
+  "description": "Fletched with gull feathers."
+}

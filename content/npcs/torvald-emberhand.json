@@ -1,0 +1,39 @@
+{
+  "id": "torvald-emberhand",
+  "name": "Torvald Emberhand",
+  "title": "Master Smith",
+  "location": "Forge",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#b9835f",
+    "hair": "#8e3b1f",
+    "top": "#4a3e30",
+    "topTrim": "#c07040",
+    "legs": "#3b3f46",
+    "boots": "#2a211a",
+    "belt": "#4a3220"
+  },
+  "scale": 1.08,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Falcon's sword? Mine. Forty years ago. Still the best thing I've made.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

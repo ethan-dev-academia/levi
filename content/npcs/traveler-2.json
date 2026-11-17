@@ -1,0 +1,39 @@
+{
+  "id": "traveler-2",
+  "name": "Corra",
+  "title": "Traveler",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#a8742e",
+    "top": "#3f5a4a",
+    "topTrim": "#2f4438",
+    "legs": "#4a3f35",
+    "boots": "#3b2a1d",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.9,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Just passing through. Lovely view.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

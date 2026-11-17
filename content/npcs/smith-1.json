@@ -1,0 +1,39 @@
+{
+  "id": "smith-1",
+  "name": "Tobin",
+  "title": "Smith",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#6e4630",
+    "hair": "#1f1712",
+    "top": "#5a4a3a",
+    "topTrim": "#3e3226",
+    "legs": "#4a3220",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.93,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Mind the sparks.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

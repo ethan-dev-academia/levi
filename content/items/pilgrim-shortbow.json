@@ -1,0 +1,14 @@
+{
+  "id": "pilgrim-shortbow",
+  "name": "Pilgrim's Shortbow",
+  "kind": "weapon",
+  "icon": "bow",
+  "color": "#a07a4a",
+  "description": "A light bow carried by those who walk the sky-roads.",
+  "slot": "weapon",
+  "weaponType": "bow",
+  "stats": {
+    "attackDamage": 6,
+    "critChance": 3
+  }
+}

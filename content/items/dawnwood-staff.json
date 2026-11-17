@@ -1,0 +1,19 @@
+{
+  "id": "dawnwood-staff",
+  "name": "Dawnwood Staff",
+  "kind": "weapon",
+  "icon": "staff",
+  "color": "#f5d77a",
+  "description": "Cut from a tree that only grows where morning first lands.",
+  "slot": "weapon",
+  "weaponType": "staff",
+  "tier": 2,
+  "rarity": "uncommon",
+  "requires": {
+    "mage": 5
+  },
+  "stats": {
+    "magicDamage": 15,
+    "maxMana": 15
+  }
+}

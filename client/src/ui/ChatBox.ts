@@ -1,4 +1,4 @@
-export type ChatKind = "game" | "system" | "player";
+export type ChatKind = "game" | "system" | "player" | "quest";
 
 const MAX_LINES = 200;
 

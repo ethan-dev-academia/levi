@@ -1,0 +1,39 @@
+{
+  "id": "merchant-4",
+  "name": "Sable",
+  "title": "Merchant",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#8a5a3c",
+    "hair": "#a8742e",
+    "top": "#2f6b5a",
+    "topTrim": "#d9b04a",
+    "legs": "#3b2a1d",
+    "boots": "#3b2a1d",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.98,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Finest goods on the Landing!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

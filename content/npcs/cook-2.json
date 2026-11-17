@@ -1,0 +1,39 @@
+{
+  "id": "cook-2",
+  "name": "Kestrel",
+  "title": "Cook",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#6e4630",
+    "hair": "#5a5552",
+    "top": "#f0e6d0",
+    "topTrim": "#b04a32",
+    "legs": "#5a3c22",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.99,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Taste this. No, don't. Not yet.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

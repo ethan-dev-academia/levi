@@ -8,10 +8,13 @@ import { BrushCursor } from "./BrushCursor.js";
 import { BuildOverlay } from "./BuildOverlay.js";
 import { BuildPanel } from "./BuildPanel.js";
 import { BuildTool, propFacing, type Edge, type Side } from "./BuildTool.js";
+import { ItemManager } from "./ItemManager.js";
+import { QuestEditor } from "./quests/QuestEditor.js";
 import { DevPanel } from "./DevPanel.js";
 import { FreeCamera } from "./FreeCamera.js";
 import { RegionOverlay } from "./RegionOverlay.js";
 import { TerrainSculptor } from "./TerrainSculptor.js";
+import { clearSave, disableSaving, STARTING_QUESTS } from "../game/characterStore.js";
 import type { DevContext } from "./types.js";
 
 export type { DevContext };
@@ -53,9 +56,71 @@ function cellRect(a: { cx: number; cz: number }, b: { cx: number; cz: number }):
 export function mountDevTools(ctx: DevContext): void {
   const sculptor = new TerrainSculptor(ctx);
   const builder = new BuildTool(ctx);
-  const buildPanel = new BuildPanel(builder, ctx.propDefs);
+  const buildPanel = new BuildPanel(builder, ctx.propDefs, ctx.npcs, ctx.items, ctx.enemyDefs, () => ctx.data.buildings.enemies.length);
   const buildOverlay = new BuildOverlay();
   ctx.scene.add(buildOverlay.group);
+  const itemManager = new ItemManager(ctx.stage, {
+    items: ctx.items,
+    itemUi: ctx.itemUi,
+    onChanged: () => ctx.onItemsChanged(),
+    give: (id, qty) => {
+      const left = ctx.sim.character.addItem(id, qty);
+      ctx.sim.markChanged();
+      report(left > 0 ? `Bag full: ${left} didn't fit.` : `Added ${qty}× ${ctx.items.get(id)?.name ?? id}.`);
+    },
+    report: (m) => ctx.chat.add(`[dev] ${m}`, "system"),
+    usages: (id) => [
+      ...ctx.data.buildings.props.filter((p) => p.loot?.some((l) => l?.item === id)).map((p) => `chest ${p.id}`),
+      ...[...ctx.quests.values()].filter((q) => q.rewards.items.some((i) => i.item === id) || q.steps.some((s) => s.objectives.some((o) => "item" in o && o.item === id))).map((q) => `quest ${q.id}`),
+    ],
+  });
+  // F2: quests + NPCs.
+  const questEditor = new QuestEditor(ctx.stage, {
+    quests: ctx.questDefs,
+    npcs: ctx.npcs,
+    lookups: {
+      quests: ctx.questDefs,
+      npcs: ctx.npcs,
+      items: ctx.items,
+      propDefs: ctx.propDefs,
+      regions: () => ctx.data.def.regions.map((r) => ({ id: r.id, name: r.name })),
+    },
+    model: ctx.model,
+    modelIds: ctx.characterModelIds,
+    engine: () => ctx.sim.quests,
+    character: () => ctx.sim.character,
+    onQuestsChanged: () => ctx.sim.markChanged(),
+    enemies: ctx.enemyDefs,
+    enemyModelIds: () => ctx.characterModelIds().concat(ctx.enemyModelIds()),
+    onEnemiesChanged: () => {
+      ctx.onEnemiesChanged();
+      buildPanel.refresh(true);
+    },
+    onNpcsChanged: () => {
+      ctx.npcLayer.rebuild();
+      ctx.sim.markChanged();
+      buildPanel.refresh(true);
+    },
+    report: (m) => ctx.chat.add(`[dev] ${m}`, "system"),
+  });
+  ctx.keys.bind("F2", () => questEditor.toggle());
+
+  builder.onEditLoot = (prop) => {
+    const def = ctx.propDefs.get(prop.prop);
+    itemManager.openLoot({
+      title: `${def?.name ?? "Chest"} loot · ${prop.id}`,
+      slots: def?.container?.slots ?? 8,
+      loot: prop.loot ?? [],
+      onSave: (loot) => {
+        builder.setPropLoot(prop.id, loot);
+        report(`Saved loot for ${prop.id} (${loot.filter(Boolean).length} slot(s)). Press Save to write the map.`);
+      },
+      onRemove: () => {
+        builder.removeProp(prop.id);
+        report(`Removed ${prop.id}.`);
+      },
+    });
+  };
   const cursor = new BrushCursor();
   ctx.scene.add(cursor.line);
   const overlay = new RegionOverlay(ctx.data.hm, () => ctx.data.def.waterLevel);
@@ -85,7 +150,7 @@ export function mountDevTools(ctx: DevContext): void {
   let setFreeCam: (on: boolean) => void = () => {};
   const FLY_SPEED = 30;
 
-  let mode: "terrain" | "build" = "terrain";
+  let mode: "terrain" | "build" | "items" = "terrain";
   const panel = new DevPanel(
     ctx.stage,
     sculptor,
@@ -100,6 +165,7 @@ export function mountDevTools(ctx: DevContext): void {
       setMode: (m) => {
         mode = m;
         cursor.hide();
+        if (m === "items") itemManager.openManager();
       },
       save,
       setSpawnHere: () => {
@@ -110,6 +176,52 @@ export function mountDevTools(ctx: DevContext): void {
       setShowCollision: (v) => (ctx.terrain.showCollision = v),
       floatRegion: (id, lift) => report(sculptor.floatRegion(id, lift)),
       sinkOutsideRegions: (seabed) => report(sculptor.sinkOutsideRegions(seabed)),
+      openItemManager: () => itemManager.openManager(),
+      resetQuests: () => {
+        const c = ctx.sim.character;
+        const save = c.save;
+        const n = Object.keys(save.quests).length;
+        if (ctx.sim.talk) ctx.sim.apply({ type: "talkEnd" });
+        save.quests = {};
+        save.pinned = [];
+        save.worldFlags = [];
+        save.xp.adventuring = 0;
+        save.pickedUp = [];
+        // Quest items go too, from bag and hotbar.
+        for (const list of [save.inventory, save.hotbar]) {
+          list.forEach((s, i) => {
+            if (s && c.def(s.item)?.kind === "quest") list[i] = null;
+          });
+        }
+        for (const id of STARTING_QUESTS) save.quests[id] = { stage: 0, progress: {} };
+        ctx.sim.markChanged();
+        report(`Quests reset (${n} cleared): progress, story flags, Adventuring XP, quest items and picked-up ground items.`);
+      },
+      clearBag: () => {
+        const save = ctx.sim.character.save;
+        const n = [...save.inventory, ...save.hotbar].filter(Boolean).length;
+        save.inventory.fill(null);
+        save.hotbar.fill(null);
+        ctx.sim.markChanged();
+        report(n ? `Cleared ${n} slot(s) from your bag and hotbar.` : "Your bag and hotbar are already empty.");
+      },
+      resetLoot: () => {
+        const save = ctx.sim.character.save;
+        const n = Object.keys(save.containers).length + save.pickedUp.length;
+        save.containers = {};
+        save.pickedUp = [];
+        ctx.sim.markChanged();
+        report(n ? `Loot regenerated: ${n} chest(s) / ground item(s) restored.` : "Nothing to reset: nothing looted yet.");
+      },
+      testCombat: () => {
+        ctx.sim.enterCombat(10);
+        report("You're in combat for 10s: try changing gear or skills.");
+      },
+      resetCharacter: () => {
+        disableSaving();
+        clearSave();
+        location.reload();
+      },
       goToRegion: (id) => {
         const r = ctx.data.def.regions.find((x) => x.id === id);
         if (!r) return;
@@ -144,6 +256,8 @@ export function mountDevTools(ctx: DevContext): void {
   let regionDrag: { start: Vec2; end: Vec2 } | null = null;
   // Build mode: a box drag (room/floor/erase) or an edge run (wall/door/window).
   let buildDrag: { kind: "rect"; start: { cx: number; cz: number } } | { kind: "edges"; start: Edge } | null = null;
+  /** Painting a spawn zone (left button held). */
+  let zoneStroke = false;
   let buildAt: (Vec2 & { y: number }) | null = null;
   const groundY = (x: number, z: number): number => ctx.data.buildings.groundHeight(ctx.data.hm, x, z);
   /** Cursor on the edit plane: the selected building's storey, else the ground. */
@@ -194,7 +308,17 @@ export function mountDevTools(ctx: DevContext): void {
     else if (t === "wall" || t === "door" || t === "window") buildDrag = { kind: "edges", start: edgeAt(hit.x, hit.z) };
     else if (t === "stairs" || t === "ladder") report(builder.placeStair(c.cx, c.cz, t, OPPOSITE[cameraSide(hit.x, hit.z)]));
     else if (t === "prop") report(builder.placeProp(c.cx, c.cz));
-    else report(builder.pick(c.cx, c.cz));
+    else if (t === "npc") report(builder.placeNpc(c.cx, c.cz));
+    else if (t === "item") report(builder.placeGroundItem(c.cx, c.cz));
+    else if (t === "enemy") report(builder.placeEnemy(c.cx, c.cz));
+    else if (t === "zone") {
+      const err = builder.beginZoneStroke();
+      if (err) report(err);
+      else {
+        zoneStroke = true;
+        builder.paintZone(c.cx, c.cz);
+      }
+    } else report(builder.pick(c.cx, c.cz));
   };
   const rectOf = (a: Vec2, b: Vec2): Region["bounds"] => ({
     x0: Math.floor(Math.min(a.x, b.x)), z0: Math.floor(Math.min(a.z, b.z)),
@@ -226,6 +350,12 @@ export function mountDevTools(ctx: DevContext): void {
     if (e.button !== 0) return;
     updateNdc(e);
     if (buildDrag) finishBuildDrag();
+    if (zoneStroke) {
+      zoneStroke = false;
+      builder.endZoneStroke();
+      const z = builder.selectedZone();
+      if (z) report(`${z.name}: ${z.cells.length} cells.`);
+    }
     if (sculptor.isStroking) sculptor.endStroke();
     if (regionDrag) {
       const b = rectOf(regionDrag.start, regionDrag.end);
@@ -259,7 +389,7 @@ export function mountDevTools(ctx: DevContext): void {
   const freeCam = new FreeCamera(ctx.camera, ctx.data.hm, ctx.keys, ctx.canvas);
   freeCam.speed = FLY_SPEED;
   // While flying, WASD/QE drive the camera, so gameplay binds are muted.
-  const FREECAM_ALLOWED = new Set(["F1", "KeyC", "KeyM", "Escape", "Enter", "BracketLeft", "BracketRight"]);
+  const FREECAM_ALLOWED = new Set(["F1", "F2", "KeyC", "KeyM", "Escape", "Enter", "BracketLeft", "BracketRight"]);
   setFreeCam = (on) => {
     if (on === freeCam.isActive) return;
     if (on) {
@@ -371,8 +501,28 @@ export function mountDevTools(ctx: DevContext): void {
     } else if (t === "wall" || t === "door" || t === "window") {
       const edges = buildDrag?.kind === "edges" ? edgeRun(buildDrag.start, hit.x, hit.z) : [edgeAt(hit.x, hit.z)];
       buildOverlay.setEdges(edges, y, t === "door" ? 2.05 : wallH);
+    } else if (t === "npc") {
+      const sp = builder.placedNpc();
+      const cells: Array<[number, number]> = [];
+      if (sp?.wander === "route") cells.push([sp.x, sp.z], ...sp.route);
+      else if (sp?.wander === "area") {
+        for (let dz = -sp.radius; dz <= sp.radius; dz++) for (let dx = -sp.radius; dx <= sp.radius; dx++) cells.push([sp.x + dx, sp.z + dz]);
+      } else if (sp) cells.push([sp.x, sp.z]);
+      cells.push([c.cx, c.cz]);
+      buildOverlay.setCells(cells, y, propFacing(builder.settings.rot));
     } else if (t === "prop") {
       buildOverlay.setCells([[c.cx, c.cz]], y, propFacing(builder.settings.rot));
+    } else if (t === "zone") {
+      if (zoneStroke) builder.paintZone(c.cx, c.cz);
+      buildOverlay.setColor(builder.settings.zoneErase ? 0xff5a4a : 0xff9a3c);
+      const sel = builder.selectedZone();
+      const sets = sel ? [sel.cells] : builder.zones.map((z) => z.cells);
+      buildOverlay.setOutlines(sets, groundY, sel ? { cx: c.cx, cz: c.cz, r: builder.settings.zoneBrush - 1 } : null);
+    } else if (t === "enemy") {
+      // Show every enemy spot plus the cursor cell.
+      const cells: Array<[number, number]> = ctx.data.buildings.enemies.map((e) => [e.x, e.z]);
+      cells.push([c.cx, c.cz]);
+      buildOverlay.setCells(cells, y, propFacing(builder.settings.rot));
     } else if (t === "stairs" || t === "ladder") {
       const dir = OPPOSITE[cameraSide(hit.x, hit.z)];
       const cells = stairCells({ id: "p", kind: t, x: c.cx, z: c.cz, dir, length: t === "ladder" ? 1 : 3, from: 0, to: 1 });

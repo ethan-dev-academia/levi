@@ -1,0 +1,14 @@
+{
+  "id": "acolyte-dirk",
+  "name": "Acolyte's Dirk",
+  "kind": "weapon",
+  "icon": "dagger",
+  "color": "#c9c2b0",
+  "description": "Short, quick, and blessed at the hilt.",
+  "slot": "weapon",
+  "weaponType": "dagger",
+  "stats": {
+    "attackDamage": 5,
+    "critChance": 6
+  }
+}

@@ -7,6 +7,11 @@ import {
   type Building,
   type BuildingsFile,
   type CellRect,
+  type EnemySpawn,
+  type SpawnZone,
+  type GroundItem,
+  type LootSlot,
+  type NpcSpawn,
   type PropInstance,
   type Dir,
   type RoofKind,
@@ -17,7 +22,7 @@ import {
 } from "@levi/shared";
 import type { DevContext } from "./types.js";
 
-export type BuildToolId = "select" | "room" | "wall" | "door" | "window" | "floor" | "stairs" | "ladder" | "prop" | "erase";
+export type BuildToolId = "select" | "room" | "wall" | "door" | "window" | "floor" | "stairs" | "ladder" | "prop" | "npc" | "item" | "enemy" | "zone" | "erase";
 export type RoomPreset = "house" | "shed" | "floor";
 export type Side = "n" | "e" | "s" | "w";
 
@@ -33,16 +38,36 @@ export interface BuildSettings {
   prop: string;
   rot: number;
   signText: string;
+  /** NPC tool: which NPC definition to place. */
+  npc: string;
+  /** Movement for newly placed NPCs. */
+  npcWander: NpcSpawn["wander"];
+  npcRadius: number;
+  /** Placed NPC being edited (clicked); route clicks go to it while recording. */
+  editNpc: string | null;
+  recordingRoute: boolean;
+  /** Item tool: which item lies on the ground, and how many. */
+  groundItem: string;
+  groundQty: number;
+  /** Enemy tool: which enemy, and how far it roams. */
+  enemy: string;
+  enemyWander: "none" | "area";
+  enemyRadius: number;
+  /** Zone tool: the zone being painted, and whether strokes add or remove cells. */
+  zone: string | null;
+  zoneErase: boolean;
+  zoneBrush: number;
 }
 
-/** Facing of a prop with `rot` quarter turns, as a cell step [dx, dz]. */
-export function propFacing(rot: number): [number, number] {
-  return [[0, 1], [-1, 0], [0, -1], [1, 0]][rot & 3] as [number, number];
-}
+export { propFacing } from "@levi/shared";
 
 interface Snapshot {
   buildings: Building[];
   props: PropInstance[];
+  npcs: NpcSpawn[];
+  groundItems: GroundItem[];
+  enemies: EnemySpawn[];
+  zones: SpawnZone[];
 }
 
 /** A wall edge without kind/material. */
@@ -89,9 +114,14 @@ export class BuildTool {
   readonly settings: BuildSettings = {
     tool: "room", preset: "house", material: "wood", storey: 0, selected: null,
     prop: "barrel", rot: 0, signText: "Welcome!",
+    npc: "", groundItem: "", groundQty: 1,
+    npcWander: "area", npcRadius: 1, editNpc: null, recordingRoute: false,
+    enemy: "", enemyWander: "area", enemyRadius: 2, zone: null, zoneErase: false, zoneBrush: 1,
   };
   dirty = false;
   onChange: (() => void) | null = null;
+  /** Open the loot editor for a chest (set by dev/index). */
+  onEditLoot: ((prop: PropInstance) => void) | null = null;
   private readonly undoStack: Snapshot[] = [];
 
   constructor(private readonly ctx: DevContext) {}
@@ -112,7 +142,8 @@ export class BuildTool {
 
   /** The whole buildings file (buildings + props), for saving. */
   file(): BuildingsFile {
-    return { buildings: this.defs(), props: [...this.ctx.data.buildings.props] };
+    const index = this.ctx.data.buildings;
+    return { buildings: this.defs(), props: [...index.props], npcs: [...index.npcs], groundItems: [...index.groundItems], enemies: [...index.enemies], zones: [...index.zones] };
   }
 
   /** Height of the plane being edited, or null = use the terrain. */
@@ -138,7 +169,8 @@ export class BuildTool {
   // --- Undo / refresh ----------------------------------------------------------
 
   private checkpoint(): void {
-    this.undoStack.push(structuredClone({ buildings: this.defs(), props: [...this.ctx.data.buildings.props] }));
+    const index = this.ctx.data.buildings;
+    this.undoStack.push(structuredClone({ buildings: this.defs(), props: [...index.props], npcs: [...index.npcs], groundItems: [...index.groundItems], enemies: [...index.enemies], zones: [...index.zones] }));
     if (this.undoStack.length > MAX_UNDO) this.undoStack.shift();
   }
 
@@ -160,7 +192,13 @@ export class BuildTool {
       area = area ? union(area, c) : c;
     }
     index.setProps(prev.props);
+    index.setNpcs(prev.npcs);
+    index.setGroundItems(prev.groundItems);
+    index.setEnemies(prev.enemies);
+    index.setZones(prev.zones);
     this.ctx.props.rebuild();
+    this.ctx.npcLayer.rebuild();
+    this.ctx.groundItems.rebuild();
     if (this.settings.selected && !index.get(this.settings.selected)) this.settings.selected = null;
     this.ctx.buildings.rebuildAll();
     if (area) this.refreshGround(area);
@@ -369,10 +407,16 @@ export class BuildTool {
     if (!def) return `Unknown prop "${s.prop}".`;
     const building = s.storey > 0 ? s.selected : index.containing(cx, cz)?.def.id ?? null;
     if (s.storey > 0 && !building) return "Select a building first to furnish an upper storey.";
-    this.checkpoint();
     const existing = index.propAt(cx, cz, s.storey, building);
+    // Clicking a chest edits its loot instead of removing it.
+    if (existing && this.ctx.propDefs.get(existing.prop)?.container) {
+      this.onEditLoot?.(existing);
+      return `Editing ${this.ctx.propDefs.get(existing.prop)?.name ?? "chest"} loot.`;
+    }
+    this.checkpoint();
     let props: PropInstance[];
     let msg: string;
+    let created: PropInstance | null = null;
     if (existing) {
       props = index.props.filter((p) => p !== existing);
       msg = `Removed ${this.ctx.propDefs.get(existing.prop)?.name ?? existing.prop}.`;
@@ -382,12 +426,243 @@ export class BuildTool {
       const inst: PropInstance = { id: `prop-${n}`, prop: def.id, x: cx, z: cz, rot: s.rot & 3, storey: s.storey, solid: def.solid };
       if (building) inst.building = building;
       if (def.readable) inst.text = s.signText.slice(0, 1000);
+      if (def.container) {
+        inst.loot = [];
+        created = inst;
+      }
       props = [...index.props, inst];
       msg = `Placed ${def.name}${def.readable ? ` ("${inst.text}")` : ""}.`;
     }
     index.setProps(props);
     this.ctx.props.rebuild();
     this.refreshGround({ cx0: cx, cz0: cz, cx1: cx, cz1: cz });
+    this.dirty = true;
+    this.onChange?.();
+    if (created) this.onEditLoot?.(created);
+    return msg;
+  }
+
+  /** Set a chest's loot (from the loot editor). */
+  setPropLoot(id: string, loot: Array<LootSlot | null>): void {
+    const index = this.ctx.data.buildings;
+    if (!index.props.some((p) => p.id === id)) return;
+    this.checkpoint();
+    // Trim trailing empties so the file stays tidy.
+    const trimmed = [...loot];
+    while (trimmed.length > 0 && !trimmed[trimmed.length - 1]) trimmed.pop();
+    index.setProps(index.props.map((p) => (p.id === id ? { ...p, loot: trimmed } : p)));
+    this.dirty = true;
+    this.onChange?.();
+  }
+
+  /** Delete a prop by id (chest editor's Remove button). */
+  removeProp(id: string): void {
+    const index = this.ctx.data.buildings;
+    const prop = index.props.find((p) => p.id === id);
+    if (!prop) return;
+    this.checkpoint();
+    index.setProps(index.props.filter((p) => p.id !== id));
+    this.ctx.props.rebuild();
+    this.refreshGround({ cx0: prop.x, cz0: prop.z, cx1: prop.x, cz1: prop.z });
+    this.dirty = true;
+    this.onChange?.();
+  }
+
+  /** NPC tool: place the chosen NPC on a cell (click an NPC to remove it). */
+  placeNpc(cx: number, cz: number): string {
+    const s = this.settings;
+    const index = this.ctx.data.buildings;
+    const building = s.storey > 0 ? s.selected : null;
+    if (s.storey > 0 && !building) return "Select a building first to place NPCs upstairs.";
+    // Recording a route: clicks add stops to the NPC being edited.
+    const editing = s.editNpc ? index.npcs.find((n) => n.id === s.editNpc) : undefined;
+    if (s.recordingRoute && editing) {
+      if (editing.route.length >= 24) return "Routes can have up to 24 stops.";
+      this.updateNpc(editing.id, { route: [...editing.route, [cx, cz]], wander: "route" });
+      return `Route stop ${editing.route.length + 1} added. Click more cells, then Finish route.`;
+    }
+    const existing = index.npcAt(cx, cz, s.storey, building);
+    if (existing) {
+      // Click a placed NPC to edit (or remove) it.
+      s.editNpc = existing.id;
+      s.recordingRoute = false;
+      this.onChange?.();
+      return `Selected ${this.ctx.npcs.get(existing.npc)?.name ?? existing.npc}: set how they move below.`;
+    }
+    if (!this.ctx.npcs.has(s.npc)) return "Pick an NPC first (make one with F2).";
+    this.checkpoint();
+    let n = index.npcs.length + 1;
+    while (index.npcs.some((x) => x.id === `npc-${n}`)) n++;
+    const spawn: NpcSpawn = {
+      id: `npc-${n}`, npc: s.npc, x: cx, z: cz, rot: s.rot & 3, storey: s.storey,
+      wander: s.npcWander === "route" ? "none" : s.npcWander, radius: s.npcRadius, route: [],
+    };
+    if (building) spawn.building = building;
+    index.setNpcs([...index.npcs, spawn]);
+    let msg = `Placed ${this.ctx.npcs.get(s.npc)?.name ?? s.npc}.`;
+    s.editNpc = spawn.id;
+    if (s.npcWander === "route") {
+      s.recordingRoute = true;
+      msg += " Now click cells to lay out their route, then Finish route.";
+    }
+    this.ctx.npcLayer.rebuild();
+    this.refreshGround({ cx0: cx, cz0: cz, cx1: cx, cz1: cz });
+    this.dirty = true;
+    this.onChange?.();
+    return msg;
+  }
+
+  /** The placed NPC currently selected for editing. */
+  placedNpc(): NpcSpawn | undefined {
+    const id = this.settings.editNpc;
+    return id ? this.ctx.data.buildings.npcs.find((n) => n.id === id) : undefined;
+  }
+
+  /** Change a placed NPC's settings (movement, route...). */
+  updateNpc(id: string, patch: Partial<Pick<NpcSpawn, "wander" | "radius" | "route" | "rot">>): void {
+    const index = this.ctx.data.buildings;
+    if (!index.npcs.some((n) => n.id === id)) return;
+    this.checkpoint();
+    index.setNpcs(index.npcs.map((n) => (n.id === id ? { ...n, ...patch } : n)));
+    const sp = index.npcs.find((n) => n.id === id)!;
+    this.ctx.npcLayer.rebuild();
+    this.refreshGround({ cx0: sp.x, cz0: sp.z, cx1: sp.x, cz1: sp.z });
+    this.dirty = true;
+    this.onChange?.();
+  }
+
+  removeNpc(id: string): void {
+    const index = this.ctx.data.buildings;
+    const sp = index.npcs.find((n) => n.id === id);
+    if (!sp) return;
+    this.checkpoint();
+    index.setNpcs(index.npcs.filter((n) => n.id !== id));
+    this.settings.editNpc = null;
+    this.settings.recordingRoute = false;
+    this.ctx.npcLayer.rebuild();
+    this.refreshGround({ cx0: sp.x, cz0: sp.z, cx1: sp.x, cz1: sp.z });
+    this.dirty = true;
+    this.onChange?.();
+  }
+
+  /** Enemy tool: place the chosen enemy's home spot (click an existing spot to remove it). */
+  placeEnemy(cx: number, cz: number): string {
+    const s = this.settings;
+    const index = this.ctx.data.buildings;
+    if (s.storey > 0) return "Enemies live on the ground for now.";
+    const existing = index.enemies.find((e) => e.x === cx && e.z === cz);
+    if (!existing && !this.ctx.enemyDefs.has(s.enemy)) return "Pick an enemy first (make one with F2).";
+    this.checkpoint();
+    let msg: string;
+    if (existing) {
+      index.setEnemies(index.enemies.filter((e) => e !== existing));
+      msg = `Removed ${this.ctx.enemyDefs.get(existing.enemy)?.name ?? existing.enemy}.`;
+    } else {
+      let n = index.enemies.length + 1;
+      while (index.enemies.some((x) => x.id === `enemy-${n}`)) n++;
+      const spawn: EnemySpawn = {
+        id: `enemy-${n}`, enemy: s.enemy, x: cx, z: cz, rot: s.rot & 3, storey: 0,
+        wander: s.enemyWander, radius: s.enemyRadius, route: [],
+      };
+      index.setEnemies([...index.enemies, spawn]);
+      msg = `Placed ${this.ctx.enemyDefs.get(s.enemy)?.name ?? s.enemy}.`;
+    }
+    this.dirty = true;
+    this.onChange?.();
+    return msg;
+  }
+
+  // --- Spawn zones -------------------------------------------------------------------------------
+
+  get zones(): readonly SpawnZone[] {
+    return this.ctx.data.buildings.zones;
+  }
+
+  selectedZone(): SpawnZone | undefined {
+    return this.zones.find((z) => z.id === this.settings.zone);
+  }
+
+  private setZones(list: SpawnZone[]): void {
+    this.ctx.data.buildings.setZones(list);
+    this.dirty = true;
+    this.onChange?.();
+  }
+
+  newZone(): void {
+    this.checkpoint();
+    let n = this.zones.length + 1;
+    while (this.zones.some((z) => z.id === `zone-${n}`)) n++;
+    const z: SpawnZone = { id: `zone-${n}`, name: `Zone ${n}`, cells: [], mobs: [] };
+    this.settings.zone = z.id;
+    this.settings.zoneErase = false;
+    this.setZones([...this.zones, z]);
+  }
+
+  updateZone(id: string, patch: Partial<Pick<SpawnZone, "name" | "mobs">>): void {
+    if (!this.zones.some((z) => z.id === id)) return;
+    this.checkpoint();
+    this.setZones(this.zones.map((z) => (z.id === id ? { ...z, ...patch } : z)));
+  }
+
+  deleteZone(id: string): void {
+    this.checkpoint();
+    if (this.settings.zone === id) this.settings.zone = null;
+    this.setZones(this.zones.filter((z) => z.id !== id));
+  }
+
+  /** Start a paint stroke (one undo step per stroke). */
+  beginZoneStroke(): string | null {
+    if (this.settings.storey > 0) return "Spawn zones are painted on the ground.";
+    if (!this.selectedZone()) return "Make or pick a zone first (Zone panel below).";
+    this.checkpoint();
+    return null;
+  }
+
+  /** Paint (or erase) a square brush of cells into the selected zone. */
+  paintZone(cx: number, cz: number): void {
+    const z = this.selectedZone();
+    if (!z) return;
+    const r = this.settings.zoneBrush - 1;
+    const set = new Set(z.cells.map(([x, y]) => `${x},${y}`));
+    let changed = false;
+    for (let dz = -r; dz <= r; dz++) {
+      for (let dx = -r; dx <= r; dx++) {
+        const k = `${cx + dx},${cz + dz}`;
+        if (this.settings.zoneErase ? set.delete(k) : !set.has(k) && set.add(k)) changed = true;
+      }
+    }
+    if (!changed) return;
+    const cells = [...set].map((k) => k.split(",").map(Number) as [number, number]);
+    this.ctx.data.buildings.setZones(this.zones.map((x) => (x.id === z.id ? { ...x, cells } : x)));
+    this.dirty = true;
+  }
+
+  endZoneStroke(): void {
+    this.onChange?.();
+  }
+
+  /** Item tool: drop the chosen item on a cell (click one to remove it). */
+  placeGroundItem(cx: number, cz: number): string {
+    const s = this.settings;
+    const index = this.ctx.data.buildings;
+    const building = s.storey > 0 ? s.selected : null;
+    if (s.storey > 0 && !building) return "Select a building first to place items upstairs.";
+    const existing = index.groundItemAt(cx, cz, s.storey, building);
+    if (!existing && !this.ctx.items.has(s.groundItem)) return "Pick an item first.";
+    this.checkpoint();
+    let msg: string;
+    if (existing) {
+      index.setGroundItems(index.groundItems.filter((g) => g !== existing));
+      msg = `Removed ${this.ctx.items.get(existing.item)?.name ?? existing.item} from the ground.`;
+    } else {
+      let n = index.groundItems.length + 1;
+      while (index.groundItems.some((x) => x.id === `ground-${n}`)) n++;
+      const g: GroundItem = { id: `ground-${n}`, item: s.groundItem, qty: Math.max(1, Math.min(10, s.groundQty)), x: cx, z: cz, storey: s.storey };
+      if (building) g.building = building;
+      index.setGroundItems([...index.groundItems, g]);
+      msg = `Dropped ${g.qty > 1 ? `${g.qty}× ` : ""}${this.ctx.items.get(g.item)?.name ?? g.item} on the ground.`;
+    }
+    this.ctx.groundItems.rebuild();
     this.dirty = true;
     this.onChange?.();
     return msg;

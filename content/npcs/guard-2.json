@@ -1,0 +1,39 @@
+{
+  "id": "guard-2",
+  "name": "Anwen",
+  "title": "Guard",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#5a5552",
+    "top": "#2f4a6b",
+    "topTrim": "#c9ccd4",
+    "legs": "#2a211a",
+    "boots": "#2a211a",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.04,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "All quiet. For now.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

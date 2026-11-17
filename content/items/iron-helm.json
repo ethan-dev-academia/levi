@@ -1,0 +1,18 @@
+{
+  "id": "iron-helm",
+  "name": "Iron Helm",
+  "kind": "armour",
+  "icon": "helm",
+  "color": "#9aa0a8",
+  "description": "Heavy, dependable, and loud on stairs.",
+  "slot": "head",
+  "style": "brawler",
+  "tier": 2,
+  "requires": {
+    "brawler": 3
+  },
+  "stats": {
+    "armour": 4,
+    "hpRegen": 0.1
+  }
+}

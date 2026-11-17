@@ -1,0 +1,39 @@
+{
+  "id": "villager-3",
+  "name": "Nell",
+  "title": "Villager",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#a06e4a",
+    "hair": "#a8742e",
+    "top": "#9a6a42",
+    "topTrim": "#7a5232",
+    "legs": "#4e5866",
+    "boots": "#4a3220",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.94,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Did you hear about the Warden? No? Never mind then.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

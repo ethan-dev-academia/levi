@@ -1,0 +1,8 @@
+{
+  "id": "oak-log",
+  "name": "Oak Log",
+  "kind": "material",
+  "icon": "log",
+  "color": "#8a5a35",
+  "description": "A good straight length of oak."
+}

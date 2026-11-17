@@ -1,0 +1,14 @@
+{
+  "id": "talisman-clarity",
+  "name": "Talisman of Clarity",
+  "kind": "talisman",
+  "rarity": "uncommon",
+  "icon": "talisman",
+  "color": "#6aa8f0",
+  "description": "Cool to the touch; thoughts come easier.",
+  "slot": "talisman",
+  "stats": {
+    "maxMana": 20,
+    "manaRegen": 0.5
+  }
+}

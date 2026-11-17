@@ -1,0 +1,8 @@
+{
+  "id": "raw-trout",
+  "name": "Raw Trout",
+  "kind": "material",
+  "icon": "fish",
+  "color": "#8aa0b0",
+  "description": "Needs cooking."
+}

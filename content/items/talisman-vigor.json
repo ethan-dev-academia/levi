@@ -1,0 +1,13 @@
+{
+  "id": "talisman-vigor",
+  "name": "Talisman of Vigor",
+  "kind": "talisman",
+  "rarity": "uncommon",
+  "icon": "talisman",
+  "color": "#d05a4a",
+  "description": "A red stone set in bronze. You feel sturdier.",
+  "slot": "talisman",
+  "stats": {
+    "maxHp": 20
+  }
+}

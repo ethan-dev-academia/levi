@@ -1,0 +1,15 @@
+{
+  "id": "dawnstone-orb",
+  "name": "Dawnstone Orb",
+  "kind": "armour",
+  "rarity": "uncommon",
+  "icon": "orb",
+  "color": "#fff1b8",
+  "description": "It hums faintly whenever the sun rises.",
+  "slot": "offhand",
+  "style": "mage",
+  "stats": {
+    "magicDamage": 3,
+    "maxMana": 10
+  }
+}

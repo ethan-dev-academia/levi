@@ -1,0 +1,37 @@
+{
+  "id": "pip",
+  "name": "Pip",
+  "title": "Runner",
+  "scale": 0.86,
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#8e3b1f",
+    "top": "#c9a23a",
+    "topTrim": "#a88429",
+    "belt": "#5a3c22",
+    "legs": "#4e5866",
+    "boots": "#3b2a1d"
+  },
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "I run messages for the Warden. Busy, busy!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

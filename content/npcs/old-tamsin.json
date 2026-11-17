@@ -1,0 +1,36 @@
+{
+  "id": "old-tamsin",
+  "name": "Old Tamsin",
+  "title": "Ferry-keeper (retired)",
+  "palette": {
+    "skin": "#c8916b",
+    "hair": "#e6e2d8",
+    "top": "#5d6b3a",
+    "topTrim": "#4a5630",
+    "belt": "#5a3c22",
+    "legs": "#5a4a3a",
+    "boots": "#33261a"
+  },
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Eh? Oh, a new face. Mind the wind up here.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

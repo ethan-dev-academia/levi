@@ -1,0 +1,39 @@
+{
+  "id": "guard-4",
+  "name": "Finch",
+  "title": "Guard",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#f1c9a5",
+    "hair": "#4a2f1d",
+    "top": "#2f4a6b",
+    "topTrim": "#c9ccd4",
+    "legs": "#2a211a",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.06,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Keep to the paths.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

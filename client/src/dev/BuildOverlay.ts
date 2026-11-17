@@ -3,7 +3,7 @@ import type { CellRect } from "@levi/shared";
 import type { Edge } from "./BuildTool.js";
 
 const GRID_RADIUS = 5;
-const MAX_SEGMENTS = 4096;
+const MAX_SEGMENTS = 16384;
 
 /**
  * Build-mode guides drawn on the edit plane: a faint cell grid around the
@@ -61,6 +61,34 @@ export class BuildOverlay {
     for (let i = 0; i < n; i++) this.shapePos.set(segs[i]!, i * 6);
     this.shape.geometry.attributes["position"]!.needsUpdate = true;
     this.shape.geometry.setDrawRange(0, n * 2);
+  }
+
+  /**
+   * Outlines of painted cell sets (spawn zones) plus an optional brush
+   * square, draped on the ground via `heightAt`.
+   */
+  setOutlines(sets: ReadonlyArray<ReadonlyArray<readonly [number, number]>>, heightAt: (x: number, z: number) => number, brush: { cx: number; cz: number; r: number } | null): void {
+    const segs: number[][] = [];
+    const seg = (x0: number, z0: number, x1: number, z1: number): void => {
+      // Split each edge in two so it follows bumps.
+      const mx = (x0 + x1) / 2, mz = (z0 + z1) / 2;
+      const y0 = heightAt(x0, z0) + 0.1, ym = heightAt(mx, mz) + 0.1, y1 = heightAt(x1, z1) + 0.1;
+      segs.push([x0, y0, z0, mx, ym, mz], [mx, ym, mz, x1, y1, z1]);
+    };
+    for (const cells of sets) {
+      const has = new Set(cells.map(([x, z]) => `${x},${z}`));
+      for (const [x, z] of cells) {
+        if (!has.has(`${x},${z - 1}`)) seg(x, z, x + 1, z);
+        if (!has.has(`${x + 1},${z}`)) seg(x + 1, z, x + 1, z + 1);
+        if (!has.has(`${x},${z + 1}`)) seg(x + 1, z + 1, x, z + 1);
+        if (!has.has(`${x - 1},${z}`)) seg(x, z + 1, x, z);
+      }
+    }
+    if (brush) {
+      const x0 = brush.cx - brush.r, z0 = brush.cz - brush.r, x1 = brush.cx + brush.r + 1, z1 = brush.cz + brush.r + 1;
+      seg(x0, z0, x1, z0); seg(x1, z0, x1, z1); seg(x1, z1, x0, z1); seg(x0, z1, x0, z0);
+    }
+    this.writeShape(segs);
   }
 
   clearShape(): void {

@@ -1,0 +1,15 @@
+{
+  "id": "leather-jerkin",
+  "name": "Leather Jerkin",
+  "kind": "armour",
+  "icon": "chest",
+  "color": "#9a6a42",
+  "description": "Supple hide, cut for drawing a bow.",
+  "slot": "body",
+  "style": "ranger",
+  "stats": {
+    "armour": 4,
+    "attackDamage": 1,
+    "energyRegen": 0.3
+  }
+}

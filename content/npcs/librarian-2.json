@@ -1,0 +1,39 @@
+{
+  "id": "librarian-2",
+  "name": "Rosa",
+  "title": "Librarian",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d9a582",
+    "hair": "#8e3b1f",
+    "top": "#4a2f4a",
+    "topTrim": "#382238",
+    "legs": "#2a2420",
+    "boots": "#3b2a1d",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.99,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Every book here was carried up the cliff by hand.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

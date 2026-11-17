@@ -3,7 +3,7 @@ import type { BuildPanel } from "./BuildPanel.js";
 import { h } from "./dom.js";
 import type { SculptTool, TerrainSculptor } from "./TerrainSculptor.js";
 
-export type DevMode = "terrain" | "build";
+export type DevMode = "terrain" | "build" | "items";
 
 const TOOLS: ReadonlyArray<[SculptTool, string]> = [
   ["raise", "Raise"], ["lower", "Lower"], ["smooth", "Smooth"], ["flatten", "Flatten"],
@@ -31,6 +31,12 @@ export interface DevPanelActions {
   floatRegion(id: string, lift: number): void;
   sinkOutsideRegions(seabed: number): void;
   goToRegion(id: string): void;
+  testCombat(): void;
+  openItemManager(): void;
+  resetLoot(): void;
+  clearBag(): void;
+  resetQuests(): void;
+  resetCharacter(): void;
 }
 
 /** DOM for the F1 panel. Holds no game state; reads/writes sculptor settings. */
@@ -48,6 +54,7 @@ export class DevPanel {
   private readonly seabedInput: HTMLInputElement;
   private readonly title: HTMLElement;
   private readonly terrainSection: HTMLElement;
+  private readonly itemsSection: HTMLElement;
   private readonly modeButtons = new Map<DevMode, HTMLButtonElement>();
   private _mode: DevMode = "terrain";
 
@@ -97,8 +104,8 @@ export class DevPanel {
     }, "Ocean outside regions");
 
     this.title = h("h2", {}, "Dev · Terrain");
-    const tabs = h("div", { className: "dev-grid cols-2 dev-tabs" });
-    for (const [mode, label] of [["terrain", "Terrain"], ["build", "Build"]] as const) {
+    const tabs = h("div", { className: "dev-grid cols-3 dev-tabs" });
+    for (const [mode, label] of [["terrain", "Terrain"], ["build", "Build"], ["items", "Items"]] as const) {
       const b = h("button", { className: "dev-btn", onclick: () => this.setMode(mode) }, label);
       this.modeButtons.set(mode, b);
       tabs.append(b);
@@ -119,6 +126,12 @@ export class DevPanel {
       h("div", { className: "dev-field" }, "Water level", this.waterInput),
       h("div", { className: "dev-field" }, this.coords, h("button", { className: "dev-btn", onclick: () => actions.setSpawnHere() }, "Set spawn here")),
     );
+    this.itemsSection = h(
+      "section",
+      {},
+      h("div", { className: "dev-empty" }, "Every item in the game: browse, edit, create, duplicate, delete, and give yourself copies to test. Saving writes content/items/<id>.json."),
+      h("button", { className: "dev-btn primary", onclick: () => actions.openItemManager() }, "Open item manager"),
+    );
     this.root = h(
       "aside",
       { id: "dev-panel", hidden: true },
@@ -126,9 +139,20 @@ export class DevPanel {
       tabs,
       this.terrainSection,
       buildPanel.root,
+      this.itemsSection,
       h("h3", {}, "Camera"),
       h("div", { className: "dev-grid cols-2" }, this.freeCamBtn),
       this.slider("Fly speed", 5, 150, 5, flySpeed, (v) => actions.setFlySpeed(v)),
+      h("h3", {}, "Player"),
+      h(
+        "div",
+        { className: "dev-grid cols-2" },
+        h("button", { className: "dev-btn", title: "Pretend you're in combat for 10s (gear/hotbar/skills lock)", onclick: () => actions.testCombat() }, "Combat 10s"),
+        h("button", { className: "dev-btn", title: "Start as a brand-new player: character, quests, chests and ground items all reset", onclick: () => confirm("Fresh start? Your character, quests, looted chests and picked-up items all reset, exactly like a new player.") && actions.resetCharacter() }, "Fresh start"),
+        h("button", { className: "dev-btn", title: "Forget all quest progress, story flags, Adventuring XP and quest items", onclick: () => confirm("Reset all quests (progress, flags, Adventuring XP and quest items)?") && actions.resetQuests() }, "Reset quests"),
+        h("button", { className: "dev-btn", title: "Refill every chest you've looted with its designed loot", onclick: () => actions.resetLoot() }, "Reset loot"),
+        h("button", { className: "dev-btn", title: "Empty your bag and hotbar (worn gear stays)", onclick: () => actions.clearBag() }, "Clear bag"),
+      ),
       h("h3", {}, "File"),
       h("div", { className: "dev-grid cols-2" }, this.undoBtn, h("button", { className: "dev-btn primary", onclick: () => actions.save() }, "Save")),
       this.hint(),
@@ -147,7 +171,8 @@ export class DevPanel {
     for (const [m, b] of this.modeButtons) b.classList.toggle("active", m === mode);
     this.terrainSection.hidden = mode !== "terrain";
     this.buildPanel.root.hidden = mode !== "build";
-    this.title.textContent = mode === "terrain" ? "Dev · Terrain" : "Dev · Build";
+    this.itemsSection.hidden = mode !== "items";
+    this.title.textContent = mode === "terrain" ? "Dev · Terrain" : mode === "build" ? "Dev · Build" : "Dev · Items";
     this.actions.setMode(mode);
     this.refresh();
   }

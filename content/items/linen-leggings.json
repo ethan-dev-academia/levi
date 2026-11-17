@@ -1,0 +1,15 @@
+{
+  "id": "linen-leggings",
+  "name": "Linen Leggings",
+  "kind": "armour",
+  "icon": "legs",
+  "color": "#e8e0c8",
+  "description": "Light cloth that does not dull the flow of light.",
+  "slot": "legs",
+  "style": "mage",
+  "stats": {
+    "armour": 2,
+    "magicDamage": 2,
+    "manaRegen": 0.2
+  }
+}

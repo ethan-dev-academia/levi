@@ -1,0 +1,43 @@
+{
+  "id": "falcon",
+  "name": "Falcon",
+  "title": "Master of the Three Arts",
+  "location": "Main town",
+  "model": "npc-falcon",
+  "palette": {},
+  "scale": 1.16,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "So the wind finally brought you. Good.",
+      "next": "hello2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "hello2",
+      "speaker": "npc",
+      "text": "Bow, blade or light: I've walked all three paths. You'll find your own. Come see me at the Training Grounds when you're ready.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 160
+      }
+    }
+  ]
+}

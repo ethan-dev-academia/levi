@@ -1,0 +1,35 @@
+{
+  "id": "trainer-rhea",
+  "name": "Vigil-Captain Rhea",
+  "title": "Ranger trainer",
+  "palette": {
+    "skin": "#b9835f",
+    "hair": "#2a1d14",
+    "top": "#3f6b3a",
+    "topTrim": "#2f5230",
+    "legs": "#4a3f35",
+    "boots": "#2e221a"
+  },
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Draw, breathe, loose.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

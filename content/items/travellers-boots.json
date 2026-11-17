@@ -1,0 +1,13 @@
+{
+  "id": "travellers-boots",
+  "name": "Traveller's Boots",
+  "kind": "armour",
+  "icon": "boots",
+  "color": "#7a5a3a",
+  "description": "Worn soft by the long road to the Landing.",
+  "slot": "feet",
+  "stats": {
+    "armour": 1,
+    "energyRegen": 0.2
+  }
+}

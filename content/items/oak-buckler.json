@@ -1,0 +1,13 @@
+{
+  "id": "oak-buckler",
+  "name": "Oak Buckler",
+  "kind": "armour",
+  "icon": "shield",
+  "color": "#8a5a35",
+  "description": "A round shield of banded oak.",
+  "slot": "offhand",
+  "style": "brawler",
+  "stats": {
+    "armour": 4
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "grilled-trout",
+  "name": "Grilled Trout",
+  "kind": "consumable",
+  "icon": "fish",
+  "color": "#d08050",
+  "description": "Flaky and smoky.",
+  "use": {
+    "kind": "restore",
+    "hp": 35
+  }
+}

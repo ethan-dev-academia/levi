@@ -1,4 +1,4 @@
-import type { Building, Dir, Stair, Wall } from "../schemas/building.js";
+import type { Building, Dir, EnemySpawn, GroundItem, NpcSpawn, SpawnZone, Stair, Wall } from "../schemas/building.js";
 import type { PropInstance } from "../schemas/prop.js";
 import type { CellRect } from "../terrain/MapData.js";
 import { getTerrainHeight, type Heightmap } from "../terrain/Heightmap.js";
@@ -93,7 +93,15 @@ function inRect(r: CellRect, cx: number, cz: number): boolean {
   return cx >= r.cx0 && cz >= r.cz0 && cx <= r.cx1 && cz <= r.cz1;
 }
 
-function deriveInfo(def: Building, cellSize: number, props: readonly PropInstance[]): BuildingInfo {
+/** Anything standing on a cell that blocks walking there. */
+interface Blocker {
+  x: number;
+  z: number;
+  storey: number;
+  building?: string | undefined;
+}
+
+function deriveInfo(def: Building, cellSize: number, blockers: readonly Blocker[]): BuildingInfo {
   const tiles = def.storeys.map((s) => new Set(s.tiles.map(([x, z]) => cellKey(x, z))));
   let cx0 = Infinity, cz0 = Infinity, cx1 = -Infinity, cz1 = -Infinity;
   const grow = (x: number, z: number): void => {
@@ -114,7 +122,7 @@ function deriveInfo(def: Building, cellSize: number, props: readonly PropInstanc
       for (const [x, z] of stairCells(st)) g.setWalkable(x, z, false);
     }
     for (const w of storey.walls) blockWall(g, w);
-    for (const p of props) if (p.solid && p.storey === k && p.building === def.id) g.setWalkable(p.x, p.z, false);
+    for (const b of blockers) if (b.storey === k && b.building === def.id) g.setWalkable(b.x, b.z, false);
     return g;
   });
   return { def, bounds, tiles, grids };
@@ -128,15 +136,80 @@ function deriveInfo(def: Building, cellSize: number, props: readonly PropInstanc
 export class BuildingIndex {
   private readonly byId = new Map<string, BuildingInfo>();
   private propList: PropInstance[] = [];
+  private npcList: NpcSpawn[] = [];
+  private groundList: GroundItem[] = [];
+  private enemyList: EnemySpawn[] = [];
+  private zoneList: SpawnZone[] = [];
 
-  constructor(buildings: readonly Building[] = [], private readonly cellSize = 1, props: readonly PropInstance[] = []) {
+  constructor(
+    buildings: readonly Building[] = [],
+    private readonly cellSize = 1,
+    props: readonly PropInstance[] = [],
+    npcs: readonly NpcSpawn[] = [],
+    groundItems: readonly GroundItem[] = [],
+    enemies: readonly EnemySpawn[] = [],
+  ) {
+    this.enemyList = [...enemies];
     this.propList = [...props];
+    this.npcList = [...npcs];
+    this.groundList = [...groundItems];
     for (const b of buildings) this.set(b);
   }
 
   /** Placed props (furniture, barrels, signs...). */
   get props(): readonly PropInstance[] {
     return this.propList;
+  }
+
+  /** NPCs standing in the world. */
+  get npcs(): readonly NpcSpawn[] {
+    return this.npcList;
+  }
+
+  /** Enemy home spots. */
+  get enemies(): readonly EnemySpawn[] {
+    return this.enemyList;
+  }
+
+  setEnemies(list: readonly EnemySpawn[]): void {
+    this.enemyList = [...list];
+  }
+
+  /** Enemy spawn zones. */
+  get zones(): readonly SpawnZone[] {
+    return this.zoneList;
+  }
+
+  setZones(list: readonly SpawnZone[]): void {
+    this.zoneList = [...list];
+  }
+
+  /** Items lying on the ground. */
+  get groundItems(): readonly GroundItem[] {
+    return this.groundList;
+  }
+
+  /** Replace all NPC spawns (they block their tile, like solid props). */
+  setNpcs(npcs: readonly NpcSpawn[]): void {
+    this.npcList = [...npcs];
+    for (const info of [...this.byId.values()]) this.set(info.def);
+  }
+
+  setGroundItems(items: readonly GroundItem[]): void {
+    this.groundList = [...items];
+  }
+
+  npcAt(cx: number, cz: number, storey: number, building: string | null): NpcSpawn | undefined {
+    return this.npcList.find((n) => n.x === cx && n.z === cz && n.storey === storey && (storey === 0 || n.building === building));
+  }
+
+  groundItemAt(cx: number, cz: number, storey: number, building: string | null): GroundItem | undefined {
+    return this.groundList.find((g) => g.x === cx && g.z === cz && g.storey === storey && (storey === 0 || g.building === building));
+  }
+
+  private blockers(): Blocker[] {
+    // Wandering NPCs don't pin a tile (they move around); stationary ones do.
+    return [...this.propList.filter((p) => p.solid), ...this.npcList.filter((n) => n.wander === "none")];
   }
 
   /** Replace all props; upper-storey grids are re-derived (props can block). */
@@ -171,7 +244,7 @@ export class BuildingIndex {
 
   /** Add or replace a building; returns its derived info. */
   set(def: Building): BuildingInfo {
-    const info = deriveInfo(def, this.cellSize, this.propList);
+    const info = deriveInfo(def, this.cellSize, this.blockers());
     this.byId.set(def.id, info);
     return info;
   }
@@ -206,7 +279,7 @@ export class BuildingIndex {
   /** Overlay buildings (and solid ground-level props) on fresh ground walkability inside `r`. */
   applyCellsToGround(grid: WalkGrid, r: CellRect, holes: Uint8Array): void {
     this.applyBuildingCells(grid, r, holes);
-    for (const p of this.propList) if (p.solid && p.storey === 0 && inRect(r, p.x, p.z)) grid.setWalkable(p.x, p.z, false);
+    for (const b of this.blockers()) if (b.storey === 0 && inRect(r, b.x, b.z)) grid.setWalkable(b.x, b.z, false);
   }
 
   private applyBuildingCells(grid: WalkGrid, r: CellRect, holes: Uint8Array): void {

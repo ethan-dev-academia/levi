@@ -1,0 +1,39 @@
+{
+  "id": "merchant-3",
+  "name": "Dell",
+  "title": "Merchant",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#f1c9a5",
+    "hair": "#a8742e",
+    "top": "#a84a32",
+    "topTrim": "#d9b04a",
+    "legs": "#3b2a1d",
+    "boots": "#2e221a",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.96,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Shop's not open yet. Come back soon.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

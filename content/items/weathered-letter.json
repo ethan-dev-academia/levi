@@ -1,0 +1,8 @@
+{
+  "id": "weathered-letter",
+  "name": "Weathered Letter",
+  "kind": "quest",
+  "icon": "scroll",
+  "color": "#e8dcc0",
+  "description": "Sealed with wax pressed by a feather."
+}

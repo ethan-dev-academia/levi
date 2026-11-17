@@ -1,0 +1,13 @@
+{
+  "id": "talisman-mending",
+  "name": "Talisman of Mending",
+  "kind": "talisman",
+  "rarity": "uncommon",
+  "icon": "talisman",
+  "color": "#7ac070",
+  "description": "Small cuts close a little faster.",
+  "slot": "talisman",
+  "stats": {
+    "hpRegen": 0.5
+  }
+}

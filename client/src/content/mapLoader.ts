@@ -14,5 +14,7 @@ export async function loadMap(id: string): Promise<MapData> {
     def.chunks.map(async (key) => MapChunkSchema.parse(await fetchJson(`${base}/chunks/${key}.json`))),
   );
   const buildings = BuildingsFileSchema.parse(await fetchJson(`${base}/buildings.json`));
-  return loadMapData(def, chunks, buildings.buildings, buildings.props);
+  const data = loadMapData(def, chunks, buildings.buildings, buildings.props, buildings.npcs, buildings.groundItems, buildings.enemies);
+  data.buildings.setZones(buildings.zones);
+  return data;
 }

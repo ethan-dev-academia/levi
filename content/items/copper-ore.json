@@ -1,0 +1,8 @@
+{
+  "id": "copper-ore",
+  "name": "Copper Ore",
+  "kind": "material",
+  "icon": "ore",
+  "color": "#c07040",
+  "description": "Ore with a green-orange sheen."
+}

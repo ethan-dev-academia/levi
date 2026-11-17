@@ -1,0 +1,13 @@
+{
+  "id": "tome-of-valor",
+  "name": "Tome of Valor",
+  "kind": "tome",
+  "icon": "tome",
+  "color": "#d05a4a",
+  "description": "Accounts of old battles. Grants XP in a combat skill of your choice (or Dungeoneering).",
+  "use": {
+    "kind": "xp",
+    "group": "combat",
+    "amount": 400
+  }
+}

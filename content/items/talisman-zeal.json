@@ -1,0 +1,14 @@
+{
+  "id": "talisman-zeal",
+  "name": "Talisman of Zeal",
+  "kind": "talisman",
+  "rarity": "uncommon",
+  "icon": "talisman",
+  "color": "#f0c040",
+  "description": "It seems to tug you forward.",
+  "slot": "talisman",
+  "stats": {
+    "maxEnergy": 20,
+    "energyRegen": 1
+  }
+}

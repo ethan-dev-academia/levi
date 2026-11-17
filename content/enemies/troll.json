@@ -1,0 +1,60 @@
+{
+ "id": "troll",
+ "name": "Hill Troll",
+ "level": 8,
+ "model": "humanoid",
+ "scale": 1.5,
+ "palette": {
+  "skin": "#7a8a6a",
+  "hair": "#3a3a2a",
+  "top": "#5a4630",
+  "topTrim": "#463624",
+  "legs": "#4a3f35",
+  "boots": "#3b2a1d",
+  "belt": "#2e221a"
+ },
+ "stats": {
+  "maxHp": 220,
+  "armour": 18,
+  "moveSpeed": 2.4
+ },
+ "aggroRange": 7,
+ "leashRange": 18,
+ "xp": 70,
+ "respawn": 60,
+ "attacks": [
+  {
+   "id": "slam",
+   "name": "Ground Slam",
+   "shape": "circle",
+   "anchor": "self",
+   "range": 2.5,
+   "radius": 3.2,
+   "windup": 1.4,
+   "damage": 22,
+   "cooldown": 4.5
+  },
+  {
+   "id": "swipe",
+   "name": "Wide Swipe",
+   "shape": "cone",
+   "range": 2.8,
+   "length": 3.4,
+   "angle": 70,
+   "windup": 1.0,
+   "damage": 16,
+   "cooldown": 3
+  },
+  {
+   "id": "boulder",
+   "name": "Hurled Boulder",
+   "shape": "circle",
+   "anchor": "target",
+   "range": 12,
+   "radius": 2.2,
+   "windup": 1.8,
+   "damage": 26,
+   "cooldown": 8
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "villager-4",
+  "name": "Vale",
+  "title": "Villager",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c98e64",
+    "hair": "#6b3f22",
+    "top": "#6b7a8a",
+    "topTrim": "#52606e",
+    "legs": "#4e5866",
+    "boots": "#2e221a",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.94,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Morning!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

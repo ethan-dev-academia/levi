@@ -1,0 +1,12 @@
+{
+  "id": "bread-loaf",
+  "name": "Bread Loaf",
+  "kind": "consumable",
+  "icon": "bread",
+  "color": "#d8a860",
+  "description": "Dense, warm, and filling.",
+  "use": {
+    "kind": "restore",
+    "hp": 20
+  }
+}

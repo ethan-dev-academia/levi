@@ -1,0 +1,11 @@
+{
+  "id": "falcon-feather",
+  "name": "Falcon Feather",
+  "description": "A long white feather banded with grey. It feels warm.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "feather",
+  "color": "#f2ede0",
+  "value": 1
+}

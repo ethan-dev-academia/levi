@@ -1,0 +1,39 @@
+{
+  "id": "traveler-3",
+  "name": "Ebba",
+  "title": "Traveler",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#a06e4a",
+    "hair": "#c9a23a",
+    "top": "#5d4a6b",
+    "topTrim": "#46385a",
+    "legs": "#4a3f35",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.05,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Have you seen the clouds from the edge? Unsettling.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

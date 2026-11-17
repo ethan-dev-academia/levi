@@ -7,19 +7,33 @@ export type KeyAction = () => void;
 export class Keyboard {
   private readonly held = new Set<string>();
   private readonly bindings = new Map<string, KeyAction>();
+  private readonly releases = new Map<string, KeyAction>();
   private readonly abort = new AbortController();
   private filter: ((code: string) => boolean) | null = null;
 
   constructor(target: Window = window) {
     const opts = { signal: this.abort.signal };
     target.addEventListener("keydown", (e) => this.down(e), opts);
-    target.addEventListener("keyup", (e) => this.held.delete(e.code), opts);
+    target.addEventListener("keyup", (e) => this.up(e), opts);
     target.addEventListener("blur", () => this.held.clear(), opts);
   }
 
   bind(code: string, action: KeyAction): this {
     this.bindings.set(code, action);
     return this;
+  }
+
+  /** Fires when a key bound with bind() is released (hold-and-release casting). */
+  bindRelease(code: string, action: KeyAction): this {
+    this.releases.set(code, action);
+    return this;
+  }
+
+  private up(e: KeyboardEvent): void {
+    const wasDown = this.held.delete(e.code);
+    if (!wasDown) return;
+    if (this.filter && !this.filter(e.code)) return;
+    this.releases.get(e.code)?.();
   }
 
   /**

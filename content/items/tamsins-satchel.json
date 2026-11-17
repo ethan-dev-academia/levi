@@ -1,0 +1,11 @@
+{
+  "id": "tamsins-satchel",
+  "name": "Tamsin's Satchel",
+  "kind": "quest",
+  "icon": "scroll",
+  "color": "#8a5a35",
+  "description": "A worn leather satchel. It smells of river water and pipe smoke.",
+  "rarity": "common",
+  "tier": 1,
+  "value": 1
+}

@@ -1,0 +1,39 @@
+{
+  "id": "innkeeper-1",
+  "name": "Holt",
+  "title": "Innkeeper",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#b9835f",
+    "hair": "#1f1712",
+    "top": "#8e3a32",
+    "topTrim": "#e8e0c8",
+    "legs": "#4a3220",
+    "boots": "#4a3220",
+    "belt": "#6b4528"
+  },
+  "scale": 0.93,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Room's two coins a night. Breakfast is extra.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

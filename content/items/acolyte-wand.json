@@ -1,0 +1,14 @@
+{
+  "id": "acolyte-wand",
+  "name": "Acolyte's Wand",
+  "kind": "weapon",
+  "icon": "wand",
+  "color": "#f0e2b0",
+  "description": "Birch, silver wire, and a sliver of dawnstone.",
+  "slot": "weapon",
+  "weaponType": "wand",
+  "stats": {
+    "magicDamage": 8,
+    "manaRegen": 0.5
+  }
+}

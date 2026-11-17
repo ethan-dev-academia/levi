@@ -1,0 +1,39 @@
+{
+  "id": "librarian-3",
+  "name": "Fenna",
+  "title": "Librarian",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c98e64",
+    "hair": "#8e3b1f",
+    "top": "#3a3f6b",
+    "topTrim": "#2a2e52",
+    "legs": "#2a2420",
+    "boots": "#2a211a",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.03,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Looking for something in particular?",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,325 @@
+{
+  "style": "ranger",
+  "name": "Path of the Vigil",
+  "blurb": "The watch that never sleeps. Rangers spend Energy and fight from afar with bows and guns.",
+  "skills": [
+    {
+      "id": "vigil-shot",
+      "name": "Vigil Shot",
+      "cost": 8,
+      "cooldown": 5,
+      "cast": {
+        "kind": "line",
+        "range": 12,
+        "width": 0.4,
+        "damage": 12,
+        "scaling": "attack",
+        "ratio": 0.8
+      },
+      "description": "Hold to aim, release to fire a single shot in a straight line. It strikes the first enemy in its path.",
+      "lore": "Every watch begins with one arrow.",
+      "tier": 1
+    },
+    {
+      "id": "triune-volley",
+      "name": "Triune Volley",
+      "cost": 14,
+      "cooldown": 5,
+      "cast": {
+        "kind": "multi",
+        "range": 10,
+        "count": 3,
+        "damage": 8,
+        "scaling": "attack",
+        "ratio": 0.5
+      },
+      "description": "A burst of 3 arrows in the aimed direction.",
+      "lore": "",
+      "tier": 2,
+      "requires": []
+    },
+    {
+      "id": "lantern-arrow",
+      "name": "Lantern Arrow",
+      "cost": 12,
+      "cooldown": 6,
+      "cast": {
+        "kind": "line",
+        "range": 13,
+        "width": 0.4,
+        "damage": 14,
+        "scaling": "attack",
+        "ratio": 0.8
+      },
+      "description": "An arrow that pierces and marks the first enemy, revealing it.",
+      "lore": "",
+      "tier": 2,
+      "requires": []
+    },
+    {
+      "id": "rain-of-psalms",
+      "name": "Rain of Psalms",
+      "cost": 20,
+      "cooldown": 10,
+      "cast": {
+        "kind": "circle",
+        "range": 10,
+        "radius": 2,
+        "count": 5,
+        "damage": 5,
+        "duration": 2,
+        "scaling": "attack",
+        "ratio": 0.3
+      },
+      "description": "A small circle of low-damage arrows falls on the target area.",
+      "lore": "Each arrow a verse.",
+      "tier": 3,
+      "requires": []
+    },
+    {
+      "id": "hallowed-snare",
+      "name": "Hallowed Snare",
+      "cost": 16,
+      "cooldown": 12,
+      "cast": {
+        "kind": "circle",
+        "range": 8,
+        "radius": 1,
+        "damage": 6,
+        "duration": 2,
+        "scaling": "attack",
+        "ratio": 0.3
+      },
+      "description": "Set a trap of light that roots the first enemy to step on it.",
+      "lore": "",
+      "tier": 3,
+      "requires": []
+    },
+    {
+      "id": "penitents-draw",
+      "name": "Penitent's Draw",
+      "cost": 25,
+      "cooldown": 9,
+      "cast": {
+        "kind": "charge",
+        "range": 16,
+        "width": 0.6,
+        "damage": 40,
+        "duration": 1,
+        "scaling": "attack",
+        "ratio": 1.4
+      },
+      "description": "Hold to charge, then loose a long straight shot that hits harder the longer you draw.",
+      "lore": "",
+      "tier": 5,
+      "requires": []
+    },
+    {
+      "id": "scatter-hymn",
+      "name": "Scatter Hymn",
+      "cost": 22,
+      "cooldown": 8,
+      "cast": {
+        "kind": "cone",
+        "range": 6,
+        "angle": 30,
+        "count": 5,
+        "damage": 7,
+        "scaling": "attack",
+        "ratio": 0.4
+      },
+      "description": "A spread of shots in a short cone.",
+      "lore": "",
+      "tier": 5,
+      "requires": []
+    },
+    {
+      "id": "pilgrims-roll",
+      "name": "Pilgrim's Roll",
+      "cost": 20,
+      "cooldown": 10,
+      "cast": {
+        "kind": "dash",
+        "range": 4
+      },
+      "description": "Roll a short distance toward the cursor.",
+      "lore": "",
+      "tier": 10,
+      "requires": []
+    },
+    {
+      "id": "wingstep",
+      "name": "Wingstep",
+      "cost": 18,
+      "cooldown": 11,
+      "cast": {
+        "kind": "dash",
+        "range": 5
+      },
+      "description": "Leap backwards, away from the cursor.",
+      "lore": "",
+      "tier": 10,
+      "requires": []
+    },
+    {
+      "id": "starfall-barrage",
+      "name": "Starfall Barrage",
+      "cost": 35,
+      "cooldown": 18,
+      "cast": {
+        "kind": "circle",
+        "range": 12,
+        "radius": 3,
+        "count": 10,
+        "damage": 7,
+        "duration": 2.5,
+        "scaling": "attack",
+        "ratio": 0.4
+      },
+      "description": "A long barrage of falling arrows over a wide area.",
+      "lore": "",
+      "tier": 20,
+      "requires": []
+    },
+    {
+      "id": "sentinel-totem",
+      "name": "Sentinel Totem",
+      "cost": 30,
+      "cooldown": 22,
+      "cast": {
+        "kind": "summon",
+        "range": 6,
+        "damage": 6,
+        "duration": 10,
+        "scaling": "attack",
+        "ratio": 0.4
+      },
+      "description": "Plant a lantern totem that fires at nearby enemies for 10 seconds.",
+      "lore": "",
+      "tier": 20,
+      "requires": []
+    },
+    {
+      "id": "eagles-grace",
+      "name": "Eagle's Grace",
+      "cost": 35,
+      "cooldown": 30,
+      "cast": {
+        "kind": "buff",
+        "amount": 20,
+        "duration": 8
+      },
+      "description": "For 8 seconds your crit chance is increased by 20%.",
+      "lore": "",
+      "tier": 30,
+      "requires": []
+    },
+    {
+      "id": "gleaming-quiver",
+      "name": "Gleaming Quiver",
+      "cost": 30,
+      "cooldown": 28,
+      "cast": {
+        "kind": "buff",
+        "amount": 50,
+        "duration": 8
+      },
+      "description": "For 8 seconds your energy regenerates 50% faster.",
+      "lore": "",
+      "tier": 30,
+      "requires": []
+    },
+    {
+      "id": "comet-spear",
+      "name": "Comet Spear",
+      "cost": 50,
+      "cooldown": 22,
+      "cast": {
+        "kind": "charge",
+        "range": 20,
+        "width": 1,
+        "damage": 95,
+        "duration": 1.5,
+        "scaling": "attack",
+        "ratio": 2.0
+      },
+      "description": "A fully drawn shot that streaks across the field, piercing everything.",
+      "lore": "",
+      "tier": 40,
+      "requires": []
+    },
+    {
+      "id": "ricochet-litany",
+      "name": "Ricochet Litany",
+      "cost": 45,
+      "cooldown": 18,
+      "cast": {
+        "kind": "multi",
+        "range": 10,
+        "count": 6,
+        "damage": 16,
+        "scaling": "attack",
+        "ratio": 0.6
+      },
+      "description": "A shot that ricochets between up to 6 enemies.",
+      "lore": "",
+      "tier": 40,
+      "requires": []
+    },
+    {
+      "id": "heavens-arsenal",
+      "name": "Heaven's Arsenal",
+      "cost": 80,
+      "cooldown": 60,
+      "cast": {
+        "kind": "circle",
+        "range": 14,
+        "radius": 6,
+        "count": 20,
+        "damage": 9,
+        "duration": 4,
+        "scaling": "attack",
+        "ratio": 0.5
+      },
+      "description": "The sky itself opens fire over a huge area.",
+      "lore": "",
+      "tier": 50,
+      "requires": []
+    },
+    {
+      "id": "eye-of-the-watcher",
+      "name": "Eye of the Watcher",
+      "cost": 70,
+      "cooldown": 75,
+      "cast": {
+        "kind": "buff",
+        "amount": 30,
+        "duration": 12
+      },
+      "description": "For 12 seconds: +30% attack damage and your shots pierce.",
+      "lore": "",
+      "tier": 50,
+      "requires": []
+    }
+  ],
+  "secrets": [
+    {
+      "id": "skypiercer",
+      "name": "Skypiercer",
+      "cost": 90,
+      "cooldown": 120,
+      "cast": {
+        "kind": "charge",
+        "range": 30,
+        "width": 1.6,
+        "damage": 300,
+        "duration": 2,
+        "scaling": "attack",
+        "ratio": 4.0,
+        "pierce": true
+      },
+      "description": "A single shot drawn for two long breaths that tears through everything in a vast line.",
+      "lore": "The Vigil keeps this arrow for the end of the world."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "villager-2",
+  "name": "Jory",
+  "title": "Villager",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#8a5a3c",
+    "hair": "#6b3f22",
+    "top": "#6b7a8a",
+    "topTrim": "#52606e",
+    "legs": "#4e5866",
+    "boots": "#3b2a1d",
+    "belt": "#6b4528"
+  },
+  "scale": 0.98,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Lovely day for it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

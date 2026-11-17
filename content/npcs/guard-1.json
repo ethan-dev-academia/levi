@@ -1,0 +1,39 @@
+{
+  "id": "guard-1",
+  "name": "Vesk",
+  "title": "Guard",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c98e64",
+    "hair": "#6b3f22",
+    "top": "#8e2a2a",
+    "topTrim": "#c9ccd4",
+    "legs": "#2a211a",
+    "boots": "#4a3220",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.98,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Keep to the paths.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

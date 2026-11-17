@@ -162,7 +162,7 @@ export class WorldMap {
     ];
 
     // Region outlines + names (OSRS-style area labels).
-    ctx.font = "700 14px Cinzel, Georgia, serif";
+    ctx.font = "700 14px Verdana, Geneva, Tahoma, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "bottom";
     for (const r of this.regions()) {

@@ -1,0 +1,13 @@
+{
+  "id": "almanac-of-seasons",
+  "name": "Almanac of Seasons",
+  "kind": "tome",
+  "icon": "tome",
+  "color": "#7ac070",
+  "description": "Notes on growing, gathering and making. Grants XP in a peacetime skill of your choice (or Dungeoneering).",
+  "use": {
+    "kind": "xp",
+    "group": "peaceful",
+    "amount": 400
+  }
+}

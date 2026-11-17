@@ -3,6 +3,17 @@ import path from "node:path";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Plugin, ResolvedConfig } from "vite";
 import { CONTENT_ID, SaveMapRequestSchema, chunkKey } from "../../shared/src/schemas/map.js";
+import { ItemDefSchema } from "../../shared/src/schemas/item.js";
+import { NpcDefSchema } from "../../shared/src/schemas/npc.js";
+import { QuestDefSchema } from "../../shared/src/schemas/quest.js";
+import { EnemyDefSchema } from "../../shared/src/schemas/enemy.js";
+
+/** Content the F2 editor may write, with the schema each file must pass. */
+const EDITABLE = {
+  npc: { dir: "npcs", schema: NpcDefSchema },
+  quest: { dir: "quests", schema: QuestDefSchema },
+  enemy: { dir: "enemies", schema: EnemyDefSchema },
+} as const;
 
 const MAX_BODY_BYTES = 64 * 1024 * 1024;
 
@@ -102,16 +113,131 @@ export function contentPlugin(contentRoot: string): Plugin {
     reply(200, { ok: true, written: chunks.length, removed: removed.length });
   }
 
+  /** Item manager (F1): write or delete one content/items/<id>.json. */
+  async function editItem(req: IncomingMessage, res: ServerResponse, remove: boolean): Promise<void> {
+    const reply = (status: number, body: unknown): void => {
+      res.statusCode = status;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify(body));
+    };
+    if (!LOOPBACK.has(req.socket.remoteAddress ?? "")) return reply(403, { error: "dev tools are local-only" });
+    let body: unknown;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch (e) {
+      return reply(400, { error: String(e) });
+    }
+    if (remove) {
+      const id = (body as { id?: unknown }).id;
+      if (typeof id !== "string" || !CONTENT_ID.test(id)) return reply(400, { error: "bad item id" });
+      const f = path.join(root, "items", `${id}.json`);
+      if (!inside(f)) return reply(400, { error: "bad path" });
+      await fs.rm(f, { force: true });
+      return reply(200, { ok: true });
+    }
+    const parsed = ItemDefSchema.safeParse((body as { item?: unknown }).item);
+    if (!parsed.success) return reply(400, { error: parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`) });
+    await writeAtomic(path.join(root, "items", `${parsed.data.id}.json`), `${JSON.stringify(parsed.data, null, 2)}\n`);
+    reply(200, { ok: true });
+  }
+
+  /** F2 editor: save or delete one NPC / quest file (validated). */
+  async function editContent(req: IncomingMessage, res: ServerResponse, remove: boolean): Promise<void> {
+    const reply = (status: number, body: unknown): void => {
+      res.statusCode = status;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify(body));
+    };
+    if (!LOOPBACK.has(req.socket.remoteAddress ?? "")) return reply(403, { error: "dev tools are local-only" });
+    let body: { kind?: unknown; id?: unknown; data?: unknown };
+    try {
+      body = JSON.parse(await readBody(req)) as typeof body;
+    } catch (e) {
+      return reply(400, { error: String(e) });
+    }
+    const kind = body.kind === "npc" || body.kind === "quest" || body.kind === "enemy" ? EDITABLE[body.kind] : null;
+    if (!kind) return reply(400, { error: "bad kind" });
+    if (remove) {
+      if (typeof body.id !== "string" || !CONTENT_ID.test(body.id)) return reply(400, { error: "bad id" });
+      const f = path.join(root, kind.dir, `${body.id}.json`);
+      if (!inside(f)) return reply(400, { error: "bad path" });
+      await fs.rm(f, { force: true });
+      return reply(200, { ok: true });
+    }
+    const parsed = kind.schema.safeParse(body.data);
+    if (!parsed.success) return reply(400, { error: parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`) });
+    await writeAtomic(path.join(root, kind.dir, `${parsed.data.id}.json`), `${JSON.stringify(parsed.data, null, 2)}\n`);
+    reply(200, { ok: true });
+  }
+
+  /** Item manager groups: editor-only organisation, never shipped. */
+  async function saveItemGroups(req: IncomingMessage, res: ServerResponse): Promise<void> {
+    const reply = (status: number, body: unknown): void => {
+      res.statusCode = status;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify(body));
+    };
+    if (!LOOPBACK.has(req.socket.remoteAddress ?? "")) return reply(403, { error: "dev tools are local-only" });
+    let body: { groups?: unknown };
+    try {
+      body = JSON.parse(await readBody(req)) as { groups?: unknown };
+    } catch (e) {
+      return reply(400, { error: String(e) });
+    }
+    const groups = Array.isArray(body.groups) ? body.groups : null;
+    const valid =
+      groups &&
+      groups.length <= 500 &&
+      groups.every(
+        (g: { id?: unknown; name?: unknown; items?: unknown }) =>
+          typeof g.id === "string" && CONTENT_ID.test(g.id) &&
+          typeof g.name === "string" && g.name.length <= 40 &&
+          Array.isArray(g.items) && g.items.length <= 5000 && g.items.every((i) => typeof i === "string" && CONTENT_ID.test(i)),
+      );
+    if (!valid) return reply(400, { error: "bad groups" });
+    await writeAtomic(path.join(root, "dev", "item-groups.json"), `${JSON.stringify({ groups }, null, 1)}\n`);
+    reply(200, { ok: true });
+  }
+
   return {
     name: "levi-content",
     configResolved(c) {
       config = c;
+    },
+    // The F1/F2 editors rewrite items, NPCs and quests and update the running
+    // game themselves; don't let Vite reload the page (and lose editor state).
+    handleHotUpdate(ctx) {
+      const rel = path.relative(root, ctx.file);
+      const editorOwned = ["items", "dev", "npcs", "quests", "enemies"].some((d) => rel.startsWith(`${d}${path.sep}`));
+      if (!rel.startsWith("..") && editorOwned) return [];
+      return undefined;
     },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? "").split("?")[0] ?? "";
         if (req.method === "GET" && url.startsWith("/content/")) {
           serveContent(url, res).then((handled) => !handled && next(), next);
+          return;
+        }
+        if (req.method === "POST" && (url === "/__dev/save-content" || url === "/__dev/delete-content")) {
+          editContent(req, res, url === "/__dev/delete-content").catch((e: unknown) => {
+            res.statusCode = 500;
+            res.end(String(e));
+          });
+          return;
+        }
+        if (req.method === "POST" && url === "/__dev/save-item-groups") {
+          saveItemGroups(req, res).catch((e: unknown) => {
+            res.statusCode = 500;
+            res.end(String(e));
+          });
+          return;
+        }
+        if (req.method === "POST" && (url === "/__dev/save-item" || url === "/__dev/delete-item")) {
+          editItem(req, res, url === "/__dev/delete-item").catch((e: unknown) => {
+            res.statusCode = 500;
+            res.end(String(e));
+          });
           return;
         }
         if (req.method === "POST" && url === "/__dev/save-map") {

@@ -1,0 +1,29 @@
+{
+ "id": "rat",
+ "name": "Giant Rat",
+ "level": 2,
+ "model": "enemy-rodent",
+ "scale": 1.1,
+ "stats": {
+  "maxHp": 30,
+  "armour": 2,
+  "moveSpeed": 3.4
+ },
+ "aggroRange": 5,
+ "leashRange": 14,
+ "xp": 9,
+ "respawn": 20,
+ "attacks": [
+  {
+   "id": "bite",
+   "name": "Lunging Bite",
+   "shape": "line",
+   "range": 2.2,
+   "length": 2.6,
+   "width": 1.0,
+   "windup": 0.8,
+   "damage": 5,
+   "cooldown": 2.5
+  }
+ ]
+}

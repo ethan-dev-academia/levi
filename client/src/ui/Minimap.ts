@@ -68,7 +68,7 @@ export class Minimap {
 
     // North (-Z) marker riding the rim.
     const r = w / 2 - 12;
-    ctx.font = "bold 12px Cinzel, Georgia, serif";
+    ctx.font = "bold 12px Verdana, Geneva, Tahoma, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#c4a465";

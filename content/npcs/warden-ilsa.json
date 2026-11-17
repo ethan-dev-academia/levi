@@ -1,0 +1,36 @@
+{
+  "id": "warden-ilsa",
+  "name": "Warden Ilsa",
+  "title": "Warden of the Landing",
+  "palette": {
+    "skin": "#d9a582",
+    "hair": "#c9c5bd",
+    "top": "#2f4a6b",
+    "topTrim": "#243a55",
+    "belt": "#6b4528",
+    "legs": "#3b3f46",
+    "boots": "#2a211a"
+  },
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Keep your feet under you. The edge is closer than it looks.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

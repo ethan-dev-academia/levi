@@ -1,0 +1,39 @@
+{
+  "id": "librarian-1",
+  "name": "Rook",
+  "title": "Librarian",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c98e64",
+    "hair": "#5a5552",
+    "top": "#3a3f6b",
+    "topTrim": "#2a2e52",
+    "legs": "#2a2420",
+    "boots": "#2a211a",
+    "belt": "#6b4528"
+  },
+  "scale": 0.97,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Quietly, please.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

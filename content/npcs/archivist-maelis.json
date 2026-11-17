@@ -1,0 +1,39 @@
+{
+  "id": "archivist-maelis",
+  "name": "Archivist Maelis",
+  "title": "Keeper of the Archive",
+  "location": "Library",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d9a582",
+    "hair": "#e6e2d8",
+    "top": "#2a2e52",
+    "topTrim": "#d9b04a",
+    "legs": "#2a2e52",
+    "boots": "#2a2420",
+    "belt": "#3b2a1d"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Everything that happens on the Landing ends up in a book eventually. Even you.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

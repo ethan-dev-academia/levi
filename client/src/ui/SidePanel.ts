@@ -36,6 +36,7 @@ function icon(d: string): SVGSVGElement {
 /** Icon tab strip + single content pane. */
 export class SidePanel {
   private readonly buttons = new Map<string, HTMLButtonElement>();
+  private current: string | null = null;
 
   constructor(
     tabBar: HTMLElement,
@@ -59,12 +60,24 @@ export class SidePanel {
   open(id: string): void {
     const tab = this.tabs.find((t) => t.id === id);
     if (!tab) return;
+    this.current = id;
+    this.content.dataset["tab"] = id;
     for (const [tid, b] of this.buttons) b.classList.toggle("active", tid === id);
     this.content.replaceChildren();
     const h = document.createElement("h3");
     h.textContent = tab.title;
     this.content.appendChild(h);
     tab.render(this.content);
+  }
+
+  /** Redraw the open tab after state changes, keeping scroll position. */
+  refresh(): void {
+    if (!this.current) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLInputElement && this.content.contains(active)) return;
+    const scroll = this.content.scrollTop;
+    this.open(this.current);
+    this.content.scrollTop = scroll;
   }
 }
 

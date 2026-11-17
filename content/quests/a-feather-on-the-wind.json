@@ -1,0 +1,32 @@
+{
+  "id": "a-feather-on-the-wind",
+  "name": "A Feather on the Wind",
+  "category": "act",
+  "act": 0,
+  "summary": "",
+  "start": "",
+  "requirements": {
+    "quests": [],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "step-1",
+      "journal": "",
+      "objectives": [
+        {
+          "id": "todo",
+          "text": "To be written",
+          "kind": "trigger"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {},
+    "coins": 0,
+    "items": [],
+    "unlocks": []
+  }
+}

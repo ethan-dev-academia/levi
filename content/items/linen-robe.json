@@ -1,0 +1,15 @@
+{
+  "id": "linen-robe",
+  "name": "Linen Robe",
+  "kind": "armour",
+  "icon": "chest",
+  "color": "#e8e0c8",
+  "description": "Light cloth that does not dull the flow of light.",
+  "slot": "body",
+  "style": "mage",
+  "stats": {
+    "armour": 2,
+    "magicDamage": 2,
+    "manaRegen": 0.2
+  }
+}

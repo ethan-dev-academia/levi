@@ -1,0 +1,39 @@
+{
+  "id": "wren",
+  "name": "Wren",
+  "title": "Falcon's Apprentice",
+  "location": "Main town",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#a8742e",
+    "top": "#3f6b3a",
+    "topTrim": "#d9b04a",
+    "legs": "#4a3f35",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.94,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Falcon says I talk too much. I say he listens too little.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

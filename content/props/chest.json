@@ -1,0 +1,11 @@
+{
+  "id": "chest",
+  "name": "Chest",
+  "model": "prop-chest",
+  "solid": true,
+  "readable": false,
+  "category": "storage",
+  "container": {
+    "slots": 8
+  }
+}

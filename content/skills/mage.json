@@ -1,0 +1,318 @@
+{
+  "style": "mage",
+  "name": "Path of the Dawn",
+  "blurb": "Light given shape. Mages spend Mana and strike from range.",
+  "skills": [
+    {
+      "id": "mote-of-dawn",
+      "name": "Mote of Dawn",
+      "cost": 8,
+      "cooldown": 5,
+      "cast": {
+        "kind": "line",
+        "range": 11,
+        "width": 0.4,
+        "damage": 14,
+        "scaling": "magic",
+        "ratio": 0.8
+      },
+      "description": "Hold to aim, release to loose a bolt of light in a straight line. It strikes the first enemy in its path.",
+      "lore": "The first light anyone learns to hold.",
+      "tier": 1
+    },
+    {
+      "id": "lance-of-morning",
+      "name": "Lance of Morning",
+      "cost": 12,
+      "cooldown": 8,
+      "cast": {
+        "kind": "line",
+        "range": 14,
+        "width": 0.9,
+        "damage": 26,
+        "scaling": "magic",
+        "ratio": 1.1,
+        "pierce": true
+      },
+      "description": "A heavier lance of light that pierces every enemy in a long straight line.",
+      "lore": "Dawn does not curve.",
+      "tier": 2,
+      "requires": []
+    },
+    {
+      "id": "censer-spark",
+      "name": "Censer Spark",
+      "cost": 12,
+      "cooldown": 6,
+      "cast": {
+        "kind": "multi",
+        "range": 8,
+        "count": 3,
+        "damage": 9,
+        "scaling": "magic",
+        "ratio": 0.5
+      },
+      "description": "A spark that leaps between up to 3 nearby enemies.",
+      "lore": "",
+      "tier": 2,
+      "requires": []
+    },
+    {
+      "id": "aegis-of-vespers",
+      "name": "Aegis of Vespers",
+      "cost": 20,
+      "cooldown": 14,
+      "cast": {
+        "kind": "shield",
+        "amount": 40,
+        "duration": 4
+      },
+      "description": "A small ward that absorbs damage for a few seconds.",
+      "lore": "Evening prayers, worn like armour.",
+      "tier": 3,
+      "requires": []
+    },
+    {
+      "id": "votive-ward",
+      "name": "Votive Ward",
+      "cost": 18,
+      "cooldown": 12,
+      "cast": {
+        "kind": "shield",
+        "amount": 25,
+        "duration": 5
+      },
+      "description": "A lighter ward; whatever it doesn't absorb returns as healing when it fades.",
+      "lore": "",
+      "tier": 3,
+      "requires": []
+    },
+    {
+      "id": "choirs-fan",
+      "name": "Choir's Fan",
+      "cost": 22,
+      "cooldown": 8,
+      "cast": {
+        "kind": "cone",
+        "range": 5,
+        "angle": 35,
+        "damage": 24,
+        "scaling": "magic",
+        "ratio": 1.0
+      },
+      "description": "A fan of light right in front of you.",
+      "lore": "Many voices, one note.",
+      "tier": 5,
+      "requires": []
+    },
+    {
+      "id": "sunwell",
+      "name": "Sunwell",
+      "cost": 24,
+      "cooldown": 10,
+      "cast": {
+        "kind": "circle",
+        "range": 9,
+        "radius": 2.5,
+        "damage": 8,
+        "count": 4,
+        "duration": 3,
+        "scaling": "magic",
+        "ratio": 0.4
+      },
+      "description": "Opens a pool of light at a point that pulses damage for 3 seconds.",
+      "lore": "",
+      "tier": 5,
+      "requires": []
+    },
+    {
+      "id": "seraph-step",
+      "name": "Seraph Step",
+      "cost": 25,
+      "cooldown": 14,
+      "cast": {
+        "kind": "dash",
+        "range": 6
+      },
+      "description": "Blink a short distance toward the cursor.",
+      "lore": "Wings you only feel, never see.",
+      "tier": 10,
+      "requires": []
+    },
+    {
+      "id": "gilded-glide",
+      "name": "Gilded Glide",
+      "cost": 20,
+      "cooldown": 12,
+      "cast": {
+        "kind": "dash",
+        "range": 4.5,
+        "duration": 2
+      },
+      "description": "Glide forward, leaving a trail of light that slows enemies.",
+      "lore": "",
+      "tier": 10,
+      "requires": []
+    },
+    {
+      "id": "pillar-of-matins",
+      "name": "Pillar of Matins",
+      "cost": 35,
+      "cooldown": 16,
+      "cast": {
+        "kind": "circle",
+        "range": 10,
+        "radius": 2,
+        "damage": 55,
+        "duration": 1,
+        "scaling": "magic",
+        "ratio": 1.4
+      },
+      "description": "After a short delay a column of light strikes the target area.",
+      "lore": "",
+      "tier": 20,
+      "requires": []
+    },
+    {
+      "id": "halo-bind",
+      "name": "Halo Bind",
+      "cost": 30,
+      "cooldown": 16,
+      "cast": {
+        "kind": "line",
+        "range": 10,
+        "width": 0.4,
+        "damage": 12,
+        "duration": 1.5,
+        "scaling": "magic",
+        "ratio": 0.5
+      },
+      "description": "A ring of light that roots the first enemy hit.",
+      "lore": "",
+      "tier": 20,
+      "requires": []
+    },
+    {
+      "id": "beacon-of-saints",
+      "name": "Beacon of Saints",
+      "cost": 40,
+      "cooldown": 30,
+      "cast": {
+        "kind": "buff",
+        "amount": 20,
+        "duration": 8
+      },
+      "description": "For 8 seconds your magic damage is increased by 20%.",
+      "lore": "",
+      "tier": 30,
+      "requires": []
+    },
+    {
+      "id": "reliquary-orbs",
+      "name": "Reliquary Orbs",
+      "cost": 35,
+      "cooldown": 20,
+      "cast": {
+        "kind": "aura",
+        "radius": 2,
+        "count": 3,
+        "damage": 10,
+        "duration": 6,
+        "scaling": "magic",
+        "ratio": 0.4
+      },
+      "description": "Three orbs circle you, striking enemies they touch.",
+      "lore": "",
+      "tier": 30,
+      "requires": []
+    },
+    {
+      "id": "judgement-ray",
+      "name": "Judgement Ray",
+      "cost": 50,
+      "cooldown": 22,
+      "cast": {
+        "kind": "charge",
+        "range": 16,
+        "width": 1.2,
+        "damage": 90,
+        "duration": 1.2,
+        "scaling": "magic",
+        "ratio": 2.0
+      },
+      "description": "Charge, then release a long beam that pierces every enemy in a line.",
+      "lore": "Light that has made up its mind.",
+      "tier": 40,
+      "requires": []
+    },
+    {
+      "id": "sanctum",
+      "name": "Sanctum",
+      "cost": 45,
+      "cooldown": 28,
+      "cast": {
+        "kind": "aura",
+        "radius": 3.5,
+        "amount": 30,
+        "duration": 5
+      },
+      "description": "Consecrate the ground around you: you take 30% less damage while inside.",
+      "lore": "",
+      "tier": 40,
+      "requires": []
+    },
+    {
+      "id": "dawnbreak",
+      "name": "Dawnbreak",
+      "cost": 80,
+      "cooldown": 60,
+      "cast": {
+        "kind": "circle",
+        "range": 12,
+        "radius": 5,
+        "damage": 160,
+        "duration": 1.5,
+        "scaling": "magic",
+        "ratio": 3.0
+      },
+      "description": "Call the sunrise down on an area. Enormous damage after a brief delay.",
+      "lore": "",
+      "tier": 50,
+      "requires": []
+    },
+    {
+      "id": "ascension",
+      "name": "Ascension",
+      "cost": 70,
+      "cooldown": 75,
+      "cast": {
+        "kind": "buff",
+        "amount": 35,
+        "duration": 10
+      },
+      "description": "Become radiant for 10 seconds: +35% magic damage and faster cooldowns.",
+      "lore": "",
+      "tier": 50,
+      "requires": []
+    }
+  ],
+  "secrets": [
+    {
+      "id": "sunfall-verdict",
+      "name": "Sunfall Verdict",
+      "cost": 90,
+      "cooldown": 120,
+      "cast": {
+        "kind": "circle",
+        "range": 12,
+        "radius": 6,
+        "damage": 320,
+        "duration": 1.5,
+        "scaling": "magic",
+        "ratio": 4.0
+      },
+      "description": "Call the full weight of the dawn down on a wide area. Devastating, and slow to return.",
+      "lore": "Only those who have looked the dark in the eye are taught this."
+    }
+  ]
+}

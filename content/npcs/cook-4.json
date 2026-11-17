@@ -1,0 +1,39 @@
+{
+  "id": "cook-4",
+  "name": "Quill",
+  "title": "Cook",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#f1c9a5",
+    "hair": "#6b3f22",
+    "top": "#f0e6d0",
+    "topTrim": "#b04a32",
+    "legs": "#5a3c22",
+    "boots": "#3b2a1d",
+    "belt": "#6b4528"
+  },
+  "scale": 1.02,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Hungry? Everyone's hungry.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

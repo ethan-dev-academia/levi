@@ -1,0 +1,39 @@
+{
+  "id": "mother-hesk",
+  "name": "Mother Hesk",
+  "title": "Keeper of The Perch",
+  "location": "The Perch (inn)",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c8916b",
+    "hair": "#9a958c",
+    "top": "#8e3a32",
+    "topTrim": "#e8e0c8",
+    "legs": "#5a4a3a",
+    "boots": "#33261a",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Welcome to The Perch, dear. Highest inn in the world, lowest prices on the Landing.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

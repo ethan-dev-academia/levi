@@ -1,0 +1,8 @@
+{
+  "id": "darkshard",
+  "name": "Darkshard",
+  "kind": "material",
+  "icon": "gem",
+  "color": "#5a3a7a",
+  "description": "A splinter of hardened shadow. Cold, and somehow heavy."
+}

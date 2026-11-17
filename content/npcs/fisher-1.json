@@ -1,0 +1,39 @@
+{
+  "id": "fisher-1",
+  "name": "Gwen",
+  "title": "Fisher",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#a06e4a",
+    "hair": "#e6e2d8",
+    "top": "#3f6b7a",
+    "topTrim": "#2f5260",
+    "legs": "#4e5866",
+    "boots": "#2a211a",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.97,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "You fish off the edge. Long line. Very long.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "merchant-2",
+  "name": "Pell",
+  "title": "Merchant",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#b9835f",
+    "hair": "#e6e2d8",
+    "top": "#2f6b5a",
+    "topTrim": "#d9b04a",
+    "legs": "#3b2a1d",
+    "boots": "#4a3220",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.01,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Everything has a price. Even you.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

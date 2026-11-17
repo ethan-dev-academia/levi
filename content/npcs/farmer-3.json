@@ -1,0 +1,39 @@
+{
+  "id": "farmer-3",
+  "name": "Zett",
+  "title": "Farmer",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#6e4630",
+    "hair": "#5a5552",
+    "top": "#7a8a3a",
+    "topTrim": "#5a6a2a",
+    "legs": "#5a4a3a",
+    "boots": "#2e221a",
+    "belt": "#6b4528"
+  },
+  "scale": 0.91,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Carrots don't grow themselves. More's the pity.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "hunters-quiver",
+  "name": "Hunter's Quiver",
+  "kind": "armour",
+  "icon": "arrow",
+  "color": "#6b4a32",
+  "description": "Keeps arrows dry and close at hand.",
+  "slot": "offhand",
+  "style": "ranger",
+  "stats": {
+    "attackDamage": 2,
+    "critChance": 2
+  }
+}

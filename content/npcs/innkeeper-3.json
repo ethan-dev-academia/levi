@@ -1,0 +1,39 @@
+{
+  "id": "innkeeper-3",
+  "name": "Sorrel",
+  "title": "Innkeeper",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#f1c9a5",
+    "hair": "#6b3f22",
+    "top": "#8e3a32",
+    "topTrim": "#e8e0c8",
+    "legs": "#4a3220",
+    "boots": "#2a211a",
+    "belt": "#6b4528"
+  },
+  "scale": 0.98,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Sit anywhere. Not there. Anywhere else.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

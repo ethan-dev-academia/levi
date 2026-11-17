@@ -1,0 +1,54 @@
+{
+ "groups": [
+  {
+   "id": "group-1",
+   "name": "Legacy",
+   "items": [
+    "acolyte-dirk",
+    "acolyte-wand",
+    "dawnwood-staff",
+    "watch-flintlock",
+    "oathbound-shortsword",
+    "pilgrim-shortbow",
+    "dawnstone-orb",
+    "hunters-quiver",
+    "iron-cuirass",
+    "iron-greaves",
+    "iron-helm",
+    "iron-sabatons",
+    "leather-boots",
+    "leather-cap",
+    "leather-chaps",
+    "leather-jerkin",
+    "linen-hood",
+    "linen-leggings",
+    "linen-robe",
+    "linen-slippers",
+    "oak-buckler",
+    "travellers-boots",
+    "talisman-clarity",
+    "talisman-mending",
+    "talisman-vigor",
+    "talisman-zeal",
+    "bread-loaf",
+    "dawn-draught",
+    "grilled-trout",
+    "vigor-tonic",
+    "copper-ore",
+    "darkshard",
+    "oak-log",
+    "raw-trout",
+    "silverleaf",
+    "wooden-arrows",
+    "almanac-of-seasons",
+    "tome-of-valor",
+    "weathered-letter"
+   ]
+  },
+  {
+   "id": "group-2",
+   "name": "Quest Items",
+   "items": []
+  }
+ ]
+}

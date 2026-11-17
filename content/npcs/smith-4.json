@@ -1,0 +1,39 @@
+{
+  "id": "smith-4",
+  "name": "Una",
+  "title": "Smith",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c98e64",
+    "hair": "#4a2f1d",
+    "top": "#6b5a48",
+    "topTrim": "#4a3e30",
+    "legs": "#3b2a1d",
+    "boots": "#2a211a",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.01,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Mind the sparks.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

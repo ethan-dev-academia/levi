@@ -1,0 +1,12 @@
+{
+  "id": "vigor-tonic",
+  "name": "Vigor Tonic",
+  "kind": "consumable",
+  "icon": "potion",
+  "color": "#f0c040",
+  "description": "Bitter and fizzing. Restores energy.",
+  "use": {
+    "kind": "restore",
+    "energy": 40
+  }
+}

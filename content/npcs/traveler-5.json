@@ -1,0 +1,39 @@
+{
+  "id": "traveler-5",
+  "name": "Mara",
+  "title": "Traveler",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#b9835f",
+    "hair": "#4a2f1d",
+    "top": "#3f5a4a",
+    "topTrim": "#2f4438",
+    "legs": "#4a3f35",
+    "boots": "#2a211a",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.03,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Just passing through. Lovely view.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

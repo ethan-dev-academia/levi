@@ -1,0 +1,14 @@
+{
+  "id": "oathbound-shortsword",
+  "name": "Oathbound Shortsword",
+  "kind": "weapon",
+  "icon": "sword",
+  "color": "#d0d4da",
+  "description": "A plain blade with a vow etched near the guard.",
+  "slot": "weapon",
+  "weaponType": "sword",
+  "stats": {
+    "attackDamage": 8,
+    "armour": 2
+  }
+}

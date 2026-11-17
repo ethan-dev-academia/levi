@@ -1,0 +1,15 @@
+{
+  "id": "leather-boots",
+  "name": "Leather Boots",
+  "kind": "armour",
+  "icon": "boots",
+  "color": "#9a6a42",
+  "description": "Supple hide, cut for drawing a bow.",
+  "slot": "feet",
+  "style": "ranger",
+  "stats": {
+    "armour": 2,
+    "attackDamage": 1,
+    "energyRegen": 0.3
+  }
+}

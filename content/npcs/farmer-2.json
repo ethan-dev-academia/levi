@@ -1,0 +1,39 @@
+{
+  "id": "farmer-2",
+  "name": "Tam",
+  "title": "Farmer",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#f1c9a5",
+    "hair": "#2b2420",
+    "top": "#a8742e",
+    "topTrim": "#7e5420",
+    "legs": "#4e5866",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.92,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "The wind took my hat again.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

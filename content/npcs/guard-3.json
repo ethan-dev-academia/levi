@@ -1,0 +1,39 @@
+{
+  "id": "guard-3",
+  "name": "Orrin",
+  "title": "Guard",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d9a582",
+    "hair": "#6b3f22",
+    "top": "#8e2a2a",
+    "topTrim": "#c9ccd4",
+    "legs": "#2a211a",
+    "boots": "#2e221a",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.94,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "Move along, citizen.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

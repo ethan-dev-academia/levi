@@ -94,11 +94,71 @@ export const BuildingSchema = z
     }
   });
 
-/** content/maps/<id>/buildings.json: structures plus placed props. */
+/** An NPC standing in the world (its look and dialogue live in content/npcs). */
+export const NpcSpawnSchema = z.object({
+  id: z.string().regex(CONTENT_ID).max(64),
+  npc: z.string().regex(CONTENT_ID).max(64),
+  x: cell,
+  z: cell,
+  /** Quarter turns from facing +Z, like props. */
+  rot: z.number().int().min(0).max(3).default(0),
+  storey: z.number().int().min(0).max(7).default(0),
+  building: z.string().regex(CONTENT_ID).max(64).optional(),
+  /**
+   * How they move: stand still, wander within `radius` cells of their spot
+   * (1 = the 3×3 around it), or walk a `route` of cells (looping). Pauses
+   * between moves are random.
+   */
+  wander: z.enum(["none", "area", "route"]).default("none"),
+  radius: z.number().int().min(1).max(6).default(1),
+  route: z.array(z.tuple([cell, cell])).max(24).default([]),
+});
+
+/** An enemy's home spot; it roams like an NPC and respawns here. */
+export const EnemySpawnSchema = z.object({
+  id: z.string().regex(CONTENT_ID).max(64),
+  enemy: z.string().regex(CONTENT_ID).max(64),
+  x: cell,
+  z: cell,
+  rot: z.number().int().min(0).max(3).default(0),
+  storey: z.number().int().min(0).max(7).default(0),
+  wander: z.enum(["none", "area", "route"]).default("area"),
+  radius: z.number().int().min(1).max(8).default(2),
+  route: z.array(z.tuple([cell, cell])).max(24).default([]),
+});
+
+/**
+ * A spawn zone: a painted set of cells where a mix of enemies lives. Each
+ * one appears on a random cell of the zone, roams the whole zone, and
+ * respawns somewhere random in it.
+ */
+export const SpawnZoneSchema = z.object({
+  id: z.string().regex(CONTENT_ID).max(64),
+  name: z.string().min(1).max(40),
+  cells: z.array(z.tuple([cell, cell])).max(16384).default([]),
+  mobs: z.array(z.object({ enemy: z.string().regex(CONTENT_ID).max(64), count: z.number().int().min(1).max(50) })).max(12).default([]),
+});
+
+/** An item lying on the ground; each player can pick up their own copy once. */
+export const GroundItemSchema = z.object({
+  id: z.string().regex(CONTENT_ID).max(64),
+  item: z.string().regex(CONTENT_ID).max(64),
+  qty: z.number().int().min(1).max(10).default(1),
+  x: cell,
+  z: cell,
+  storey: z.number().int().min(0).max(7).default(0),
+  building: z.string().regex(CONTENT_ID).max(64).optional(),
+});
+
+/** content/maps/<id>/buildings.json: structures, props, NPCs and ground items. */
 export const BuildingsFileSchema = z
   .object({
     buildings: z.array(BuildingSchema).max(4096),
     props: z.array(PropInstanceSchema).max(65536).default([]),
+    npcs: z.array(NpcSpawnSchema).max(4096).default([]),
+    groundItems: z.array(GroundItemSchema).max(65536).default([]),
+    enemies: z.array(EnemySpawnSchema).max(65536).default([]),
+    zones: z.array(SpawnZoneSchema).max(512).default([]),
   })
   .superRefine((f, ctx) => {
     const ids = new Set<string>();
@@ -122,3 +182,7 @@ export type Stair = z.infer<typeof StairSchema>;
 export type Roof = z.infer<typeof RoofSchema>;
 export type Building = z.infer<typeof BuildingSchema>;
 export type BuildingsFile = z.infer<typeof BuildingsFileSchema>;
+export type NpcSpawn = z.infer<typeof NpcSpawnSchema>;
+export type GroundItem = z.infer<typeof GroundItemSchema>;
+export type EnemySpawn = z.infer<typeof EnemySpawnSchema>;
+export type SpawnZone = z.infer<typeof SpawnZoneSchema>;

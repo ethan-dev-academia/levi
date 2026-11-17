@@ -1,0 +1,39 @@
+{
+  "id": "smith-3",
+  "name": "Isolde",
+  "title": "Smith",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b58e",
+    "hair": "#2b2420",
+    "top": "#5a4a3a",
+    "topTrim": "#3e3226",
+    "legs": "#4a3220",
+    "boots": "#3b2a1d",
+    "belt": "#3b2a1d"
+  },
+  "scale": 0.98,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "If it's dented, I can fix it. Mostly.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

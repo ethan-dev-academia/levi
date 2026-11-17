@@ -1,0 +1,39 @@
+{
+  "id": "guard-5",
+  "name": "Willa",
+  "title": "Guard",
+  "location": "",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d9a582",
+    "hair": "#5a5552",
+    "top": "#8e2a2a",
+    "topTrim": "#c9ccd4",
+    "legs": "#2a211a",
+    "boots": "#2e221a",
+    "belt": "#5a3c22"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "All quiet. For now.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  ]
+}

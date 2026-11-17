@@ -1,0 +1,34 @@
+{
+  "id": "path-of-the-arrow",
+  "name": "Path of the Arrow",
+  "category": "act",
+  "act": 0,
+  "summary": "You must reach them from afar. Hit them from afar and learn the art of the ranger from Falcon.",
+  "start": "",
+  "requirements": {
+    "quests": [
+      "what-dims-below"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "step-1",
+      "journal": "What the player writes in their journal.",
+      "objectives": [
+        {
+          "id": "talk-1",
+          "text": "Do the thing",
+          "kind": "trigger"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {},
+    "coins": 0,
+    "items": [],
+    "unlocks": []
+  }
+}
