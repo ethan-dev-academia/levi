@@ -1,0 +1,51 @@
+{
+  "id": "the-first-emperor",
+  "name": "The First Emperor",
+  "category": "act",
+  "act": 0,
+  "summary": "",
+  "start": "Falcon, on the mountain",
+  "requirements": {
+    "quests": [
+      "falcons-secret"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "crash",
+      "journal": "Something fell out of the sky and hit the island like a hammer. Falcon went pale and said a single name: Alpha.",
+      "objectives": [
+        {
+          "id": "alpha-named",
+          "text": "See what fell from the sky",
+          "kind": "talk",
+          "npc": "falcon-overlook",
+          "node": "alpha-arrives"
+        }
+      ]
+    },
+    {
+      "id": "face",
+      "journal": "Alpha, one of the seven Emperors. Small enough to be mistaken for a child, until you feel the air around him. Falcon told me to stand behind him.",
+      "objectives": [
+        {
+          "id": "alpha-face",
+          "text": "Face Alpha",
+          "kind": "trigger"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 35
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "falcon-overlook"
+}

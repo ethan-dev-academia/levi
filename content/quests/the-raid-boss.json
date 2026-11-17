@@ -1,0 +1,59 @@
+{
+  "id": "the-raid-boss",
+  "name": "The Raid Boss",
+  "category": "act",
+  "act": 1,
+  "summary": "Before you leave the catacombs, there is one final enemy standing in your way.",
+  "start": "Continues in the catacombs",
+  "requirements": {
+    "quests": [
+      "the-catacombs"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "boss",
+      "journal": "The way out runs through a great hall. Someone in armour is guarding it, wearing a seal I've seen on the Cathedral doors.",
+      "objectives": [
+        {
+          "id": "trajan",
+          "text": "Defeat Trajan, Servant of the Emperor",
+          "kind": "defeat",
+          "enemy": "trajan",
+          "qty": 1,
+          "boss": true
+        }
+      ]
+    },
+    {
+      "id": "after",
+      "journal": "Trajan fell. Before he died he said the Emperor would be pleased. Pleased with what?",
+      "objectives": [
+        {
+          "id": "drali-trajan",
+          "text": "Tell Drali what Trajan said",
+          "kind": "talk",
+          "npc": "drali",
+          "node": "trajan"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 90
+    },
+    "coins": 200,
+    "items": [
+      {
+        "item": "talisman-zeal",
+        "qty": 1
+      }
+    ],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "drali"
+}

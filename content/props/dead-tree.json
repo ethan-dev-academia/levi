@@ -1,0 +1,10 @@
+{
+  "id": "dead-tree",
+  "name": "Dead Tree",
+  "model": "nature-dead-tree",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 1.4
+}

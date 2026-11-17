@@ -4,5 +4,6 @@
   "kind": "ammo",
   "icon": "arrow",
   "color": "#a07a4a",
-  "description": "Fletched with gull feathers."
+  "description": "Fletched with gull feathers.",
+  "rarity": "common"
 }

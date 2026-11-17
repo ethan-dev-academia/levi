@@ -1,0 +1,75 @@
+{
+  "id": "eta",
+  "name": "Eta",
+  "level": 10,
+  "model": "humanoid",
+  "scale": 0.8,
+  "palette": {
+    "skin": "#d8b8a0",
+    "hair": "#141418",
+    "top": "#1a1a22",
+    "topTrim": "#7a6ad0",
+    "legs": "#16161c",
+    "boots": "#0e0e12",
+    "belt": "#2a1a20"
+  },
+  "stats": {
+    "maxHp": 1400,
+    "armour": 18,
+    "moveSpeed": 3.8
+  },
+  "aggroRange": 12,
+  "leashRange": 24,
+  "xp": 600,
+  "respawn": 600,
+  "attacks": [
+    {
+      "id": "eta-blades",
+      "name": "Twin Blades",
+      "shape": "cone",
+      "tracking": "auto",
+      "range": 2.2,
+      "length": 2.8,
+      "angle": 55,
+      "windup": 0.8,
+      "damage": 18,
+      "cooldown": 2.5
+    },
+    {
+      "id": "eta-volley",
+      "name": "Piercing Volley",
+      "shape": "line",
+      "tracking": "auto",
+      "range": 12,
+      "length": 14,
+      "width": 1.4,
+      "windup": 1.1,
+      "damage": 22,
+      "cooldown": 5
+    },
+    {
+      "id": "eta-sigil",
+      "name": "Starfall Sigil",
+      "shape": "circle",
+      "tracking": "auto",
+      "anchor": "target",
+      "range": 12,
+      "radius": 2.8,
+      "windup": 1.5,
+      "damage": 28,
+      "cooldown": 6
+    },
+    {
+      "id": "eta-nova",
+      "name": "Collapse",
+      "shape": "circle",
+      "tracking": "auto",
+      "anchor": "self",
+      "range": 3,
+      "radius": 5,
+      "windup": 2.0,
+      "damage": 36,
+      "cooldown": 12
+    }
+  ]
+}

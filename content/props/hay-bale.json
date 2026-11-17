@@ -1,0 +1,8 @@
+{
+  "id": "hay-bale",
+  "name": "Hay Bale",
+  "model": "prop-hay-bale",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

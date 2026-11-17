@@ -1,0 +1,82 @@
+{
+  "id": "the-forest-witch",
+  "name": "The Forest Witch",
+  "category": "world",
+  "act": 1,
+  "summary": "There is a mysterious being responsible for the disappearance of the farmers.",
+  "start": "Drali, in the southern forest",
+  "requirements": {
+    "quests": [
+      "the-outback"
+    ],
+    "skills": {},
+    "flags": [],
+    "adventureLevel": 8
+  },
+  "steps": [
+    {
+      "id": "signs",
+      "journal": "Drali says farmers have been vanishing from the edge of the forest. He found tracks that weren't quite human.",
+      "objectives": [
+        {
+          "id": "witch-thralls",
+          "text": "Fight off the creatures in the woods",
+          "kind": "defeat",
+          "enemy": "pig",
+          "qty": 4,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "witch",
+      "journal": "The trail ends at a hut of bones and branches. Something is waiting inside.",
+      "objectives": [
+        {
+          "id": "witch",
+          "text": "Defeat the Forest Witch",
+          "kind": "defeat",
+          "enemy": "forest-witch",
+          "qty": 1,
+          "boss": true
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "journal": "She's gone. The missing farmers are free and dazed, but alive. Something fell from her robes.",
+      "objectives": [
+        {
+          "id": "scroll",
+          "text": "Search the witch's hut",
+          "kind": "pickup",
+          "item": "witch-scroll",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "A scroll, with a map of tunnels and a stairway beneath the town. Drali needs to see this.",
+      "objectives": [
+        {
+          "id": "drali-witch",
+          "text": "Show Drali the scroll",
+          "kind": "talk",
+          "npc": "drali",
+          "node": "witch-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 70
+    },
+    "coins": 100,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "drali"
+}

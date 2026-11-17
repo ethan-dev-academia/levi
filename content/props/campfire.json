@@ -1,0 +1,8 @@
+{
+  "id": "campfire",
+  "name": "Campfire",
+  "model": "prop-campfire",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

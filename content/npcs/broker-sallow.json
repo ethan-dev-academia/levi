@@ -1,0 +1,75 @@
+{
+  "id": "broker-sallow",
+  "name": "Broker Sallow",
+  "title": "Master of the Auction Stalls",
+  "location": "Argon bazaar",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d8a880",
+    "hair": "#1a1410",
+    "top": "#7a2a3a",
+    "topTrim": "#d9b04a",
+    "legs": "#3a1a22",
+    "boots": "#1a1010",
+    "belt": "#d9b04a"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "meet",
+      "label": "The Bazaar: broker",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-bazaar",
+          "step": "broker"
+        }
+      ],
+      "start": "meet"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "bs-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "meet",
+      "speaker": "npc",
+      "text": "A new face! Welcome to the auction stalls of Argon.",
+      "next": "meet-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "meet-2",
+      "speaker": "npc",
+      "text": "Here, anyone can sell to anyone. Name your price, and let the bazaar decide what it's worth.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "bs-hello",
+      "speaker": "npc",
+      "text": "Buying or selling? Everything has a price.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    }
+  ]
+}

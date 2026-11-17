@@ -1,0 +1,10 @@
+{
+  "id": "boulder",
+  "name": "Boulder",
+  "model": "nature-boulder",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 0.9
+}

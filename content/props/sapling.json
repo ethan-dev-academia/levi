@@ -1,0 +1,10 @@
+{
+  "id": "sapling",
+  "name": "Young Tree",
+  "model": "nature-sapling",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 1.1
+}

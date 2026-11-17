@@ -1,0 +1,10 @@
+{
+  "id": "pine",
+  "name": "Pine",
+  "model": "nature-pine",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 1.9
+}

@@ -16,6 +16,98 @@
   "scale": 1.0,
   "entries": [
     {
+      "id": "the-world-around-us-offer",
+      "label": "Offer: the-world-around-us",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-world-around-us",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-light",
+          "status": "done"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-sword",
+          "status": "done"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-arrow",
+          "status": "done"
+        }
+      ],
+      "start": "the-world-around-us-o0"
+    },
+    {
+      "id": "world-lesson",
+      "label": "The World Around Us: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-world-around-us",
+          "step": "visit"
+        }
+      ],
+      "start": "world-lesson"
+    },
+    {
+      "id": "world-wait",
+      "label": "The World Around Us: waiting",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-world-around-us",
+          "step": "errand"
+        }
+      ],
+      "start": "world-w"
+    },
+    {
+      "id": "world-done",
+      "label": "The World Around Us: return",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-world-around-us",
+          "step": "return"
+        }
+      ],
+      "start": "world-done"
+    },
+    {
+      "id": "librarians-letter-offer",
+      "label": "Offer: librarians-letter",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "librarians-letter",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-world-around-us",
+          "status": "done"
+        }
+      ],
+      "start": "librarians-letter-o0"
+    },
+    {
+      "id": "letter-thanks",
+      "label": "Librarian's Letter: return",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "librarians-letter",
+          "step": "return"
+        }
+      ],
+      "start": "letter-thanks"
+    },
+    {
       "id": "default",
       "label": "Default",
       "when": [],
@@ -24,6 +116,198 @@
   ],
   "nodes": [
     {
+      "id": "the-world-around-us-o0",
+      "speaker": "npc",
+      "text": "Ah, Falcon's newest student. He sends them all to me eventually.",
+      "next": "the-world-around-us-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-world-around-us-o1",
+      "speaker": "npc",
+      "text": "Shall I tell you how this world really works?",
+      "next": null,
+      "options": [
+        {
+          "text": "Please.",
+          "next": "the-world-around-us-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-world-around-us"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "the-world-around-us-ok",
+      "speaker": "npc",
+      "text": "Then sit, and listen.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 300
+      }
+    },
+    {
+      "id": "world-lesson",
+      "speaker": "npc",
+      "text": "Falcon sent you? Then you've learned to hit things. Excellent. Now learn everything else.",
+      "next": "world-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "world-2",
+      "speaker": "npc",
+      "text": "An adventurer grows by walking the world: helping its people, finding its secrets, reading its signs. That is your Adventuring, and nothing else counts toward it.",
+      "next": "world-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "world-3",
+      "speaker": "npc",
+      "text": "Start with people. Go and speak with Mother Hesk at The Perch. Nobody on this island knows more gossip.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 300
+      }
+    },
+    {
+      "id": "world-w",
+      "speaker": "npc",
+      "text": "Mother Hesk, at The Perch. Go on.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "world-done",
+      "speaker": "npc",
+      "text": "She told you about the Cathedrals? She tells everyone. But she's right about one thing: there's one in every town, and every one of them belongs to the Benefactor.",
+      "next": "world-d2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "world-d2",
+      "speaker": "npc",
+      "text": "Keep listening like that and you'll do well out there. Now, Falcon was asking after you. He's back at the stone circle, and he had that look he gets.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 150
+      }
+    },
+    {
+      "id": "librarians-letter-o0",
+      "speaker": "npc",
+      "text": "One more thing, if you're heading out with Falcon. I've lost a letter. It must have blown out of the window.",
+      "next": "librarians-letter-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    },
+    {
+      "id": "librarians-letter-o1",
+      "speaker": "npc",
+      "text": "If you find it on your travels, I'd be grateful. And I'd rather nobody else read it.",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll keep an eye out.",
+          "next": "librarians-letter-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "librarians-letter"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 150
+      }
+    },
+    {
+      "id": "librarians-letter-ok",
+      "speaker": "npc",
+      "text": "Thank you. The seal will tell me if anyone's opened it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 300
+      }
+    },
+    {
+      "id": "letter-thanks",
+      "speaker": "npc",
+      "text": "My letter! Seal intact, too. You're more trustworthy than most who come through here.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 0
+      }
+    },
+    {
       "id": "hello",
       "speaker": "npc",
       "text": "Everything that happens on the Landing ends up in a book eventually. Even you.",
@@ -31,7 +315,7 @@
       "options": [],
       "effects": [],
       "pos": {
-        "x": 0,
+        "x": 1680,
         "y": 0
       }
     }

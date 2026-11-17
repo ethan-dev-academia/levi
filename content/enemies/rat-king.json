@@ -1,0 +1,58 @@
+{
+  "id": "rat-king",
+  "name": "The Rat King",
+  "level": 7,
+  "model": "enemy-rodent",
+  "scale": 2.2,
+  "palette": {
+    "fur": "#4a3a30",
+    "belly": "#7a6a5a"
+  },
+  "stats": {
+    "maxHp": 260,
+    "armour": 8,
+    "moveSpeed": 3.0
+  },
+  "aggroRange": 7,
+  "leashRange": 14,
+  "xp": 120,
+  "respawn": 120,
+  "attacks": [
+    {
+      "id": "gnash",
+      "name": "Gnash",
+      "shape": "line",
+      "tracking": "auto",
+      "range": 3,
+      "length": 3.5,
+      "width": 1.6,
+      "windup": 0.9,
+      "damage": 12,
+      "cooldown": 3
+    },
+    {
+      "id": "tail-sweep",
+      "name": "Tail Sweep",
+      "shape": "circle",
+      "tracking": "auto",
+      "anchor": "self",
+      "range": 2.5,
+      "radius": 2.8,
+      "windup": 1.2,
+      "damage": 14,
+      "cooldown": 5
+    },
+    {
+      "id": "plague-spit",
+      "name": "Plague Spit",
+      "shape": "circle",
+      "tracking": "auto",
+      "anchor": "target",
+      "range": 9,
+      "radius": 1.8,
+      "windup": 1.4,
+      "damage": 10,
+      "cooldown": 6
+    }
+  ]
+}

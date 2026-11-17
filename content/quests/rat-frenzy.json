@@ -1,0 +1,55 @@
+{
+  "id": "rat-frenzy",
+  "name": "Rat Frenzy",
+  "category": "world",
+  "act": 1,
+  "summary": "That is a whole lot of rats.",
+  "start": "Foreman Grell, at the mines",
+  "requirements": {
+    "quests": [
+      "rat-problem",
+      "deeper-in-the-mines"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "frenzy",
+      "journal": "The rats have gone mad, pouring out of every crack at once. Something is driving them.",
+      "objectives": [
+        {
+          "id": "frenzy-rats",
+          "text": "Defeat the frenzied rats",
+          "kind": "defeat",
+          "enemy": "rat",
+          "qty": 15,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "They fled back down the tunnels, toward something large.",
+      "objectives": [
+        {
+          "id": "grell-frenzy",
+          "text": "Report to Foreman Grell",
+          "kind": "talk",
+          "npc": "foreman-grell",
+          "node": "frenzy-report"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 40
+    },
+    "coins": 60,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "foreman-grell"
+}

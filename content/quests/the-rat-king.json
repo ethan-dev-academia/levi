@@ -1,0 +1,59 @@
+{
+  "id": "the-rat-king",
+  "name": "The Rat King",
+  "category": "world",
+  "act": 1,
+  "summary": "That is one big rat.",
+  "start": "Foreman Grell, at the mines",
+  "giver": "foreman-grell",
+  "requirements": {
+    "quests": [
+      "rat-frenzy"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "hunt",
+      "journal": "At the bottom of the gnawed tunnels sits the thing the rats serve.",
+      "objectives": [
+        {
+          "id": "rat-king",
+          "text": "Defeat the Rat King",
+          "kind": "defeat",
+          "enemy": "rat-king",
+          "qty": 1,
+          "boss": true
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "It's dead. The mines should be quiet now.",
+      "objectives": [
+        {
+          "id": "grell-king",
+          "text": "Tell Foreman Grell",
+          "kind": "talk",
+          "npc": "foreman-grell",
+          "node": "king-report"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 55
+    },
+    "coins": 120,
+    "items": [
+      {
+        "item": "talisman-vigor",
+        "qty": 1
+      }
+    ],
+    "skills": [],
+    "unlocks": []
+  }
+}

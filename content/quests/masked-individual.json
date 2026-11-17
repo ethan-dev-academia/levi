@@ -1,0 +1,69 @@
+{
+  "id": "masked-individual",
+  "name": "Masked Individual",
+  "category": "act",
+  "act": 2,
+  "summary": "Myrie notices someone tailing you through the market. You decide to investigate.",
+  "start": "Myrie, in the Argon bazaar",
+  "requirements": {
+    "quests": [
+      "the-bazaar"
+    ],
+    "skills": {},
+    "flags": [],
+    "combatLevel": 10,
+    "adventureLevel": 10
+  },
+  "steps": [
+    {
+      "id": "tail",
+      "journal": "Myrie spotted someone in a mask tailing us through the market. When I looked, they were gone.",
+      "objectives": [
+        {
+          "id": "myrie-tail",
+          "text": "Ask Myrie what she saw",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "tail"
+        }
+      ]
+    },
+    {
+      "id": "fight",
+      "journal": "We followed the masked figure into the back alleys and walked straight into a trap.",
+      "objectives": [
+        {
+          "id": "assassins",
+          "text": "Defeat the masked assassins",
+          "kind": "defeat",
+          "enemy": "masked-assassin",
+          "qty": 3,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "search",
+      "journal": "The assassins all carried the same thing: the Benefactor's sigil from the Cathedral.",
+      "objectives": [
+        {
+          "id": "myrie-sigil",
+          "text": "Show Myrie what they carried",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "sigil"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 70
+    },
+    "coins": 150,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "myrie"
+}

@@ -1,0 +1,170 @@
+{
+  "id": "dorran-anvilsong",
+  "name": "Dorran Anvilsong",
+  "title": "Smith",
+  "location": "Forge",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c08868",
+    "hair": "#2a1a12",
+    "top": "#5a3a2a",
+    "legs": "#3a2a20",
+    "topTrim": "#c8b07a",
+    "boots": "#2a2018",
+    "belt": "#4a3220"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "hammer-and-anvil-offer",
+      "label": "Offer: hammer-and-anvil",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "hammer-and-anvil",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "hammer-and-anvil-o0"
+    },
+    {
+      "id": "hammer-and-anvil-lesson",
+      "label": "Hammer and Anvil: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "hammer-and-anvil",
+          "step": "learn"
+        }
+      ],
+      "start": "hammer-and-anvil-lesson"
+    },
+    {
+      "id": "hammer-and-anvil-practice",
+      "label": "Hammer and Anvil: practising",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "hammer-and-anvil",
+          "step": "practice"
+        }
+      ],
+      "start": "hammer-and-anvil-p"
+    },
+    {
+      "id": "hammer-and-anvil-done",
+      "label": "Hammer and Anvil: done",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "hammer-and-anvil",
+          "step": "show"
+        }
+      ],
+      "start": "hammer-and-anvil-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "dorran-anvilsong-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hammer-and-anvil-o0",
+      "speaker": "npc",
+      "text": "New in town? I teach smithing, if you want to learn.",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me.",
+          "next": "hammer-and-anvil-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "hammer-and-anvil"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "hammer-and-anvil-ok",
+      "speaker": "npc",
+      "text": "Then let's begin.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "hammer-and-anvil-lesson",
+      "speaker": "npc",
+      "text": "Every blade starts as ore, fire and stubbornness. Bring me ore.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "hammer-and-anvil-p",
+      "speaker": "npc",
+      "text": "Go on, then. Practice makes perfect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "hammer-and-anvil-done",
+      "speaker": "npc",
+      "text": "Decent ore. Next time we'll make something out of it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "dorran-anvilsong-hello",
+      "speaker": "npc",
+      "text": "Every blade starts as ore, fire and stubbornness. Bring me ore.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    }
+  ]
+}

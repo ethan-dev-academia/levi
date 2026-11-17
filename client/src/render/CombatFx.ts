@@ -1,8 +1,8 @@
 import * as THREE from "three";
-import { lerp, type CombatEvent, type CombatStyle, type CombatWorld, type Telegraph } from "@levi/shared";
+import { lerp, type CombatEvent, type CombatWorld, type Telegraph } from "@levi/shared";
+import { SpellFx, type BoltLook } from "./SpellFx.js";
 
 const RED = 0xe0342a;
-const BOLT_COLOR: Record<CombatStyle, number> = { mage: 0xfff2b0, ranger: 0xd9c08a, brawler: 0xf0f0f0 };
 const NUMBER_LIFE = 0.9;
 /** Height above the ground for ground markings. */
 const LIFT = 0.06;
@@ -85,21 +85,23 @@ export class CombatFx {
   private readonly tele = new Map<number, { fill: Drape; edge: Drape }>();
   /** Strike flashes: the full shape, bright, fading out quickly. */
   private readonly flashes: Array<{ d: Drape; age: number }> = [];
-  private readonly bolts = new Map<number, THREE.Mesh>();
+  private readonly bolts = new Map<number, BoltLook>();
+  /** Casts, bolts and impacts. */
+  readonly spells: SpellFx;
   private readonly aim: Drape;
   /** Yellow ring under the enemy you're auto-attacking. */
   private readonly target: Drape;
   private pulse = 0;
   private readonly numbers: Array<{ el: HTMLElement; pos: THREE.Vector3; age: number; dx: number }> = [];
   private readonly v = new THREE.Vector3();
-  private readonly boltGeom = new THREE.IcosahedronGeometry(0.16, 0);
-  private readonly boltMats = new Map<CombatStyle, THREE.MeshBasicMaterial>();
 
   constructor(
     private readonly groundAt: GroundAt,
     private readonly numberHost: HTMLElement,
   ) {
     this.group.name = "combat-fx";
+    this.spells = new SpellFx(groundAt);
+    this.group.add(this.spells.group);
     // Unit strip along +Z (scaled to width × range when shown), cut finely so it bends over hills.
     this.aim = new Drape(new THREE.PlaneGeometry(1, 1, 1, 40).rotateX(-Math.PI / 2).translate(0, 0, 0.5), markMat(0x9fd4ff, 0.32), 6);
     this.aim.mesh.visible = false;
@@ -141,29 +143,21 @@ export class CombatFx {
 
   // --- Projectiles --------------------------------------------------------------------------------
 
-  private syncBolts(world: CombatWorld, alpha: number): void {
+  private syncBolts(world: CombatWorld, alpha: number, dt: number): void {
     const live = new Set<number>();
     for (const p of world.projectiles) {
       live.add(p.id);
-      let m = this.bolts.get(p.id);
-      if (!m) {
-        let mat = this.boltMats.get(p.visual);
-        if (!mat) this.boltMats.set(p.visual, (mat = new THREE.MeshBasicMaterial({ color: BOLT_COLOR[p.visual], fog: false })));
-        m = new THREE.Mesh(this.boltGeom, mat);
-        if (p.visual === "ranger") m.scale.set(0.5, 0.5, 2.2);
-        if (p.visual === "brawler") m.scale.set(2.4, 0.3, 0.6);
-        this.bolts.set(p.id, m);
-        this.group.add(m);
-      }
       const x = lerp(p.prevX, p.x, alpha);
       const z = lerp(p.prevZ, p.z, alpha);
-      m.position.set(x, this.groundAt(x, z) + 0.7, z);
-      m.rotation.y = Math.atan2(p.dirX, p.dirZ);
-      m.rotation.z += 0.3;
+      // Bolts fly at chest height, rising out of the hand over the first metre.
+      const y = this.groundAt(x, z) + 0.8;
+      let b = this.bolts.get(p.id);
+      if (!b) this.bolts.set(p.id, (b = this.spells.makeBolt(p.visual, p.homing !== null, x, y, z)));
+      this.spells.moveBolt(b, x, y, z, p.dirX, p.dirZ, dt);
     }
-    for (const [id, m] of this.bolts) {
+    for (const [id, b] of this.bolts) {
       if (live.has(id)) continue;
-      this.group.remove(m);
+      this.spells.dropBolt(b);
       this.bolts.delete(id);
     }
   }
@@ -202,8 +196,22 @@ export class CombatFx {
 
   /** Pop a number for each hit. `at(event)` gives the world point above the target. */
   showEvents(events: readonly CombatEvent[], at: (e: Extract<CombatEvent, { kind: "damage" }>) => THREE.Vector3): void {
+    let swing: Extract<CombatEvent, { kind: "cast" }> | null = null;
     for (const e of events) {
+      if (e.kind === "cast") {
+        this.spells.cast(e.style, e.x, e.z, e.dirX, e.dirZ, e.skill, e.melee);
+        if (e.melee) swing = e;
+        continue;
+      }
+      if (e.kind === "projectileEnd") {
+        this.spells.impact(e.style, e.x, e.z, e.hit, e.auto);
+        continue;
+      }
       if (e.kind !== "damage") continue;
+      if (swing && e.target === "enemy") {
+        this.spells.slash(swing.style, e.x, e.z, swing.dirX, swing.dirZ);
+        swing = null;
+      }
       const el = document.createElement("div");
       el.className = `dmg-num${e.crit ? " crit" : ""}${e.target === "player" ? " taken" : ""}`;
       el.textContent = String(e.amount);
@@ -232,8 +240,10 @@ export class CombatFx {
       }
     }
     this.syncTelegraphs(world);
-    this.syncBolts(world, alpha);
+    this.syncBolts(world, alpha, dt);
     const rect = this.numberHost.getBoundingClientRect();
+    this.spells.setViewport(rect.height);
+    this.spells.update(dt);
     for (let i = this.numbers.length - 1; i >= 0; i--) {
       const n = this.numbers[i]!;
       n.age += dt;

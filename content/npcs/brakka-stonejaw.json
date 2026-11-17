@@ -1,0 +1,170 @@
+{
+  "id": "brakka-stonejaw",
+  "name": "Brakka Stonejaw",
+  "title": "Quarry Master",
+  "location": "Quarry",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#b88868",
+    "hair": "#3a2a1a",
+    "top": "#6a5a4a",
+    "legs": "#4a4034",
+    "topTrim": "#c8b07a",
+    "boots": "#2a2018",
+    "belt": "#4a3220"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "strike-the-earth-offer",
+      "label": "Offer: strike-the-earth",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "strike-the-earth",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "strike-the-earth-o0"
+    },
+    {
+      "id": "strike-the-earth-lesson",
+      "label": "Strike the Earth: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "strike-the-earth",
+          "step": "learn"
+        }
+      ],
+      "start": "strike-the-earth-lesson"
+    },
+    {
+      "id": "strike-the-earth-practice",
+      "label": "Strike the Earth: practising",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "strike-the-earth",
+          "step": "practice"
+        }
+      ],
+      "start": "strike-the-earth-p"
+    },
+    {
+      "id": "strike-the-earth-done",
+      "label": "Strike the Earth: done",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "strike-the-earth",
+          "step": "show"
+        }
+      ],
+      "start": "strike-the-earth-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "brakka-stonejaw-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "strike-the-earth-o0",
+      "speaker": "npc",
+      "text": "New in town? I teach mining, if you want to learn.",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me.",
+          "next": "strike-the-earth-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "strike-the-earth"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "strike-the-earth-ok",
+      "speaker": "npc",
+      "text": "Then let's begin.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "strike-the-earth-lesson",
+      "speaker": "npc",
+      "text": "Rock. Pick. Hit. Repeat until the rock gives up.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "strike-the-earth-p",
+      "speaker": "npc",
+      "text": "Go on, then. Practice makes perfect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "strike-the-earth-done",
+      "speaker": "npc",
+      "text": "Good ore. Good arms. Keep swinging.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "brakka-stonejaw-hello",
+      "speaker": "npc",
+      "text": "Rock. Pick. Hit. Repeat until the rock gives up.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    }
+  ]
+}

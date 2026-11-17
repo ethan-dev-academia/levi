@@ -10,5 +10,6 @@
   "stats": {
     "attackDamage": 2,
     "critChance": 2
-  }
+  },
+  "rarity": "common"
 }

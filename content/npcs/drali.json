@@ -1,0 +1,482 @@
+{
+  "id": "drali",
+  "name": "Drali",
+  "title": "Hunter of the Southern Forest",
+  "location": "Southern forest",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e0b494",
+    "hair": "#a8452a",
+    "top": "#4a5a32",
+    "topTrim": "#6a4a2a",
+    "legs": "#3a3022",
+    "boots": "#2a1e16",
+    "belt": "#5a3a22"
+  },
+  "scale": 1.08,
+  "entries": [
+    {
+      "id": "outback-meet",
+      "label": "The Outback: meet",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-outback",
+          "step": "find"
+        }
+      ],
+      "start": "outback-meet"
+    },
+    {
+      "id": "the-forest-witch-offer",
+      "label": "Offer: the-forest-witch",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-forest-witch",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-outback",
+          "status": "done"
+        },
+        {
+          "kind": "level",
+          "skill": "adventuring",
+          "min": 8
+        }
+      ],
+      "start": "the-forest-witch-o0"
+    },
+    {
+      "id": "witch-done",
+      "label": "Forest Witch: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-forest-witch",
+          "step": "report"
+        }
+      ],
+      "start": "witch-done"
+    },
+    {
+      "id": "the-first-dungeon-offer",
+      "label": "Offer: the-first-dungeon",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-first-dungeon",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-forest-witch",
+          "status": "done"
+        },
+        {
+          "kind": "level",
+          "skill": "adventuring",
+          "min": 9
+        }
+      ],
+      "start": "the-first-dungeon-o0"
+    },
+    {
+      "id": "stairs",
+      "label": "First Dungeon: stairs",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-first-dungeon",
+          "step": "stairs"
+        }
+      ],
+      "start": "stairs"
+    },
+    {
+      "id": "dungeon-done",
+      "label": "First Dungeon: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-first-dungeon",
+          "step": "report"
+        }
+      ],
+      "start": "dungeon-done"
+    },
+    {
+      "id": "the-catacombs-offer",
+      "label": "Offer: the-catacombs",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-catacombs",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-first-dungeon",
+          "status": "done"
+        }
+      ],
+      "start": "the-catacombs-o0"
+    },
+    {
+      "id": "maps",
+      "label": "Catacombs: maps",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-catacombs",
+          "step": "discover"
+        }
+      ],
+      "start": "maps"
+    },
+    {
+      "id": "raid-start",
+      "label": "Raid Boss: start",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-catacombs",
+          "status": "done"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-raid-boss",
+          "status": "notStarted"
+        }
+      ],
+      "start": "raid-start"
+    },
+    {
+      "id": "trajan",
+      "label": "Raid Boss: after",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-raid-boss",
+          "step": "after"
+        }
+      ],
+      "start": "trajan"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "dr-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "outback-meet",
+      "speaker": "npc",
+      "text": "Myrie sent you? Of course she did. She worries.",
+      "next": "om-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "om-2",
+      "speaker": "npc",
+      "text": "I'd come home, but I can't. Farmers have been vanishing from the forest edge, and I'm the only one looking.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "the-forest-witch-o0",
+      "speaker": "npc",
+      "text": "The tracks lead deeper into the woods. They're not quite human.",
+      "next": "the-forest-witch-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-forest-witch-o1",
+      "speaker": "npc",
+      "text": "I could use another pair of eyes. And hands.",
+      "next": null,
+      "options": [
+        {
+          "text": "Let's find them.",
+          "next": "the-forest-witch-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-forest-witch"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "the-forest-witch-ok",
+      "speaker": "npc",
+      "text": "Stay close.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 300
+      }
+    },
+    {
+      "id": "witch-done",
+      "speaker": "npc",
+      "text": "A map of tunnels... and a stairway under the town. Under MY town. How long has that been there?",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-first-dungeon-o0",
+      "speaker": "npc",
+      "text": "I'm going down those stairs. Coming?",
+      "next": null,
+      "options": [
+        {
+          "text": "Right behind you.",
+          "next": "the-first-dungeon-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-first-dungeon"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-first-dungeon-ok",
+      "speaker": "npc",
+      "text": "Meet me there.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 150
+      }
+    },
+    {
+      "id": "stairs",
+      "speaker": "npc",
+      "text": "Here. Behind the old well. You'd never find it without the scroll.",
+      "next": "st-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    },
+    {
+      "id": "st-2",
+      "speaker": "npc",
+      "text": "Weapons ready.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 150
+      }
+    },
+    {
+      "id": "dungeon-done",
+      "speaker": "npc",
+      "text": "These halls are old. Older than the town. Older than the Cathedral.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-catacombs-o0",
+      "speaker": "npc",
+      "text": "There are entrances like this all over the Layland. Eight that I know of. I want to know how they connect.",
+      "next": null,
+      "options": [
+        {
+          "text": "Let's explore.",
+          "next": "the-catacombs-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-catacombs"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-catacombs-ok",
+      "speaker": "npc",
+      "text": "Keep the torch high.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 150
+      }
+    },
+    {
+      "id": "maps",
+      "speaker": "npc",
+      "text": "Let me see... they fit. They all fit together.",
+      "next": "maps-2",
+      "options": [],
+      "effects": [
+        {
+          "kind": "takeItem",
+          "item": "catacomb-map",
+          "qty": 1
+        }
+      ],
+      "pos": {
+        "x": 1960,
+        "y": 0
+      }
+    },
+    {
+      "id": "maps-2",
+      "speaker": "npc",
+      "text": "There aren't eight dungeons. There's one: one great catacomb under the whole Layland, with eight doors.",
+      "next": "maps-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 150
+      }
+    },
+    {
+      "id": "maps-3",
+      "speaker": "npc",
+      "text": "And there's someone guarding the way out. I can hear the armour from here.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 300
+      }
+    },
+    {
+      "id": "raid-start",
+      "speaker": "npc",
+      "text": "Whoever's down there, we go through them.",
+      "next": null,
+      "options": [],
+      "effects": [
+        {
+          "kind": "startQuest",
+          "quest": "the-raid-boss"
+        }
+      ],
+      "pos": {
+        "x": 2240,
+        "y": 0
+      }
+    },
+    {
+      "id": "trajan",
+      "speaker": "npc",
+      "text": "\"The Emperor will be pleased.\" With what? With us? With him dying?",
+      "next": "tr-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2520,
+        "y": 0
+      }
+    },
+    {
+      "id": "tr-2",
+      "speaker": "npc",
+      "text": "Go back to town. Tell Myrie... no. Let her find out from me.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2520,
+        "y": 150
+      }
+    },
+    {
+      "id": "dr-hello",
+      "speaker": "npc",
+      "text": "Quiet. You'll scare the game.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2800,
+        "y": 0
+      }
+    }
+  ]
+}

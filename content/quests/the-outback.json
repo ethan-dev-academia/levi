@@ -1,0 +1,41 @@
+{
+  "id": "the-outback",
+  "name": "The Outback",
+  "category": "world",
+  "act": 1,
+  "summary": "Myrie seems to be a bit occupied recently. She asks you to seek out Drali, her brother who is a hunter in the forest out south.",
+  "start": "Myrie, in the town",
+  "requirements": {
+    "quests": [
+      "secret-book"
+    ],
+    "skills": {},
+    "flags": [],
+    "adventureLevel": 7
+  },
+  "steps": [
+    {
+      "id": "find",
+      "journal": "Myrie asked me to find her brother Drali, a hunter in the forest to the south. She didn't say why she couldn't go herself.",
+      "objectives": [
+        {
+          "id": "drali-meet",
+          "text": "Find Drali in the southern forest",
+          "kind": "talk",
+          "npc": "drali",
+          "node": "outback-meet"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 40
+    },
+    "coins": 40,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "myrie"
+}

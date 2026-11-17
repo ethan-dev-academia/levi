@@ -1,0 +1,16 @@
+{
+  "id": "falcons-talon",
+  "name": "Falcon's Talon",
+  "kind": "weapon",
+  "icon": "sword",
+  "color": "#e8d9a8",
+  "description": "Falcon's old sidearm. The edge has never needed sharpening, and nobody knows why.",
+  "slot": "weapon",
+  "weaponType": "sword",
+  "rarity": "rare",
+  "stats": {
+    "attackDamage": 14,
+    "critChance": 6,
+    "armour": 3
+  }
+}

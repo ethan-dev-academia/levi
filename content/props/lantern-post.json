@@ -1,0 +1,8 @@
+{
+  "id": "lantern-post",
+  "name": "Lantern Post",
+  "model": "prop-lantern-post",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

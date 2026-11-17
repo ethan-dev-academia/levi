@@ -1,0 +1,1017 @@
+{
+  "id": "myrie",
+  "name": "Myrie",
+  "title": "Guide of the Cathedral Town",
+  "location": "First city",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e0b494",
+    "hair": "#a8452a",
+    "top": "#3a6a5a",
+    "topTrim": "#d9c08a",
+    "legs": "#4a3a2a",
+    "boots": "#2a1e16",
+    "belt": "#5a3a22"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "cathedral-meet",
+      "label": "Welcome: meet",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "welcome-to-the-cathedral",
+          "step": "myrie"
+        }
+      ],
+      "start": "cathedral-meet"
+    },
+    {
+      "id": "townsquare-offer",
+      "label": "Offer: townsquare",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "welcome-to-the-cathedral",
+          "status": "done"
+        }
+      ],
+      "start": "townsquare-o0"
+    },
+    {
+      "id": "tour",
+      "label": "Townsquare: tour",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "townsquare",
+          "step": "tour"
+        }
+      ],
+      "start": "tour-market"
+    },
+    {
+      "id": "rat-problem-offer",
+      "label": "Offer: rat-problem",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "rat-problem",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "rat-problem-o0"
+    },
+    {
+      "id": "secret-book-offer",
+      "label": "Offer: secret-book",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "secret-book",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        },
+        {
+          "kind": "level",
+          "skill": "adventuring",
+          "min": 7
+        }
+      ],
+      "start": "secret-book-o0"
+    },
+    {
+      "id": "book-wrong",
+      "label": "Secret Book: wrong edition",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "secret-book",
+          "step": "show"
+        }
+      ],
+      "start": "book-wrong"
+    },
+    {
+      "id": "book-read",
+      "label": "Secret Book: read",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "secret-book",
+          "step": "return"
+        }
+      ],
+      "start": "book-read"
+    },
+    {
+      "id": "the-outback-offer",
+      "label": "Offer: the-outback",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-outback",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "secret-book",
+          "status": "done"
+        },
+        {
+          "kind": "level",
+          "skill": "adventuring",
+          "min": 7
+        }
+      ],
+      "start": "the-outback-o0"
+    },
+    {
+      "id": "army",
+      "label": "A New City: army",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "a-new-city",
+          "step": "news"
+        }
+      ],
+      "start": "army"
+    },
+    {
+      "id": "a-new-city-offer",
+      "label": "Offer: a-new-city",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "a-new-city",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-raid-boss",
+          "status": "done"
+        }
+      ],
+      "start": "a-new-city-o0"
+    },
+    {
+      "id": "eta-offer",
+      "label": "Offer: eta",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "eta",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "ambush",
+          "status": "done"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "a-new-city",
+          "status": "done"
+        },
+        {
+          "kind": "level",
+          "skill": "adventuring",
+          "min": 9
+        }
+      ],
+      "start": "eta-o0"
+    },
+    {
+      "id": "eta-warning",
+      "label": "Eta: warning",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "eta",
+          "step": "warning"
+        }
+      ],
+      "start": "eta-warning"
+    },
+    {
+      "id": "eta-after",
+      "label": "Eta: after",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "eta",
+          "step": "after"
+        }
+      ],
+      "start": "eta-after"
+    },
+    {
+      "id": "the-bazaar-offer",
+      "label": "Offer: the-bazaar",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-bazaar",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "eta",
+          "status": "done"
+        }
+      ],
+      "start": "the-bazaar-o0"
+    },
+    {
+      "id": "bazaar-tour",
+      "label": "The Bazaar: tour",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-bazaar",
+          "step": "arrive"
+        }
+      ],
+      "start": "bazaar-tour"
+    },
+    {
+      "id": "masked-individual-offer",
+      "label": "Offer: masked-individual",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "masked-individual",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-bazaar",
+          "status": "done"
+        }
+      ],
+      "start": "masked-individual-o0"
+    },
+    {
+      "id": "tail",
+      "label": "Masked Individual: tail",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "masked-individual",
+          "step": "tail"
+        }
+      ],
+      "start": "tail"
+    },
+    {
+      "id": "sigil",
+      "label": "Masked Individual: sigil",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "masked-individual",
+          "step": "search"
+        }
+      ],
+      "start": "sigil"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "my-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "cathedral-meet",
+      "speaker": "npc",
+      "text": "You're awake! I'm Myrie. I watched the light come down on the Cathedral last night, and I knew someone new had arrived.",
+      "next": "cm-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "cm-2",
+      "speaker": "npc",
+      "text": "You look like you've been through a storm. Come on, I'll show you around town. It helps, honestly.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "townsquare-o0",
+      "speaker": "npc",
+      "text": "Ready for the tour? There's so much to see!",
+      "next": null,
+      "options": [
+        {
+          "text": "Lead the way.",
+          "next": "townsquare-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "townsquare"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "townsquare-ok",
+      "speaker": "npc",
+      "text": "Follow me!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "tour-market",
+      "speaker": "npc",
+      "text": "This is the market. Food, tools, gossip: if it's for sale, it's here. Penwick's bookshop is on the corner.",
+      "next": "tour-crafts",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "tour-crafts",
+      "speaker": "npc",
+      "text": "The workshops. Fishing, cooking, mining, smithing, crafting, gathering: there's a teacher for each, if you're willing to get your hands dirty.",
+      "next": "tour-gate",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 150
+      }
+    },
+    {
+      "id": "tour-gate",
+      "speaker": "npc",
+      "text": "And the gate. Mines to the east, forest to the south. Everything past here gets a little less friendly.",
+      "next": "tour-end",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 300
+      }
+    },
+    {
+      "id": "tour-end",
+      "speaker": "npc",
+      "text": "That's the town! If you need work, come find me. There's always something.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 450
+      }
+    },
+    {
+      "id": "rat-problem-o0",
+      "speaker": "npc",
+      "text": "The miners are in a state. Rats, everywhere in the tunnels. Nobody can work.",
+      "next": "rat-problem-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "rat-problem-o1",
+      "speaker": "npc",
+      "text": "Could you clear them out?",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll handle it.",
+          "next": "rat-problem-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "rat-problem"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 150
+      }
+    },
+    {
+      "id": "rat-problem-ok",
+      "speaker": "npc",
+      "text": "You're a lifesaver. Foreman Grell runs the mine.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 300
+      }
+    },
+    {
+      "id": "secret-book-o0",
+      "speaker": "npc",
+      "text": "Can I ask a strange favour? I'm looking for a children's book: The Great Benefactor.",
+      "next": "secret-book-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    },
+    {
+      "id": "secret-book-o1",
+      "speaker": "npc",
+      "text": "My mother read it to me. I'd like to read it again. Penwick might have it.",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll ask Penwick.",
+          "next": "secret-book-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "secret-book"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 150
+      }
+    },
+    {
+      "id": "secret-book-ok",
+      "speaker": "npc",
+      "text": "Thank you! It's silly, I know.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 300
+      }
+    },
+    {
+      "id": "book-wrong",
+      "speaker": "npc",
+      "text": "That's... not it. The pictures are the same, but the ending is wrong.",
+      "next": "bw-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 0
+      }
+    },
+    {
+      "id": "bw-2",
+      "speaker": "npc",
+      "text": "In my mother's copy, the Benefactor and the Primordial were drawn in the same shadow. I always thought it was a mistake by the printer.",
+      "next": "bw-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 150
+      }
+    },
+    {
+      "id": "bw-3",
+      "speaker": "npc",
+      "text": "Penwick said there might be an old reading room? Please try.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 300
+      }
+    },
+    {
+      "id": "book-read",
+      "speaker": "npc",
+      "text": "This is it! Look: the last page. One shadow, two names.",
+      "next": "br-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 0
+      }
+    },
+    {
+      "id": "br-2",
+      "speaker": "npc",
+      "text": "Why would the Cathedral collect all of these? It's just a children's book... isn't it?",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 150
+      }
+    },
+    {
+      "id": "the-outback-o0",
+      "speaker": "npc",
+      "text": "I've got too much on my plate right now. Could you find my brother, Drali? He hunts in the forest to the south.",
+      "next": "the-outback-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-outback-o1",
+      "speaker": "npc",
+      "text": "He hasn't been to town in weeks. That isn't like him.",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll find him.",
+          "next": "the-outback-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-outback"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 150
+      }
+    },
+    {
+      "id": "the-outback-ok",
+      "speaker": "npc",
+      "text": "Thank you. Tell him to come home sometime.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 300
+      }
+    },
+    {
+      "id": "army",
+      "speaker": "npc",
+      "text": "There you are! I just got back. You need to hear this.",
+      "next": "army-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2240,
+        "y": 0
+      }
+    },
+    {
+      "id": "army-2",
+      "speaker": "npc",
+      "text": "An army of monsters is marching on the city next door. Goblins, trolls, things I don't have names for. They'll reach the walls by nightfall.",
+      "next": "army-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2240,
+        "y": 150
+      }
+    },
+    {
+      "id": "army-3",
+      "speaker": "npc",
+      "text": "The city needs everyone who can hold a blade. Please.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2240,
+        "y": 300
+      }
+    },
+    {
+      "id": "a-new-city-o0",
+      "speaker": "npc",
+      "text": "I'm back! And I have news. Bad news.",
+      "next": null,
+      "options": [
+        {
+          "text": "Tell me.",
+          "next": "a-new-city-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "a-new-city"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 2520,
+        "y": 0
+      }
+    },
+    {
+      "id": "a-new-city-ok",
+      "speaker": "npc",
+      "text": "Then listen.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2520,
+        "y": 150
+      }
+    },
+    {
+      "id": "eta-o0",
+      "speaker": "npc",
+      "text": "The army had a leader. I saw them from the walls.",
+      "next": null,
+      "options": [
+        {
+          "text": "Who?",
+          "next": "eta-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "eta"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 2800,
+        "y": 0
+      }
+    },
+    {
+      "id": "eta-ok",
+      "speaker": "npc",
+      "text": "Let me tell you what I saw.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2800,
+        "y": 150
+      }
+    },
+    {
+      "id": "eta-warning",
+      "speaker": "npc",
+      "text": "Small. Masked. Moving so fast the goblins scattered just to stay out of the way.",
+      "next": "ew-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3080,
+        "y": 0
+      }
+    },
+    {
+      "id": "ew-2",
+      "speaker": "npc",
+      "text": "The soldiers are calling them Eta. One of the Emperors.",
+      "next": "ew-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3080,
+        "y": 150
+      }
+    },
+    {
+      "id": "ew-3",
+      "speaker": "npc",
+      "text": "Be careful. Please.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3080,
+        "y": 300
+      }
+    },
+    {
+      "id": "eta-after",
+      "speaker": "npc",
+      "text": "You're alive! You actually beat an Emperor!",
+      "next": "ea-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3360,
+        "y": 0
+      }
+    },
+    {
+      "id": "ea-2",
+      "speaker": "player",
+      "text": "When the mask cracked... there was a person under it. Just a person.",
+      "next": "ea-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3360,
+        "y": 150
+      }
+    },
+    {
+      "id": "ea-3",
+      "speaker": "npc",
+      "text": "That can't be right. The Emperors aren't people. They can't be.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3360,
+        "y": 300
+      }
+    },
+    {
+      "id": "the-bazaar-o0",
+      "speaker": "npc",
+      "text": "Argon is just over the hills. The biggest bazaar in the Layland! Come with me?",
+      "next": null,
+      "options": [
+        {
+          "text": "Let's go.",
+          "next": "the-bazaar-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-bazaar"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 3640,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-bazaar-ok",
+      "speaker": "npc",
+      "text": "You'll love it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3640,
+        "y": 150
+      }
+    },
+    {
+      "id": "bazaar-tour",
+      "speaker": "npc",
+      "text": "Welcome to Argon! Spices, steel, silk, spellbooks: if it exists, someone here is selling it.",
+      "next": "bt-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3920,
+        "y": 0
+      }
+    },
+    {
+      "id": "bt-2",
+      "speaker": "npc",
+      "text": "And if they're not selling it, you can bid on it. The auction stalls are run by Broker Sallow.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3920,
+        "y": 150
+      }
+    },
+    {
+      "id": "masked-individual-o0",
+      "speaker": "npc",
+      "text": "Don't turn around. Someone in a mask has been following us since the spice stalls.",
+      "next": null,
+      "options": [
+        {
+          "text": "Let's find out who.",
+          "next": "masked-individual-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "masked-individual"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 4200,
+        "y": 0
+      }
+    },
+    {
+      "id": "masked-individual-ok",
+      "speaker": "npc",
+      "text": "Carefully.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 4200,
+        "y": 150
+      }
+    },
+    {
+      "id": "tail",
+      "speaker": "npc",
+      "text": "There, by the fountain. Gone again. They're good.",
+      "next": "tail-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 4480,
+        "y": 0
+      }
+    },
+    {
+      "id": "tail-2",
+      "speaker": "npc",
+      "text": "They went into the back alleys. Let's follow, but watch your back.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 4480,
+        "y": 150
+      }
+    },
+    {
+      "id": "sigil",
+      "speaker": "npc",
+      "text": "What did they have on them?",
+      "next": "sig-2",
+      "options": [],
+      "effects": [
+        {
+          "kind": "giveItem",
+          "item": "cathedral-sigil",
+          "qty": 1
+        }
+      ],
+      "pos": {
+        "x": 4760,
+        "y": 0
+      }
+    },
+    {
+      "id": "sig-2",
+      "speaker": "npc",
+      "text": "That's the Benefactor's sigil. The same one on the Cathedral doors.",
+      "next": "sig-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 4760,
+        "y": 150
+      }
+    },
+    {
+      "id": "sig-3",
+      "speaker": "npc",
+      "text": "Why would the Cathedral send assassins after you?",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 4760,
+        "y": 300
+      }
+    },
+    {
+      "id": "my-hello",
+      "speaker": "npc",
+      "text": "Need something to do? There's always someone in town who needs a hand.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 5040,
+        "y": 0
+      }
+    }
+  ]
+}

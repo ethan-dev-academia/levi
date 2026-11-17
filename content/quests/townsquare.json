@@ -1,0 +1,56 @@
+{
+  "id": "townsquare",
+  "name": "Townsquare",
+  "category": "act",
+  "act": 1,
+  "summary": "Myrie said she would show you around. You better take her up on this offer. There are so many things to see!",
+  "start": "Myrie, outside the Cathedral",
+  "requirements": {
+    "quests": [
+      "welcome-to-the-cathedral"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "tour",
+      "journal": "Myrie is showing me around the town. She talks fast and walks faster.",
+      "objectives": [
+        {
+          "id": "tour-market",
+          "text": "See the market",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "tour-market"
+        },
+        {
+          "id": "tour-crafts",
+          "text": "See the workshops",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "tour-crafts"
+        },
+        {
+          "id": "tour-gate",
+          "text": "See the town gate",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "tour-gate"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 35
+    },
+    "coins": 50,
+    "items": [],
+    "skills": [],
+    "unlocks": [
+      "town-tour-done"
+    ]
+  },
+  "giver": "myrie"
+}

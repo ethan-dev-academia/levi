@@ -11,5 +11,6 @@
     "armour": 1,
     "magicDamage": 1,
     "manaRegen": 0.2
-  }
+  },
+  "rarity": "common"
 }

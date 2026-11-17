@@ -1,0 +1,10 @@
+{
+  "id": "flowers",
+  "name": "Flowers",
+  "model": "nature-flowers",
+  "solid": false,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 0.3
+}

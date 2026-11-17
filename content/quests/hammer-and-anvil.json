@@ -1,0 +1,68 @@
+{
+  "id": "hammer-and-anvil",
+  "name": "Hammer and Anvil",
+  "category": "skill",
+  "act": 1,
+  "summary": "The town's smithing teacher is willing to show a newcomer the basics.",
+  "start": "Dorran Anvilsong, at the forge",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "learn",
+      "journal": "I met the town's smithing teacher.",
+      "objectives": [
+        {
+          "id": "hammer-and-anvil-learn",
+          "text": "Learn the basics of Smithing",
+          "kind": "talk",
+          "npc": "dorran-anvilsong",
+          "node": "hammer-and-anvil-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Dorran says every blade I'll ever trust starts as ore, fire and stubbornness.",
+      "objectives": [
+        {
+          "id": "smith-ore",
+          "text": "Bring copper ore to the forge",
+          "kind": "collect",
+          "item": "copper-ore",
+          "qty": 4,
+          "consume": true
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "journal": "Back to my teacher to show what I've done.",
+      "objectives": [
+        {
+          "id": "hammer-and-anvil-done",
+          "text": "Show your teacher",
+          "kind": "talk",
+          "npc": "dorran-anvilsong",
+          "node": "hammer-and-anvil-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "smithing": 200,
+      "adventuring": 20
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "dorran-anvilsong"
+}

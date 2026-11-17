@@ -1,0 +1,53 @@
+{
+  "id": "welcome-to-the-cathedral",
+  "name": "Welcome to the Cathedral",
+  "category": "act",
+  "act": 1,
+  "summary": "You wake up in a building of light. The assassin is nowhere to be seen.",
+  "start": "Wake in the Cathedral",
+  "requirements": {
+    "quests": [
+      "operation-survive"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "wake",
+      "journal": "I woke on cold stone, under coloured glass. A woman in white was watching me.",
+      "objectives": [
+        {
+          "id": "odalyn-wake",
+          "text": "Speak with the woman in white",
+          "kind": "talk",
+          "npc": "sister-odalyn",
+          "node": "wake"
+        }
+      ]
+    },
+    {
+      "id": "myrie",
+      "journal": "Sister Odalyn said someone was waiting for me outside the Cathedral doors.",
+      "objectives": [
+        {
+          "id": "meet-myrie",
+          "text": "Meet Myrie outside the Cathedral",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "cathedral-meet"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 30
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "sister-odalyn"
+}

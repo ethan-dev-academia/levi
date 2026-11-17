@@ -8,6 +8,30 @@
   "scale": 1.16,
   "entries": [
     {
+      "id": "feather",
+      "label": "A Feather on the Wind",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "a-feather-on-the-wind",
+          "status": "active"
+        }
+      ],
+      "start": "feather-meet"
+    },
+    {
+      "id": "later",
+      "label": "After the lessons begin",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "a-feather-on-the-wind",
+          "status": "done"
+        }
+      ],
+      "start": "later-1"
+    },
+    {
       "id": "default",
       "label": "Default",
       "when": [],
@@ -16,10 +40,10 @@
   ],
   "nodes": [
     {
-      "id": "hello",
+      "id": "feather-meet",
       "speaker": "npc",
-      "text": "So the wind finally brought you. Good.",
-      "next": "hello2",
+      "text": "So the Benefactor sent another one. Look at you: still swaying, like the wind hasn't finished setting you down.",
+      "next": "feather-2",
       "options": [],
       "effects": [],
       "pos": {
@@ -28,16 +52,122 @@
       }
     },
     {
-      "id": "hello2",
+      "id": "feather-2",
       "speaker": "npc",
-      "text": "Bow, blade or light: I've walked all three paths. You'll find your own. Come see me at the Training Grounds when you're ready.",
+      "text": "I'm Falcon. Everyone who lands on this rock ends up in front of me sooner or later. You're early. That's a good sign.",
+      "next": "feather-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "feather-3",
+      "speaker": "player",
+      "text": "The voice told me to find you. It didn't say why.",
+      "next": "feather-4",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 300
+      }
+    },
+    {
+      "id": "feather-4",
+      "speaker": "npc",
+      "text": "It never does. Here's the short version: the Layland is big, old and hungry, and right now it would eat you before breakfast. So we fix that.",
+      "next": null,
+      "options": [
+        {
+          "text": "Then teach me.",
+          "next": "feather-5",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "path-of-the-sword"
+            }
+          ]
+        },
+        {
+          "text": "What is this place?",
+          "next": "feather-why",
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 450
+      }
+    },
+    {
+      "id": "feather-5",
+      "speaker": "npc",
+      "text": "Good. Meet me at the Training Grounds: the old stone circle, west along the road. We start with the blade.",
       "next": null,
       "options": [],
       "effects": [],
       "pos": {
         "x": 0,
-        "y": 160
+        "y": 600
       }
+    },
+    {
+      "id": "later-1",
+      "speaker": "npc",
+      "text": "The stone circle, west along the road. I'll be waiting. Try not to fall off anything on the way.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "hello",
+      "speaker": "npc",
+      "text": "So the wind finally brought you. Good.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "feather-why",
+      "speaker": "npc",
+      "text": "Falcon's Landing. An island in the sky, where the Benefactor sends new heroes to learn the three arts before he lets them loose. Blade, bow and light.",
+      "next": "feather-4b",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "feather-4b",
+      "speaker": "npc",
+      "text": "The north's fenced off until you've earned it. Everything you need is on this side.",
+      "next": null,
+      "options": [
+        {
+          "text": "Then teach me.",
+          "next": "feather-5",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "path-of-the-sword"
+            }
+          ]
+        }
+      ],
+      "effects": []
     }
   ]
 }

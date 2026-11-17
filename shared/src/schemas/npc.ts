@@ -10,7 +10,8 @@ const HEX = z.string().regex(/^#[0-9a-fA-F]{6}$/);
  * the same building blocks). All conditions in a list must pass.
  */
 export const ConditionSchema = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("questStatus"), quest: id, status: z.enum(["notStarted", "active", "done"]) }),
+  /** "started" = active or done; "notDone" = not started or still active. */
+  z.object({ kind: z.literal("questStatus"), quest: id, status: z.enum(["notStarted", "active", "done", "started", "notDone"]) }),
   /** Quest is active and currently on this step. */
   z.object({ kind: z.literal("questStep"), quest: id, step: id }),
   z.object({ kind: z.literal("objectiveDone"), quest: id, objective: id }),

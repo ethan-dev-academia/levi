@@ -302,24 +302,5 @@
       "requires": []
     }
   ],
-  "secrets": [
-    {
-      "id": "skypiercer",
-      "name": "Skypiercer",
-      "cost": 90,
-      "cooldown": 120,
-      "cast": {
-        "kind": "charge",
-        "range": 30,
-        "width": 1.6,
-        "damage": 300,
-        "duration": 2,
-        "scaling": "attack",
-        "ratio": 4.0,
-        "pierce": true
-      },
-      "description": "A single shot drawn for two long breaths that tears through everything in a vast line.",
-      "lore": "The Vigil keeps this arrow for the end of the world."
-    }
-  ]
+  "secrets": []
 }

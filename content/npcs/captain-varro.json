@@ -1,0 +1,151 @@
+{
+  "id": "captain-varro",
+  "name": "Captain Varro",
+  "title": "Captain of the City Guard",
+  "location": "Neighbouring city",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c8a080",
+    "hair": "#2a2420",
+    "top": "#5a6a7a",
+    "topTrim": "#c8a84a",
+    "legs": "#3a4250",
+    "boots": "#22262c",
+    "belt": "#5a3a22"
+  },
+  "scale": 1.06,
+  "entries": [
+    {
+      "id": "thanks",
+      "label": "A New City: thanks",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "a-new-city",
+          "step": "captain"
+        }
+      ],
+      "start": "thanks"
+    },
+    {
+      "id": "ambush-offer",
+      "label": "Offer: ambush",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "ambush",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "a-new-city",
+          "status": "done"
+        },
+        {
+          "kind": "level",
+          "skill": "combat",
+          "min": 9
+        }
+      ],
+      "start": "ambush-o0"
+    },
+    {
+      "id": "ambush-done",
+      "label": "Ambush: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "ambush",
+          "step": "report"
+        }
+      ],
+      "start": "ambush-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "vr-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "thanks",
+      "speaker": "npc",
+      "text": "So you're the one who broke their vanguard. The city owes you.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "ambush-o0",
+      "speaker": "npc",
+      "text": "I need the forest road scouted before the supply carts go out. It's too quiet out there.",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll scout it.",
+          "next": "ambush-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "ambush"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "ambush-ok",
+      "speaker": "npc",
+      "text": "Watch the treeline.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "ambush-done",
+      "speaker": "npc",
+      "text": "A troll? Then someone knew exactly where we'd be. Somebody is feeding them our plans.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "vr-hello",
+      "speaker": "npc",
+      "text": "Walls hold. Gates hold. As long as people do their jobs.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    }
+  ]
+}

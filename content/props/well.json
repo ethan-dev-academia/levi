@@ -1,0 +1,8 @@
+{
+  "id": "well",
+  "name": "Well",
+  "model": "prop-well",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

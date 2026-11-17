@@ -1,0 +1,8 @@
+{
+  "id": "market-stall",
+  "name": "Market Stall",
+  "model": "prop-market-stall",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

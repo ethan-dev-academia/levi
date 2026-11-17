@@ -1,0 +1,11 @@
+{
+  "id": "witch-scroll",
+  "name": "Witch's Scroll",
+  "description": "A scroll of rough bark-paper, covered in a map of tunnels and a stairway drawn beneath the town.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "scroll",
+  "color": "#9ab06a",
+  "value": 1
+}

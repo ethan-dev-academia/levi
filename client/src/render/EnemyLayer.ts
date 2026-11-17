@@ -82,7 +82,7 @@ export class EnemyLayer {
         this.shown.set(e.spawn.id, (s = made));
       }
       const alive = e.mode !== "dead";
-      s.entity.model.root.visible = alive;
+      s.entity.setVisible(alive);
       if (!alive) {
         s.tag.hidden = true;
         continue;

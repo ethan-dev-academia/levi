@@ -1,0 +1,16 @@
+{
+  "id": "skylight-staff",
+  "name": "Skylight Staff",
+  "kind": "weapon",
+  "icon": "staff",
+  "color": "#bfe0ff",
+  "description": "Falcon kept it wrapped in cloth. Unwrapped, it hums like the sky before a storm.",
+  "slot": "weapon",
+  "weaponType": "staff",
+  "rarity": "rare",
+  "stats": {
+    "magicDamage": 16,
+    "maxMana": 20,
+    "manaRegen": 0.5
+  }
+}

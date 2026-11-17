@@ -29,7 +29,8 @@ export const CastIntentSchema = z.object({
 });
 
 /** Auto-attack an enemy (by its spawn id): walk into range, then keep swinging. */
-export const AttackIntentSchema = z.object({ type: z.literal("attack"), enemy: z.string().regex(/^[a-z0-9_-]+$/).max(64) });
+/** Spawn ids, plus zone mobs ("zone-id#3"). */
+export const AttackIntentSchema = z.object({ type: z.literal("attack"), enemy: z.string().regex(/^[a-z0-9_-]+(#\d+)?$/).max(80) });
 
 export const UseItemIntentSchema = z.object({
   type: z.literal("useItem"),

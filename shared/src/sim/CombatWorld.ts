@@ -78,7 +78,11 @@ export interface EnemyState {
 }
 
 export type CombatEvent =
-  | { kind: "damage"; target: "enemy" | "player"; id: string; x: number; z: number; amount: number; crit: boolean }
+  | { kind: "damage"; target: "enemy" | "player"; id: string; x: number; z: number; amount: number; crit: boolean; style?: CombatStyle }
+  /** A player projectile ended: on an enemy (hit) or against a wall / at full range. */
+  | { kind: "projectileEnd"; x: number; z: number; dirX: number; dirZ: number; style: CombatStyle; hit: boolean; auto: boolean }
+  /** The player cast a skill or swung / loosed an auto-attack (visuals only). */
+  | { kind: "cast"; style: CombatStyle; x: number; z: number; dirX: number; dirZ: number; skill: boolean; melee: boolean }
   | { kind: "kill"; enemy: EnemyDef; spawn: string; style: CombatStyle }
   | { kind: "dummyHit"; enemy: EnemyDef; style: CombatStyle; amount: number };
 
@@ -249,7 +253,7 @@ export class CombatWorld {
   hitEnemy(e: EnemyState, payload: HitPayload): void {
     if (e.mode === "dead") return;
     const roll = rollDamage(payload.base, payload.ratio, payload.stat, payload.critChance, payload.critMultiplier, e.def.stats.armour, this.rand);
-    this.events.push({ kind: "damage", target: "enemy", id: e.spawn.id, x: e.x, z: e.z, amount: roll.amount, crit: roll.crit });
+    this.events.push({ kind: "damage", target: "enemy", id: e.spawn.id, x: e.x, z: e.z, amount: roll.amount, crit: roll.crit, style: payload.style });
     if (e.def.dummy) {
       e.hp = Math.max(1, e.hp - roll.amount);
       e.timer = 0;
@@ -304,6 +308,7 @@ export class CombatWorld {
         const step = p.speed * dt;
         if (d <= step + this.radius(t)) {
           this.hitEnemy(t, p.payload);
+          this.events.push({ kind: "projectileEnd", x: t.x, z: t.z, dirX: p.dirX, dirZ: p.dirZ, style: p.visual, hit: true, auto: true });
           this.projectiles.splice(i, 1);
           continue;
         }
@@ -337,18 +342,27 @@ export class CombatWorld {
       }
       p.left -= moved;
       let done = blocked || p.left <= 1e-4;
+      let landed = false;
       for (const e of this.enemies.values()) {
         if (e.mode === "dead" || p.hit.has(e.spawn.id)) continue;
         if (distToSegment(e.x, e.z, p.prevX, p.prevZ, p.x, p.z) <= p.width / 2 + this.radius(e)) {
           p.hit.add(e.spawn.id);
           this.hitEnemy(e, p.payload);
           if (!p.pierce) {
+            // Stop on the enemy, not past it.
+            const t = Math.max(0, (e.x - p.prevX) * p.dirX + (e.z - p.prevZ) * p.dirZ);
+            p.x = p.prevX + p.dirX * t;
+            p.z = p.prevZ + p.dirZ * t;
+            landed = true;
             done = true;
             break;
           }
         }
       }
-      if (done) this.projectiles.splice(i, 1);
+      if (done) {
+        this.events.push({ kind: "projectileEnd", x: p.x, z: p.z, dirX: p.dirX, dirZ: p.dirZ, style: p.visual, hit: landed || p.hit.size > 0, auto: false });
+        this.projectiles.splice(i, 1);
+      }
     }
   }
 

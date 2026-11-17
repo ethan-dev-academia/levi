@@ -296,23 +296,5 @@
       "requires": []
     }
   ],
-  "secrets": [
-    {
-      "id": "sunfall-verdict",
-      "name": "Sunfall Verdict",
-      "cost": 90,
-      "cooldown": 120,
-      "cast": {
-        "kind": "circle",
-        "range": 12,
-        "radius": 6,
-        "damage": 320,
-        "duration": 1.5,
-        "scaling": "magic",
-        "ratio": 4.0
-      },
-      "description": "Call the full weight of the dawn down on a wide area. Devastating, and slow to return.",
-      "lore": "Only those who have looked the dark in the eye are taught this."
-    }
-  ]
+  "secrets": []
 }

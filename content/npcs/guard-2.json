@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "All quiet. For now.",
+      "text": "Fields past here are closed, friend. Falcon's orders. Plenty to do on this side of the fence.",
       "next": null,
       "options": [],
       "effects": [],

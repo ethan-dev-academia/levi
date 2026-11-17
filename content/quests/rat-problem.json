@@ -1,0 +1,54 @@
+{
+  "id": "rat-problem",
+  "name": "Rat Problem",
+  "category": "world",
+  "act": 1,
+  "summary": "There seems to be a huge outbreak of rats in the mines. Myrie asks if you can take care of it.",
+  "start": "Myrie, in the town",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "clear",
+      "journal": "The miners can't work with rats swarming the tunnels. Myrie asked me to clear them out.",
+      "objectives": [
+        {
+          "id": "mine-rats",
+          "text": "Defeat rats in the mines",
+          "kind": "defeat",
+          "enemy": "rat",
+          "qty": 10,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "That's ten. The foreman at the mine entrance should know.",
+      "objectives": [
+        {
+          "id": "grell-report",
+          "text": "Speak with Foreman Grell",
+          "kind": "talk",
+          "npc": "foreman-grell",
+          "node": "rats-cleared"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 30
+    },
+    "coins": 40,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "myrie"
+}

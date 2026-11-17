@@ -1,0 +1,158 @@
+{
+  "id": "sister-odalyn",
+  "name": "Sister Odalyn",
+  "title": "Keeper of the Cathedral",
+  "location": "First Cathedral",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e8c8a8",
+    "hair": "#d8d0c0",
+    "top": "#ece8de",
+    "topTrim": "#d9b04a",
+    "legs": "#ece8de",
+    "boots": "#c8c0b0",
+    "belt": "#d9b04a"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "welcome-to-the-cathedral-offer",
+      "label": "Offer: welcome-to-the-cathedral",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "welcome-to-the-cathedral",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "operation-survive",
+          "status": "done"
+        }
+      ],
+      "start": "welcome-to-the-cathedral-o0"
+    },
+    {
+      "id": "wake",
+      "label": "Welcome: wake",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "welcome-to-the-cathedral",
+          "step": "wake"
+        }
+      ],
+      "start": "wake"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "od-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "welcome-to-the-cathedral-o0",
+      "speaker": "npc",
+      "text": "Easy. Don't try to stand yet.",
+      "next": null,
+      "options": [
+        {
+          "text": "Where am I?",
+          "next": "welcome-to-the-cathedral-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "welcome-to-the-cathedral"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "welcome-to-the-cathedral-ok",
+      "speaker": "npc",
+      "text": "You're in the Cathedral. Here, let me help you up.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "wake",
+      "speaker": "npc",
+      "text": "You're in the Cathedral of the Benefactor. You appeared on the altar in a flash of light. It happens more often than you'd think.",
+      "next": "wake-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "wake-2",
+      "speaker": "player",
+      "text": "Falcon... there was a man with me. He fell.",
+      "next": "wake-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "wake-3",
+      "speaker": "npc",
+      "text": "Only you came through. I'm sorry. The Benefactor brings back those he chooses.",
+      "next": "wake-4",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 300
+      }
+    },
+    {
+      "id": "wake-4",
+      "speaker": "npc",
+      "text": "Someone's been waiting outside since dawn, asking about you. Her name is Myrie.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 450
+      }
+    },
+    {
+      "id": "od-hello",
+      "speaker": "npc",
+      "text": "May the Benefactor's light find you, and bring you home.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    }
+  ]
+}

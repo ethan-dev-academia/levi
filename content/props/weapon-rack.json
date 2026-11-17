@@ -1,0 +1,8 @@
+{
+  "id": "weapon-rack",
+  "name": "Weapon Rack",
+  "model": "prop-weapon-rack",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

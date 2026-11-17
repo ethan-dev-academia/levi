@@ -1,0 +1,326 @@
+{
+  "id": "falcon-overlook",
+  "name": "Falcon",
+  "title": "Master of the Three Arts",
+  "location": "Mountain overlook",
+  "model": "npc-falcon",
+  "palette": {},
+  "scale": 1.16,
+  "entries": [
+    {
+      "id": "secret",
+      "label": "Falcon's Secret",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "falcons-secret",
+          "step": "meet"
+        }
+      ],
+      "start": "secret-tell"
+    },
+    {
+      "id": "alpha",
+      "label": "The First Emperor: Alpha arrives",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-first-emperor",
+          "step": "crash"
+        }
+      ],
+      "start": "alpha-arrives"
+    },
+    {
+      "id": "alpha-face",
+      "label": "The First Emperor: placeholder fight",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-first-emperor",
+          "step": "face"
+        }
+      ],
+      "start": "face-1"
+    },
+    {
+      "id": "survive",
+      "label": "Operation Survive: placeholder fight",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "operation-survive",
+          "step": "survive"
+        }
+      ],
+      "start": "survive-1"
+    },
+    {
+      "id": "falls",
+      "label": "Operation Survive: Falcon falls",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "operation-survive",
+          "step": "fall"
+        }
+      ],
+      "start": "falcon-falls"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "fo-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "secret-tell",
+      "speaker": "npc",
+      "text": "You came. Good. Sit. Look out there: past the clouds, that's the Layland. Every road, every city, every Cathedral.",
+      "next": "secret-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "secret-2",
+      "speaker": "npc",
+      "text": "There are seven of them down there. The Emperors. The strongest beings in the world. Nobody knows where they came from, only that nothing has ever stopped them.",
+      "next": "secret-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "secret-3",
+      "speaker": "npc",
+      "text": "Every hero the Benefactor sends is told the same thing: train, grow strong, and one day stand against them. Most never come back to tell me how it went.",
+      "next": "secret-4",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 300
+      }
+    },
+    {
+      "id": "secret-4",
+      "speaker": "player",
+      "text": "And the secret? You didn't drag me up a mountain to talk about the view.",
+      "next": "secret-5",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 450
+      }
+    },
+    {
+      "id": "secret-5",
+      "speaker": "npc",
+      "text": "I've been sent to the Cathedrals more times than I can count. Every time I fell, I woke up on that cold floor. And I've never once prayed in one.",
+      "next": "secret-6",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 600
+      }
+    },
+    {
+      "id": "secret-6",
+      "speaker": "npc",
+      "text": "Remember that. Whatever they tell you about the Benefactor, keep your eyes open. Gifts always come from somewhere.",
+      "next": null,
+      "options": [
+        {
+          "text": "Why tell me this?",
+          "next": "secret-7",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-first-emperor"
+            }
+          ]
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 750
+      }
+    },
+    {
+      "id": "secret-7",
+      "speaker": "npc",
+      "text": "Because you listen. Because... wait. Do you feel that? The wind just stopped.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 900
+      }
+    },
+    {
+      "id": "alpha-arrives",
+      "speaker": "npc",
+      "text": "Get behind me. NOW.",
+      "next": "alpha-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "alpha-2",
+      "speaker": "npc",
+      "text": "...Alpha. That's impossible. The Emperors don't come here. They never come here.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "face-1",
+      "speaker": "npc",
+      "text": "Stay behind me. Whatever happens, don't try to be a hero.",
+      "next": null,
+      "options": [
+        {
+          "text": "[Placeholder: the Alpha fight is not built yet] Stand your ground.",
+          "next": "face-2",
+          "when": [],
+          "effects": [
+            {
+              "kind": "objective",
+              "quest": "the-first-emperor",
+              "objective": "alpha-face"
+            },
+            {
+              "kind": "startQuest",
+              "quest": "operation-survive"
+            }
+          ]
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "face-2",
+      "speaker": "npc",
+      "text": "He's toying with us. Keep moving. Keep breathing.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 150
+      }
+    },
+    {
+      "id": "survive-1",
+      "speaker": "npc",
+      "text": "Dodge, keep moving! Watch the ground: when it glows, get out of it!",
+      "next": null,
+      "options": [
+        {
+          "text": "[Placeholder: the survival fight is not built yet] Survive.",
+          "next": "survive-2",
+          "when": [],
+          "effects": [
+            {
+              "kind": "objective",
+              "quest": "operation-survive",
+              "objective": "survive-alpha"
+            }
+          ]
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "survive-2",
+      "speaker": "npc",
+      "text": "Look out!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 150
+      }
+    },
+    {
+      "id": "falcon-falls",
+      "speaker": "npc",
+      "text": "Agh... that one... was meant for you.",
+      "next": "falls-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    },
+    {
+      "id": "falls-2",
+      "speaker": "npc",
+      "text": "I'm going over the edge. Listen. I can send you somewhere safe. The nearest Cathedral.",
+      "next": "falls-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 150
+      }
+    },
+    {
+      "id": "falls-3",
+      "speaker": "npc",
+      "text": "Remember what I told you. Keep your eyes... open...",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 300
+      }
+    },
+    {
+      "id": "fo-hello",
+      "speaker": "npc",
+      "text": "Quiet up here. That's why I like it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 0
+      }
+    }
+  ],
+  "looksLike": "falcon"
+}

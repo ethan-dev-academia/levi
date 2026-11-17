@@ -10,5 +10,6 @@
   "stats": {
     "magicDamage": 8,
     "manaRegen": 0.5
-  }
+  },
+  "rarity": "common"
 }

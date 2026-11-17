@@ -183,8 +183,12 @@ export class QuestEngine {
 
   check(cond: Condition): boolean {
     switch (cond.kind) {
-      case "questStatus":
-        return this.status(cond.quest) === cond.status;
+      case "questStatus": {
+        const st = this.status(cond.quest);
+        if (cond.status === "started") return st !== "notStarted";
+        if (cond.status === "notDone") return st !== "done";
+        return st === cond.status;
+      }
       case "questStep": {
         const q = this.quest(cond.quest);
         return !!q && this.step(q)?.id === cond.step;

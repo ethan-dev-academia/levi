@@ -1,0 +1,324 @@
+{
+  "id": "foreman-grell",
+  "name": "Foreman Grell",
+  "title": "Mine Foreman",
+  "location": "Mines",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c89878",
+    "hair": "#4a3a2a",
+    "top": "#6a5a3a",
+    "topTrim": "#3a3020",
+    "legs": "#4a4030",
+    "boots": "#2a2018",
+    "belt": "#3a2a1a"
+  },
+  "scale": 1.05,
+  "entries": [
+    {
+      "id": "rats-cleared",
+      "label": "Rat Problem: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "rat-problem",
+          "step": "report"
+        }
+      ],
+      "start": "rats-cleared"
+    },
+    {
+      "id": "deeper-in-the-mines-offer",
+      "label": "Offer: deeper-in-the-mines",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "deeper-in-the-mines",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "rat-problem",
+          "status": "done"
+        }
+      ],
+      "start": "deeper-in-the-mines-o0"
+    },
+    {
+      "id": "deep-report",
+      "label": "Deeper: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "deeper-in-the-mines",
+          "step": "report"
+        }
+      ],
+      "start": "deep-report"
+    },
+    {
+      "id": "rat-frenzy-offer",
+      "label": "Offer: rat-frenzy",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "rat-frenzy",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "deeper-in-the-mines",
+          "status": "done"
+        }
+      ],
+      "start": "rat-frenzy-o0"
+    },
+    {
+      "id": "frenzy-report",
+      "label": "Rat Frenzy: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "rat-frenzy",
+          "step": "report"
+        }
+      ],
+      "start": "frenzy-report"
+    },
+    {
+      "id": "the-rat-king-offer",
+      "label": "Offer: the-rat-king",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "the-rat-king",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "rat-frenzy",
+          "status": "done"
+        }
+      ],
+      "start": "the-rat-king-o0"
+    },
+    {
+      "id": "king-report",
+      "label": "Rat King: report",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-rat-king",
+          "step": "report"
+        }
+      ],
+      "start": "king-report"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "gr-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "rats-cleared",
+      "speaker": "npc",
+      "text": "Ten of the beasts? That'll get my lads back to work. For a day, anyway.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "deeper-in-the-mines-o0",
+      "speaker": "npc",
+      "text": "They keep coming from the lower tunnels. Tunnels we sealed years ago.",
+      "next": "deeper-in-the-mines-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "deeper-in-the-mines-o1",
+      "speaker": "npc",
+      "text": "Go and see where they're getting in?",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll go deeper.",
+          "next": "deeper-in-the-mines-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "deeper-in-the-mines"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "deeper-in-the-mines-ok",
+      "speaker": "npc",
+      "text": "Bring a light.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 300
+      }
+    },
+    {
+      "id": "deep-report",
+      "speaker": "npc",
+      "text": "Gnawed smooth? Rats don't dig like that. Not normal rats.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "rat-frenzy-o0",
+      "speaker": "npc",
+      "text": "Do you hear that? They're pouring out of every crack at once!",
+      "next": null,
+      "options": [
+        {
+          "text": "I'm on it.",
+          "next": "rat-frenzy-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "rat-frenzy"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "rat-frenzy-ok",
+      "speaker": "npc",
+      "text": "Go!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 150
+      }
+    },
+    {
+      "id": "frenzy-report",
+      "speaker": "npc",
+      "text": "Running toward something big, you say? Then that's what has to die.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-rat-king-o0",
+      "speaker": "npc",
+      "text": "Whatever's down there, it's what they serve. End it, and my mine is mine again.",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll end it.",
+          "next": "the-rat-king-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "the-rat-king"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 0
+      }
+    },
+    {
+      "id": "the-rat-king-ok",
+      "speaker": "npc",
+      "text": "Good hunting.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 150
+      }
+    },
+    {
+      "id": "king-report",
+      "speaker": "npc",
+      "text": "A Rat King. I'll be telling that one at the tavern for years. Thank you.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 0
+      }
+    },
+    {
+      "id": "gr-hello",
+      "speaker": "npc",
+      "text": "Helmets on in the tunnels. I mean it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 0
+      }
+    }
+  ]
+}

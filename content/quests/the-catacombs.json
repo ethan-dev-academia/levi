@@ -1,0 +1,61 @@
+{
+  "id": "the-catacombs",
+  "name": "The Catacombs",
+  "category": "world",
+  "act": 1,
+  "summary": "You make a discovery about the dungeons.",
+  "start": "Drali, below the town",
+  "requirements": {
+    "quests": [
+      "the-first-dungeon"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "explore",
+      "journal": "Drali says there are entrances like this one all over the Layland: eight that he knows of.",
+      "objectives": [
+        {
+          "id": "deep-ghouls",
+          "text": "Explore deeper into the catacombs",
+          "kind": "defeat",
+          "enemy": "catacomb-ghoul",
+          "qty": 10,
+          "boss": false
+        },
+        {
+          "id": "map",
+          "text": "Find the old catacomb maps",
+          "kind": "pickup",
+          "item": "catacomb-map",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "discover",
+      "journal": "The maps fit together. There aren't eight separate dungeons. There is one dungeon with many distinct regions, and each entrance opens onto one part of the catacombs.",
+      "objectives": [
+        {
+          "id": "drali-maps",
+          "text": "Show Drali the maps",
+          "kind": "talk",
+          "npc": "drali",
+          "node": "maps"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 50
+    },
+    "coins": 80,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "drali"
+}

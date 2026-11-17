@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Keep to the paths.",
+      "text": "North Reach is closed. Falcon's orders: nobody goes past this fence until their training's done. Wild things up there, and worse.",
       "next": null,
       "options": [],
       "effects": [],

@@ -1,0 +1,10 @@
+{
+  "id": "oak",
+  "name": "Oak",
+  "model": "nature-oak",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 2.6
+}

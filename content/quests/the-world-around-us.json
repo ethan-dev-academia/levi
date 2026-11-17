@@ -1,0 +1,69 @@
+{
+  "id": "the-world-around-us",
+  "name": "The World Around Us",
+  "category": "act",
+  "act": 0,
+  "summary": "Every hero knows that mastery of the world around them is a must to survive. The librarian may have things to say...",
+  "start": "Archivist Maelis, in the library",
+  "requirements": {
+    "quests": [
+      "path-of-the-light",
+      "path-of-the-sword",
+      "path-of-the-arrow",
+      "a-feather-on-the-wind"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "visit",
+      "journal": "Falcon says the fighting is only half of it. Archivist Maelis keeps the Archive in town, and he knows how this world works.",
+      "objectives": [
+        {
+          "id": "maelis-lesson",
+          "text": "Speak with Archivist Maelis",
+          "kind": "talk",
+          "npc": "archivist-maelis",
+          "node": "world-lesson"
+        }
+      ]
+    },
+    {
+      "id": "errand",
+      "journal": "Maelis says an adventurer learns the world by walking it and talking to people. He sent me to Mother Hesk at The Perch, the tall stone inn on the east side of town.",
+      "objectives": [
+        {
+          "id": "hesk-talk",
+          "text": "Speak with Mother Hesk at The Perch",
+          "kind": "talk",
+          "npc": "mother-hesk",
+          "node": "world-hesk"
+        }
+      ]
+    },
+    {
+      "id": "return",
+      "journal": "Mother Hesk had plenty to say about the Cathedrals, and a question nobody seems to ask. Back to Maelis.",
+      "objectives": [
+        {
+          "id": "maelis-return",
+          "text": "Return to Archivist Maelis",
+          "kind": "talk",
+          "npc": "archivist-maelis",
+          "node": "world-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 40
+    },
+    "coins": 25,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "archivist-maelis"
+}

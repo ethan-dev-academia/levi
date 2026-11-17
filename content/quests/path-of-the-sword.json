@@ -1,0 +1,77 @@
+{
+  "id": "path-of-the-sword",
+  "name": "Path of the Sword",
+  "category": "act",
+  "act": 0,
+  "summary": "In so much uncertainty, you take matters into your own hands. You pick up the sword and make a resolve to learn.",
+  "start": "Falcon, in the town",
+  "requirements": {
+    "quests": [
+      "a-feather-on-the-wind"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "lesson",
+      "journal": "Falcon told me to meet him at the Training Grounds, the old stone circle west of town. The first art is the blade: close, fast, and honest.",
+      "objectives": [
+        {
+          "id": "sword-lesson",
+          "text": "Meet Falcon at the Training Grounds",
+          "kind": "talk",
+          "npc": "falcon-training",
+          "node": "sword-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Falcon gave me a shortsword. Equip it, put a Brawler skill on my bar, then cut down the mice in Mouse Meadow, east of the circle. Get close, strike, step away.",
+      "objectives": [
+        {
+          "id": "sword-mice",
+          "text": "Defeat 6 mice in Mouse Meadow",
+          "kind": "defeat",
+          "enemy": "mouse",
+          "qty": 6,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "Six mice. My arm aches, but I'm still standing. Falcon will want to hear about it.",
+      "objectives": [
+        {
+          "id": "sword-report",
+          "text": "Return to Falcon",
+          "kind": "talk",
+          "npc": "falcon-training",
+          "node": "sword-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "brawler": 480,
+      "adventuring": 30
+    },
+    "coins": 0,
+    "items": [
+      {
+        "item": "iron-cuirass",
+        "qty": 1
+      },
+      {
+        "item": "oak-buckler",
+        "qty": 1
+      }
+    ],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "falcon"
+}

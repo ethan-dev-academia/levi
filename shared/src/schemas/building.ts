@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ConditionSchema } from "./npc.js";
 import { PropInstanceSchema } from "./prop.js";
 
 /** Same rule as map CONTENT_ID (kept local: map.ts imports this module). */
@@ -112,6 +113,12 @@ export const NpcSpawnSchema = z.object({
   wander: z.enum(["none", "area", "route"]).default("none"),
   radius: z.number().int().min(1).max(6).default(1),
   route: z.array(z.tuple([cell, cell])).max(24).default([]),
+  /**
+   * Only there while these pass (quest progress, flags...), e.g. Falcon waits
+   * at the Training Grounds only once you've met him in town. Conditional
+   * NPCs never block the tile they stand on.
+   */
+  visibleWhen: z.array(ConditionSchema).max(8).default([]),
 });
 
 /** An enemy's home spot; it roams like an NPC and respawns here. */
@@ -148,6 +155,8 @@ export const GroundItemSchema = z.object({
   z: cell,
   storey: z.number().int().min(0).max(7).default(0),
   building: z.string().regex(CONTENT_ID).max(64).optional(),
+  /** Only there while these pass, e.g. a quest item that appears once the quest is active. */
+  visibleWhen: z.array(ConditionSchema).max(8).default([]),
 });
 
 /** content/maps/<id>/buildings.json: structures, props, NPCs and ground items. */

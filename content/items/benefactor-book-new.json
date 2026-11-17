@@ -1,0 +1,11 @@
+{
+  "id": "benefactor-book-new",
+  "name": "The Great Benefactor (New Edition)",
+  "description": "A cheerful children's book. Bright pictures, simple words, and the Benefactor saves everyone.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "tome",
+  "color": "#d9b04a",
+  "value": 1
+}

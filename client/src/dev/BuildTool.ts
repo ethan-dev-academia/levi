@@ -57,6 +57,15 @@ export interface BuildSettings {
   zone: string | null;
   zoneErase: boolean;
   zoneBrush: number;
+  /** Nature props: drag to sprinkle a random mix instead of placing one. */
+  scatter: boolean;
+  /** Brush radius in cells. */
+  scatterRadius: number;
+  /** Chance per cell under the brush (0–1). */
+  scatterDensity: number;
+  /** Props picked at random while scattering (empty = the selected prop). */
+  scatterMix: string[];
+  scatterErase: boolean;
 }
 
 export { propFacing } from "@levi/shared";
@@ -117,6 +126,7 @@ export class BuildTool {
     npc: "", groundItem: "", groundQty: 1,
     npcWander: "area", npcRadius: 1, editNpc: null, recordingRoute: false,
     enemy: "", enemyWander: "area", enemyRadius: 2, zone: null, zoneErase: false, zoneBrush: 1,
+    scatter: false, scatterRadius: 3, scatterDensity: 0.08, scatterMix: [], scatterErase: false,
   };
   dirty = false;
   onChange: (() => void) | null = null;
@@ -442,6 +452,88 @@ export class BuildTool {
     return msg;
   }
 
+  // --- Scatter brush (trees, rocks, flowers) -------------------------------------------
+
+  private scatterSeen = new Set<string>();
+  private scatterArea: CellRect | null = null;
+
+  /** True when a drag with the Prop tool should scatter. */
+  get scattering(): boolean {
+    const s = this.settings;
+    return s.tool === "prop" && s.scatter && s.storey === 0 && this.ctx.propDefs.get(s.prop)?.category === "nature";
+  }
+
+  beginScatter(): void {
+    this.checkpoint();
+    this.scatterSeen.clear();
+    this.scatterArea = null;
+  }
+
+  /**
+   * Sprinkle (or erase) nature props in a circle around a cell. Each cell gets
+   * one roll per stroke, so holding still doesn't pile trees up. Skips
+   * buildings, void, occupied cells and NPC / item spots; never puts two solid
+   * props side by side, so paths stay open.
+   */
+  scatterAt(cx: number, cz: number): void {
+    const s = this.settings;
+    const index = this.ctx.data.buildings;
+    const r = s.scatterRadius;
+    const mix = (s.scatterMix.length ? s.scatterMix : [s.prop]).filter((id) => this.ctx.propDefs.has(id));
+    const { cols, rows } = this.ctx.data.def;
+    let props = [...index.props];
+    let changed = false;
+    const taken = new Set(props.filter((p) => p.storey === 0).map((p) => `${p.x},${p.z}`));
+    const solidAt = new Set(props.filter((p) => p.storey === 0 && p.solid).map((p) => `${p.x},${p.z}`));
+    const reserved = new Set([...index.npcs.map((n) => `${n.x},${n.z}`), ...index.groundItems.map((g) => `${g.x},${g.z}`)]);
+    let n = props.length + 1;
+    for (let dz = -r; dz <= r; dz++) {
+      for (let dx = -r; dx <= r; dx++) {
+        if (dx * dx + dz * dz > r * r + r) continue;
+        const x = cx + dx, z = cz + dz;
+        if (x < 0 || z < 0 || x >= cols || z >= rows) continue;
+        const k = `${x},${z}`;
+        if (s.scatterErase) {
+          const before = props.length;
+          props = props.filter((p) => !(p.storey === 0 && p.x === x && p.z === z && this.ctx.propDefs.get(p.prop)?.category === "nature"));
+          if (props.length !== before) changed = true;
+          continue;
+        }
+        if (this.scatterSeen.has(k)) continue;
+        this.scatterSeen.add(k);
+        if (Math.random() >= s.scatterDensity || mix.length === 0) continue;
+        if (taken.has(k) || reserved.has(k) || index.containing(x, z) || this.ctx.data.holes[z * cols + x] === 1) continue;
+        const def = this.ctx.propDefs.get(mix[Math.floor(Math.random() * mix.length)]!)!;
+        if (def.solid) {
+          let crowded = false;
+          for (let oz = -1; oz <= 1 && !crowded; oz++) for (let ox = -1; ox <= 1; ox++) if (solidAt.has(`${x + ox},${z + oz}`)) crowded = true;
+          if (crowded) continue;
+          solidAt.add(k);
+        }
+        while (props.some((p) => p.id === `prop-${n}`)) n++;
+        props.push({ id: `prop-${n++}`, prop: def.id, x, z, rot: Math.floor(Math.random() * 4), storey: 0, solid: def.solid });
+        taken.add(k);
+        changed = true;
+      }
+    }
+    if (!changed) return;
+    const a = this.scatterArea;
+    const box = { cx0: cx - r, cz0: cz - r, cx1: cx + r, cz1: cz + r };
+    this.scatterArea = a ? { cx0: Math.min(a.cx0, box.cx0), cz0: Math.min(a.cz0, box.cz0), cx1: Math.max(a.cx1, box.cx1), cz1: Math.max(a.cz1, box.cz1) } : box;
+    index.setProps(props);
+    this.ctx.props.rebuild();
+    this.dirty = true;
+  }
+
+  endScatter(): string {
+    const area = this.scatterArea;
+    if (area) this.refreshGround(area);
+    this.scatterArea = null;
+    this.onChange?.();
+    const nature = this.ctx.data.buildings.props.filter((p) => this.ctx.propDefs.get(p.prop)?.category === "nature").length;
+    return `${nature} trees, rocks and plants on the map.`;
+  }
+
   /** Set a chest's loot (from the loot editor). */
   setPropLoot(id: string, loot: Array<LootSlot | null>): void {
     const index = this.ctx.data.buildings;
@@ -495,7 +587,7 @@ export class BuildTool {
     while (index.npcs.some((x) => x.id === `npc-${n}`)) n++;
     const spawn: NpcSpawn = {
       id: `npc-${n}`, npc: s.npc, x: cx, z: cz, rot: s.rot & 3, storey: s.storey,
-      wander: s.npcWander === "route" ? "none" : s.npcWander, radius: s.npcRadius, route: [],
+      wander: s.npcWander === "route" ? "none" : s.npcWander, radius: s.npcRadius, route: [], visibleWhen: [],
     };
     if (building) spawn.building = building;
     index.setNpcs([...index.npcs, spawn]);
@@ -657,7 +749,7 @@ export class BuildTool {
     } else {
       let n = index.groundItems.length + 1;
       while (index.groundItems.some((x) => x.id === `ground-${n}`)) n++;
-      const g: GroundItem = { id: `ground-${n}`, item: s.groundItem, qty: Math.max(1, Math.min(10, s.groundQty)), x: cx, z: cz, storey: s.storey };
+      const g: GroundItem = { id: `ground-${n}`, item: s.groundItem, qty: Math.max(1, Math.min(10, s.groundQty)), x: cx, z: cz, storey: s.storey, visibleWhen: [] };
       if (building) g.building = building;
       index.setGroundItems([...index.groundItems, g]);
       msg = `Dropped ${g.qty > 1 ? `${g.qty}× ` : ""}${this.ctx.items.get(g.item)?.name ?? g.item} on the ground.`;
@@ -685,6 +777,16 @@ export class BuildTool {
     const info = this.ctx.data.buildings.containing(cx, cz);
     this.select(info?.def.id ?? null);
     return info ? `Selected ${info.def.name}.` : "Selection cleared.";
+  }
+
+  /** Highest terrain under a building's ground floor (its floor normally sits 0.1 above this). */
+  groundTop(b: Building): number {
+    const tiles = b.storeys[0]?.tiles ?? [];
+    let top = -Infinity;
+    for (const [x, z] of tiles) {
+      for (const [dx, dz] of [[0, 0], [1, 0], [0, 1], [1, 1]] as const) top = Math.max(top, getTerrainHeight(this.ctx.data.hm, x + dx, z + dz));
+    }
+    return Number.isFinite(top) ? top : b.baseY - 0.1;
   }
 
   updateSelected(patch: Partial<Pick<Building, "name" | "material" | "baseY" | "floorHeight">> & { roof?: Partial<Building["roof"]> }): void {

@@ -1,0 +1,8 @@
+{
+  "id": "banner",
+  "name": "Banner",
+  "model": "prop-banner",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

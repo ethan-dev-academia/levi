@@ -1,0 +1,54 @@
+{
+  "id": "operation-survive",
+  "name": "Operation Survive",
+  "category": "act",
+  "act": 0,
+  "summary": "Survive.",
+  "start": "Continues from The First Emperor",
+  "requirements": {
+    "quests": [
+      "the-first-emperor"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "survive",
+      "journal": "No blade, arrow or spell of mine even scratches him. Falcon says to stay alive, nothing more.",
+      "objectives": [
+        {
+          "id": "survive-alpha",
+          "text": "Survive Alpha's onslaught",
+          "kind": "trigger"
+        }
+      ]
+    },
+    {
+      "id": "fall",
+      "journal": "Falcon took the blow meant for me.",
+      "objectives": [
+        {
+          "id": "falcon-falls",
+          "text": "Reach Falcon",
+          "kind": "talk",
+          "npc": "falcon-overlook",
+          "node": "falcon-falls"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "brawler": 80,
+      "ranger": 80,
+      "mage": 80,
+      "adventuring": 50
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "falcon-overlook"
+}

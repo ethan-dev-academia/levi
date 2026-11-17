@@ -1,0 +1,10 @@
+{
+  "id": "maple",
+  "name": "Autumn Maple",
+  "model": "nature-maple",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 2.3
+}

@@ -27,7 +27,8 @@ import { ReadPopup } from "./ui/ReadPopup.js";
 import { skillIcon } from "./ui/skillIcons.js";
 import { SkillTreeWindow } from "./ui/SkillTreeWindow.js";
 import { mountSidebarResize } from "./ui/SidebarResize.js";
-import { fitCharacterTab, gameTabs } from "./ui/GameMenus.js";
+import { fitCharacterTab, focusQuestInBook, gameTabs } from "./ui/GameMenus.js";
+import { QuestMapWindow } from "./ui/QuestMapWindow.js";
 import { ItemUi } from "./ui/ItemUi.js";
 import { ChestWindow } from "./ui/ChestWindow.js";
 import { DialogueBox } from "./ui/DialogueBox.js";
@@ -152,6 +153,16 @@ async function boot(): Promise<void> {
   const intents = new LocalIntentSink((i) => sim.apply(i));
 
   // --- Menus (bag, character, skills, quests, friends) --------------------------
+  const questMap = new QuestMapWindow(stage, {
+    quests: content.quests,
+    engine: () => sim.quests,
+    actNames: content.actNames,
+    pick: (id) => {
+      focusQuestInBook(id);
+      questMap.close();
+      panel.open("quests");
+    },
+  });
   const skillTree = new SkillTreeWindow(stage, {
     character: () => sim.character,
     send: (i) => intents.send(i),
@@ -173,6 +184,7 @@ async function boot(): Promise<void> {
         engine: () => sim.quests,
         actNames: content.actNames,
         openTree: (style) => skillTree.open(style),
+        openQuestMap: () => questMap.toggle(),
       },
       controlsTab,
     ),
@@ -215,6 +227,7 @@ async function boot(): Promise<void> {
     if (!itemUi.isDragging) panel.refresh();
     chest.refresh();
     skillTree.refresh();
+    questMap.refresh();
     tracker.render(c, sim.quests, content.quests);
   };
   let lastStored = 0;
@@ -249,22 +262,29 @@ async function boot(): Promise<void> {
     return picker.pick(ndcX, ndcY);
   };
 
+  /** Enemy right under the cursor: its model, a little slack around small ones, or right at the clicked spot. */
+  const enemyUnder = (x: number, y: number, ground: { x: number; z: number } | null): string | null =>
+    enemyLayer.pick(world.camera, x, y) ??
+    enemyLayer.pickNear(world.camera, x, y, 24) ??
+    (ground ? sim.combat.enemyNear(ground.x, ground.z, 0.8)?.spawn.id ?? null : null);
+
   const pointer = new PointerInput(canvas, {
     onMoveCommand: (ndc, initial) => {
       if (initial) {
         attackPress = false;
         const hitGround = picker.pick(ndc.x, ndc.y);
-        const target =
-          enemyLayer.pick(world.camera, ndc.x, ndc.y) ??
-          enemyLayer.pickNear(world.camera, ndc.x, ndc.y) ??
-          (hitGround ? sim.combat.enemyNear(hitGround.x, hitGround.z, 1.4)?.spawn.id ?? null : null);
+        const target = enemyUnder(ndc.x, ndc.y, hitGround);
         if (target) {
           // The whole press is an attack: hold-to-steer repeats mustn't turn it into a walk.
           attackPress = true;
           intents.send({ type: "attack", enemy: target });
           return;
         }
-      } else if (attackPress) return;
+      } else if (attackPress) {
+        // Holding on the enemy keeps attacking; dragging off it walks instead.
+        if (enemyUnder(ndc.x, ndc.y, picker.pick(ndc.x, ndc.y))) return;
+        attackPress = false;
+      }
       // Stairs/ladders: the clicked half picks the direction (top = up).
       const stair = initial ? buildings.pickStair(world.camera, ndc.x, ndc.y) : null;
       const info = stair ? data.buildings.get(stair.building) : undefined;
@@ -463,15 +483,19 @@ async function boot(): Promise<void> {
 
       hero.update(surfaceAt, x, z, p.dirX, p.dirZ, dt);
       buildings.update({ x, z, storey: p.storey, building: p.building }, world.camera.position, dt);
-      props.update(buildings);
+      props.update(buildings, { x, z, y: surfaceAt(x, z) + 1 }, world.camera.position, dt);
       npcLayer.update(world.camera, { x, z }, sim.talk?.spawn.id ?? null, buildings, dt, (id) => {
         const w = sim.npcWalkers().get(id);
         return w ? { x: lerp(w.prevX, w.x, alpha), z: lerp(w.prevZ, w.z, alpha), dirX: w.dirX, dirZ: w.dirZ, home: w.spawn.wander === "none" } : null;
+      }, (id) => {
+        const s = sim.npcWalkers().get(id)?.spawn;
+        return !s || sim.npcShown(s);
       });
       groundItems.update(dt, (g) => sim.isGroundItemAvailable(g), buildings);
       enemyLayer.update(sim.combat, world.camera, { x, z }, alpha, dt);
       const fresh = sim.combatEvents;
       sim.combatEvents = [];
+      for (const e of fresh) if (e.kind === "cast") hero.playCast(e.melee || e.style === "brawler" ? "swing" : "thrust");
       combatFx.showEvents(fresh, (e) =>
         e.target === "player" ? new THREE.Vector3(x, surfaceAt(x, z) + 2.1, z) : enemyLayer.headOf(e.id) ?? new THREE.Vector3(e.x, surfaceAt(e.x, e.z) + 1.4, e.z),
       );

@@ -178,31 +178,6 @@ export class SkillTreeWindow {
     for (const t of SKILL_MILESTONES) marks.append(el("span", lvl >= t ? "reached" : "", `Lv ${t}`));
     this.root.append(marks);
 
-    // Secret arts: outside the tree, granted by the story. Hidden until earned.
-    if (tree.secrets.length) {
-      const row = el("div", "sw-secrets");
-      row.append(el("span", "sw-secrets-label", "Secret arts"));
-      for (const sk of tree.secrets) {
-        const have = c.isUnlocked(style, sk.id);
-        const node = el("button", `sw-node secret ${have ? "learned" : "hidden-secret"}${this.selected === sk.id ? " selected" : ""}`);
-        node.dataset["name"] = have ? sk.name : "???";
-        if (have) node.append(skillIcon(sk, style), el("span", "sw-name", sk.name));
-        else node.append(el("span", "sw-q", "?"), el("span", "sw-name", "???"));
-        const key = c.keyOf(style, sk.id);
-        if (key) node.append(el("span", "tn-key", key));
-        node.addEventListener("click", () => {
-          this.selected = sk.id;
-          this.render();
-        });
-        if (have) {
-          node.addEventListener("pointerdown", (e) => {
-            if (e.button === 0) this.drag = { skill: sk, style, x: e.clientX, y: e.clientY, ghost: null, from: null };
-          });
-        }
-        row.append(node);
-      }
-      this.root.append(row);
-    }
 
     this.root.append(this.detail(c, style));
     this.root.append(el("div", "sw-hint", "Drag a learned skill onto Q W E R D F to use it. Drag between keys to swap, or off the bar to unbind."));

@@ -3,8 +3,8 @@
   "name": "A Feather on the Wind",
   "category": "act",
   "act": 0,
-  "summary": "",
-  "start": "",
+  "summary": "The voice is gone. But the will of the great benefactor has not gone away. You remember his words... \"seek out Falcon\".",
+  "start": "Starts when you arrive",
   "requirements": {
     "quests": [],
     "skills": {},
@@ -12,21 +12,27 @@
   },
   "steps": [
     {
-      "id": "step-1",
-      "journal": "",
+      "id": "find-falcon",
+      "journal": "The voice that sent me here told me to seek out a man named Falcon. He should be somewhere in the town.",
       "objectives": [
         {
-          "id": "todo",
-          "text": "To be written",
-          "kind": "trigger"
+          "id": "meet-falcon",
+          "text": "Find Falcon in the town",
+          "kind": "talk",
+          "npc": "falcon",
+          "node": "feather-meet"
         }
       ]
     }
   ],
   "rewards": {
-    "xp": {},
-    "coins": 0,
+    "xp": {
+      "adventuring": 20
+    },
+    "coins": 10,
     "items": [],
+    "skills": [],
     "unlocks": []
-  }
+  },
+  "giver": "falcon"
 }

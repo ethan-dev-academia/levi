@@ -8,24 +8,787 @@
   "scale": 1.16,
   "entries": [
     {
+      "id": "sword-lesson",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-sword",
+          "step": "lesson"
+        }
+      ],
+      "start": "sword-lesson"
+    },
+    {
+      "id": "sword-practice",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-sword",
+          "step": "practice"
+        }
+      ],
+      "start": "sword-p"
+    },
+    {
+      "id": "sword-done",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-sword",
+          "step": "report"
+        }
+      ],
+      "start": "sword-done"
+    },
+    {
+      "id": "path-of-the-arrow-offer",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-arrow",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-sword",
+          "status": "done"
+        }
+      ],
+      "start": "sword-d2"
+    },
+    {
+      "id": "arrow-lesson",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-arrow",
+          "step": "lesson"
+        }
+      ],
+      "start": "arrow-lesson"
+    },
+    {
+      "id": "arrow-practice",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-arrow",
+          "step": "practice"
+        }
+      ],
+      "start": "arrow-p"
+    },
+    {
+      "id": "arrow-done",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-arrow",
+          "step": "report"
+        }
+      ],
+      "start": "arrow-done"
+    },
+    {
+      "id": "path-of-the-light-offer",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-light",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-arrow",
+          "status": "done"
+        }
+      ],
+      "start": "arrow-d2"
+    },
+    {
+      "id": "light-lesson",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-light",
+          "step": "lesson"
+        }
+      ],
+      "start": "light-lesson"
+    },
+    {
+      "id": "light-practice",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-light",
+          "step": "practice"
+        }
+      ],
+      "start": "light-p"
+    },
+    {
+      "id": "light-done",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "path-of-the-light",
+          "step": "report"
+        }
+      ],
+      "start": "light-done"
+    },
+    {
+      "id": "gift",
+      "label": "Gift not chosen",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-light",
+          "status": "done"
+        },
+        {
+          "kind": "flag",
+          "flag": "falcon-gift",
+          "set": false
+        }
+      ],
+      "start": "gift-again"
+    },
+    {
+      "id": "falcons-secret-offer",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "falcons-secret",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "the-world-around-us",
+          "status": "done"
+        }
+      ],
+      "start": "falcons-secret-o0"
+    },
+    {
+      "id": "wait-maelis",
+      "label": "",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "path-of-the-light",
+          "status": "done"
+        }
+      ],
+      "start": "ft-wait"
+    },
+    {
       "id": "default",
-      "label": "Default",
+      "label": "",
       "when": [],
-      "start": "hello"
+      "start": "ft-hello"
     }
   ],
   "nodes": [
     {
-      "id": "hello",
+      "id": "sword-lesson",
       "speaker": "npc",
-      "text": "Here, the ground forgives mistakes. Out there, it won't. Pick a weapon.",
+      "text": "The blade first. It's the most honest of the three arts: to hit them, you have to be close enough to be hit back.",
+      "next": "sword-l2",
+      "options": [],
+      "effects": [
+        {
+          "kind": "giveItem",
+          "item": "oathbound-shortsword",
+          "qty": 1
+        }
+      ],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "sword-l2",
+      "speaker": "npc",
+      "text": "Take this. Equip it from your bag, then open your Brawler skills and drag the first one onto your bar. Hold the key to aim, let go to strike.",
+      "next": "sword-l3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "sword-l3",
+      "speaker": "npc",
+      "text": "Mouse Meadow is just east of the circle. Six of them. Get close, strike, and step out of the way before they bite. Watch the red on the ground: that's where they're about to hit.",
       "next": null,
       "options": [],
       "effects": [],
       "pos": {
         "x": 0,
+        "y": 300
+      }
+    },
+    {
+      "id": "sword-p",
+      "speaker": "npc",
+      "text": "Six mice, Mouse Meadow, east of the circle. Close, strike, step away. Red on the ground means move.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
         "y": 0
       }
+    },
+    {
+      "id": "sword-done",
+      "speaker": "npc",
+      "text": "Not bad. You flinch less than most, and you didn't lose any fingers.",
+      "next": "sword-d1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "sword-d2",
+      "speaker": "npc",
+      "text": "But some things you won't want to get close to. Ready for the second art?",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me the bow.",
+          "next": "sword-d3",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "path-of-the-arrow"
+            }
+          ]
+        },
+        {
+          "text": "I need a moment.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 150
+      }
+    },
+    {
+      "id": "sword-d3",
+      "speaker": "npc",
+      "text": "Good. Listen closely.",
+      "next": "arrow-lesson",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 300
+      }
+    },
+    {
+      "id": "path-of-the-arrow-o0",
+      "speaker": "npc",
+      "text": "The bow is next. Ready?",
+      "next": null,
+      "options": [
+        {
+          "text": "Ready.",
+          "next": "path-of-the-arrow-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "path-of-the-arrow"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "path-of-the-arrow-ok",
+      "speaker": "npc",
+      "text": "Then listen closely.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 150
+      }
+    },
+    {
+      "id": "arrow-lesson",
+      "speaker": "npc",
+      "text": "An archer wins the fight before it starts. Keep your distance, and never let them close it.",
+      "next": "arrow-l2",
+      "options": [],
+      "effects": [
+        {
+          "kind": "giveItem",
+          "item": "pilgrim-shortbow",
+          "qty": 1
+        },
+        {
+          "kind": "giveItem",
+          "item": "wooden-arrows",
+          "qty": 30
+        }
+      ],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    },
+    {
+      "id": "arrow-l2",
+      "speaker": "npc",
+      "text": "Bow, arrows. Same as before: equip it, put a Ranger skill on your bar. Aim where they're going, not where they are.",
+      "next": "arrow-l3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 150
+      }
+    },
+    {
+      "id": "arrow-p",
+      "speaker": "npc",
+      "text": "Six rats, the Warren, north-west. Make them come to you.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1400,
+        "y": 0
+      }
+    },
+    {
+      "id": "arrow-done",
+      "speaker": "npc",
+      "text": "You've got a steady hand. That's rarer than courage, and it lasts longer.",
+      "next": "arrow-d1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 0
+      }
+    },
+    {
+      "id": "arrow-d2",
+      "speaker": "npc",
+      "text": "There's one more art. The strangest of the three.",
+      "next": null,
+      "options": [
+        {
+          "text": "Show me.",
+          "next": "arrow-d3",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "path-of-the-light"
+            }
+          ]
+        },
+        {
+          "text": "Later.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 150
+      }
+    },
+    {
+      "id": "arrow-d3",
+      "speaker": "npc",
+      "text": "Then let's see if you can hold light in your hands.",
+      "next": "light-lesson",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1680,
+        "y": 300
+      }
+    },
+    {
+      "id": "path-of-the-light-o0",
+      "speaker": "npc",
+      "text": "The last art. Magic. Are you ready?",
+      "next": null,
+      "options": [
+        {
+          "text": "I'm ready.",
+          "next": "path-of-the-light-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "path-of-the-light"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 0
+      }
+    },
+    {
+      "id": "path-of-the-light-ok",
+      "speaker": "npc",
+      "text": "Good.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1960,
+        "y": 150
+      }
+    },
+    {
+      "id": "light-lesson",
+      "speaker": "npc",
+      "text": "Magic. They'll tell you it's the Benefactor's gift. Light given shape.",
+      "next": "light-l2",
+      "options": [],
+      "effects": [
+        {
+          "kind": "giveItem",
+          "item": "acolyte-wand",
+          "qty": 1
+        }
+      ],
+      "pos": {
+        "x": 2240,
+        "y": 0
+      }
+    },
+    {
+      "id": "light-l2",
+      "speaker": "npc",
+      "text": "Maybe it is. I've used it for longer than you've been alive, and I still couldn't tell you where it comes from.",
+      "next": "light-l3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2240,
+        "y": 150
+      }
+    },
+    {
+      "id": "light-l3",
+      "speaker": "npc",
+      "text": "Aim it like an arrow, release it like a breath. Mage skills, on your bar. Try it on the wild pigs in Pig Hollow, south-west of the circle. They're sturdier than they look.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2240,
+        "y": 300
+      }
+    },
+    {
+      "id": "light-p",
+      "speaker": "npc",
+      "text": "Four pigs, Pig Hollow, south-west. Light. Breathe.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2520,
+        "y": 0
+      }
+    },
+    {
+      "id": "light-done",
+      "speaker": "npc",
+      "text": "Blade, bow and light. Most people pick one and spend their whole lives on it. You've held all three.",
+      "next": "light-d1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2800,
+        "y": 0
+      }
+    },
+    {
+      "id": "light-d2",
+      "speaker": "npc",
+      "text": "You'll learn the rest by walking the world. Go and see Archivist Maelis at the Archive in town. He'll explain it better than I can, and at much greater length.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 2800,
+        "y": 150
+      }
+    },
+    {
+      "id": "falcons-secret-o0",
+      "speaker": "npc",
+      "text": "Maelis talked your ear off? Good. Then you've learned everything this side of the island can teach you.",
+      "next": "falcons-secret-o1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3080,
+        "y": 0
+      }
+    },
+    {
+      "id": "falcons-secret-o1",
+      "speaker": "npc",
+      "text": "Meet me at the lookout, at the far end of the mountain path above town. Alone. There's something I want to tell you where nobody else can hear.",
+      "next": null,
+      "options": [
+        {
+          "text": "I'll be there.",
+          "next": "falcons-secret-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "falcons-secret"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 3080,
+        "y": 150
+      }
+    },
+    {
+      "id": "falcons-secret-ok",
+      "speaker": "npc",
+      "text": "Don't tell anyone where you're going. I'll head up now.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3080,
+        "y": 300
+      }
+    },
+    {
+      "id": "ft-hello",
+      "speaker": "npc",
+      "text": "The Training Grounds. Blade, bow or light: pick your poison.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 3360,
+        "y": 0
+      }
+    },
+    {
+      "id": "sword-d1",
+      "speaker": "npc",
+      "text": "Here. Armour, and a buckler for the off hand. A blade-fighter lives or dies by what they can take.",
+      "next": "sword-d2",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "arrow-l3",
+      "speaker": "npc",
+      "text": "The Rat Warren is north-west of the circle, up by the fence. Six rats. They're quick, so make them come to you.",
+      "next": null,
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "arrow-d1",
+      "speaker": "npc",
+      "text": "A jerkin and a quiver. Light enough to keep running in.",
+      "next": "arrow-d2",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "light-d1",
+      "speaker": "npc",
+      "text": "Robe and hood. They won't stop a blade, but the light runs easier through them.",
+      "next": "gift-0",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "gift-0",
+      "speaker": "npc",
+      "text": "And one more thing. Every student who finishes the three paths gets something from my own collection. Only one, so choose the art that felt like yours.",
+      "next": null,
+      "options": [
+        {
+          "text": "The Talon. I'll stay close.",
+          "next": "gift-sword",
+          "when": [
+            {
+              "kind": "flag",
+              "flag": "falcon-gift",
+              "set": false
+            }
+          ],
+          "effects": [
+            {
+              "kind": "giveItem",
+              "item": "falcons-talon",
+              "qty": 1
+            },
+            {
+              "kind": "setFlag",
+              "flag": "falcon-gift",
+              "value": true
+            }
+          ]
+        },
+        {
+          "text": "Windcutter. I'd rather they never reach me.",
+          "next": "gift-bow",
+          "when": [
+            {
+              "kind": "flag",
+              "flag": "falcon-gift",
+              "set": false
+            }
+          ],
+          "effects": [
+            {
+              "kind": "giveItem",
+              "item": "windcutter",
+              "qty": 1
+            },
+            {
+              "kind": "setFlag",
+              "flag": "falcon-gift",
+              "value": true
+            }
+          ]
+        },
+        {
+          "text": "The Skylight Staff. I want to understand the light.",
+          "next": "gift-staff",
+          "when": [
+            {
+              "kind": "flag",
+              "flag": "falcon-gift",
+              "set": false
+            }
+          ],
+          "effects": [
+            {
+              "kind": "giveItem",
+              "item": "skylight-staff",
+              "qty": 1
+            },
+            {
+              "kind": "setFlag",
+              "flag": "falcon-gift",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "effects": []
+    },
+    {
+      "id": "gift-sword",
+      "speaker": "npc",
+      "text": "The Talon. It was my first blade. Don't make me regret it.",
+      "next": "light-d2",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "gift-bow",
+      "speaker": "npc",
+      "text": "Windcutter. It always did like flying more than I did.",
+      "next": "light-d2",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "gift-staff",
+      "speaker": "npc",
+      "text": "The Skylight Staff. Careful. It listens.",
+      "next": "light-d2",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "gift-again",
+      "speaker": "npc",
+      "text": "Before you go: you never chose your gift.",
+      "next": "gift-0",
+      "options": [],
+      "effects": []
+    },
+    {
+      "id": "ft-wait",
+      "speaker": "npc",
+      "text": "Go and see Maelis at the Archive. I'm not going anywhere.",
+      "next": null,
+      "options": [],
+      "effects": []
     }
   ],
   "looksLike": "falcon"

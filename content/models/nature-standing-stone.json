@@ -1,0 +1,58 @@
+{
+ "id": "nature-standing-stone",
+ "scale": 1,
+ "palette": {
+  "stone": "#8c8a86",
+  "moss": "#6a8a4a"
+ },
+ "parts": [
+  {
+   "id": "slab",
+   "color": "$stone",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "rings": [
+    [
+     0,
+     0.5,
+     0.3
+    ],
+    [
+     1.6,
+     0.45,
+     0.27
+    ],
+    [
+     2.5,
+     0.33,
+     0.2
+    ],
+    [
+     2.75,
+     0.12,
+     0.08
+    ]
+   ]
+  },
+  {
+   "id": "moss",
+   "color": "$moss",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "rings": [
+    [
+     0,
+     0.53,
+     0.33
+    ],
+    [
+     0.3,
+     0.51,
+     0.31
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "a-new-city",
+  "name": "A New City",
+  "category": "world",
+  "act": 1,
+  "summary": "Defeating the raid boss, you learn that Myrie is back. She tells of a massive army of monsters approaching the region nearby. Should you rush to aid?",
+  "start": "Myrie, back in town",
+  "requirements": {
+    "quests": [
+      "the-raid-boss"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "news",
+      "journal": "Myrie is back, out of breath. A huge army of monsters is marching on the region next door.",
+      "objectives": [
+        {
+          "id": "myrie-army",
+          "text": "Hear Myrie out",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "army"
+        }
+      ]
+    },
+    {
+      "id": "defend",
+      "journal": "The army's vanguard is already at the walls of the neighbouring city.",
+      "objectives": [
+        {
+          "id": "vanguard",
+          "text": "Break the goblin vanguard",
+          "kind": "defeat",
+          "enemy": "goblin",
+          "qty": 12,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "captain",
+      "journal": "The walls held. The city's captain wants to meet whoever helped.",
+      "objectives": [
+        {
+          "id": "varro-meet",
+          "text": "Speak with Captain Varro",
+          "kind": "talk",
+          "npc": "captain-varro",
+          "node": "thanks"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 50
+    },
+    "coins": 150,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "myrie"
+}

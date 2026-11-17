@@ -1,0 +1,68 @@
+{
+  "id": "strike-the-earth",
+  "name": "Strike the Earth",
+  "category": "skill",
+  "act": 1,
+  "summary": "The town's mining teacher is willing to show a newcomer the basics.",
+  "start": "Brakka Stonejaw, at the quarry",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "learn",
+      "journal": "I met the town's mining teacher.",
+      "objectives": [
+        {
+          "id": "strike-the-earth-learn",
+          "text": "Learn the basics of Mining",
+          "kind": "talk",
+          "npc": "brakka-stonejaw",
+          "node": "strike-the-earth-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Brakka handed me a pick and pointed at the rock. Apparently that's the whole lesson.",
+      "objectives": [
+        {
+          "id": "mine-copper",
+          "text": "Mine copper ore",
+          "kind": "collect",
+          "item": "copper-ore",
+          "qty": 4,
+          "consume": true
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "journal": "Back to my teacher to show what I've done.",
+      "objectives": [
+        {
+          "id": "strike-the-earth-done",
+          "text": "Show your teacher",
+          "kind": "talk",
+          "npc": "brakka-stonejaw",
+          "node": "strike-the-earth-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "mining": 200,
+      "adventuring": 20
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "brakka-stonejaw"
+}

@@ -42,7 +42,7 @@ export function clearSave(): void {
 }
 
 /** Quests every new character starts with (the story opener). */
-export const STARTING_QUESTS: readonly string[] = [];
+export const STARTING_QUESTS: readonly string[] = ["a-feather-on-the-wind"];
 
 /** A fresh adventurer: empty-handed. Gear and supplies come from the world (chests, quests). */
 export function createCharacter(data: GameData, map: string, spawn: { x: number; z: number }): Character {

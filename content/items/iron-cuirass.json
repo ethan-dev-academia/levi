@@ -14,5 +14,6 @@
   "stats": {
     "armour": 8,
     "hpRegen": 0.1
-  }
+  },
+  "rarity": "common"
 }

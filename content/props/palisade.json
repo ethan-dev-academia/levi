@@ -1,0 +1,8 @@
+{
+  "id": "palisade",
+  "name": "Palisade",
+  "model": "prop-palisade",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

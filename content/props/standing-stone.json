@@ -1,0 +1,10 @@
+{
+  "id": "standing-stone",
+  "name": "Standing Stone",
+  "model": "nature-standing-stone",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 0.6
+}

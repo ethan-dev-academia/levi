@@ -1,0 +1,105 @@
+{
+  "id": "penwick",
+  "name": "Penwick",
+  "title": "Bookseller",
+  "location": "First city market",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d8b090",
+    "hair": "#8a8a8a",
+    "top": "#5a4a6a",
+    "topTrim": "#c8b07a",
+    "legs": "#3a3040",
+    "boots": "#2a2020",
+    "belt": "#4a3a2a"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "book-ask",
+      "label": "Secret Book: ask",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "secret-book",
+          "step": "ask"
+        }
+      ],
+      "start": "book-ask"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "pw-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "book-ask",
+      "speaker": "npc",
+      "text": "The Great Benefactor? Of course. Every child in the Layland has a copy.",
+      "next": "ba-2",
+      "options": [],
+      "effects": [
+        {
+          "kind": "giveItem",
+          "item": "benefactor-book-new",
+          "qty": 1
+        }
+      ],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "ba-2",
+      "speaker": "player",
+      "text": "Myrie wanted an older version.",
+      "next": "ba-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "ba-3",
+      "speaker": "npc",
+      "text": "Older? Ah. The first printings were all collected by the Cathedral years ago. Printer's errors, they said.",
+      "next": "ba-4",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 300
+      }
+    },
+    {
+      "id": "ba-4",
+      "speaker": "npc",
+      "text": "If any survived, they'd be in the old reading room. Nobody goes there anymore.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 450
+      }
+    },
+    {
+      "id": "pw-hello",
+      "speaker": "npc",
+      "text": "Books, scrolls, maps. Mind the dust.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    }
+  ]
+}

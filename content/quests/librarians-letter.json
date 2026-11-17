@@ -1,0 +1,59 @@
+{
+  "id": "librarians-letter",
+  "name": "Librarian's Letter",
+  "category": "adventurer",
+  "act": 0,
+  "summary": "The librarian is missing his letter. He asks you to recover it while you are on your journey with Falcon.",
+  "start": "Archivist Maelis, in the library",
+  "giver": "archivist-maelis",
+  "requirements": {
+    "quests": [],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "find",
+      "journal": "Maelis lost a letter. He thinks the wind took it out of the Archive window and south over the meadows, towards the cliffs.",
+      "objectives": [
+        {
+          "id": "letter-found",
+          "text": "Find Maelis's letter on the south meadow",
+          "kind": "pickup",
+          "item": "maelis-letter",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "return",
+      "journal": "Found it, seal unbroken. Maelis will be relieved.",
+      "objectives": [
+        {
+          "id": "letter-hand",
+          "text": "Bring the letter to Maelis",
+          "kind": "collect",
+          "item": "maelis-letter",
+          "qty": 1,
+          "consume": true
+        },
+        {
+          "id": "letter-thanks",
+          "text": "Return it to Archivist Maelis",
+          "kind": "talk",
+          "npc": "archivist-maelis",
+          "node": "letter-thanks"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 30
+    },
+    "coins": 40,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  }
+}

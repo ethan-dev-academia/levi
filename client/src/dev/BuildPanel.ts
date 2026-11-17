@@ -142,7 +142,8 @@ export class BuildPanel {
       }
       if (!s.npc && this.npcs.size) s.npc = [...this.npcs.keys()][0]!;
       sel.addEventListener("change", () => (s.npc = sel.value));
-      const facing = ["South", "West", "North", "East"][s.rot] ?? "South";
+      if (this.propDefs.get(s.prop)?.category === "nature") this.propBox.append(this.scatterControls());
+    const facing = ["South", "West", "North", "East"][s.rot] ?? "South";
       const moveBtns = (current: string, pick: (m: "none" | "area" | "route") => void): HTMLElement =>
         h("div", { className: "dev-grid cols-3" }, ...(["none", "area", "route"] as const).map((m) => {
           const b = h("button", { className: "dev-btn", onclick: () => pick(m) }, m === "none" ? "Stand" : m === "area" ? "Wander" : "Route");
@@ -283,14 +284,14 @@ export class BuildPanel {
   private renderProps(force: boolean): void {
     const s = this.tool.settings;
     this.propBox.hidden = s.tool !== "prop";
-    const snap = `${s.tool}|${s.prop}|${s.rot}`;
+    const snap = `${s.tool}|${s.prop}|${s.rot}|${s.scatter}|${s.scatterErase}`;
     if (!force && snap === this.renderedProps) return;
     if (this.propBox.contains(document.activeElement) && !force) return;
     this.renderedProps = snap;
     this.propBox.replaceChildren();
     if (s.tool !== "prop") return;
     const defs = [...this.propDefs.values()];
-    for (const cat of ["furniture", "storage", "decor", "signage"] as const) {
+    for (const cat of ["nature", "furniture", "storage", "decor", "signage"] as const) {
       const list = defs.filter((d) => d.category === cat);
       if (list.length === 0) continue;
       this.propBox.append(
@@ -315,6 +316,46 @@ export class BuildPanel {
       text.addEventListener("input", () => (s.signText = text.value));
       this.propBox.append(h("h3", {}, "Sign text (new signs)"), text);
     }
+  }
+
+  /** Scatter brush options for nature props: on/off, size, density, which props to mix. */
+  private scatterControls(): HTMLElement {
+    const s = this.tool.settings;
+    const box = h("div", { className: "dev-scatter" });
+    const toggle = h("button", { className: "dev-btn", onclick: () => { s.scatter = !s.scatter; this.refresh(true); } }, s.scatter ? "Scatter brush: on" : "Scatter brush: off");
+    toggle.classList.toggle("active", s.scatter);
+    box.append(h("h3", {}, "Scatter"), toggle);
+    if (!s.scatter) {
+      box.append(h("div", { className: "dev-hint" }, "Turn on to drag-paint a random mix of trees, rocks or plants."));
+      return box;
+    }
+    const mode = h("div", { className: "dev-grid cols-2" }, ...([false, true] as const).map((erase) => {
+      const b = h("button", { className: "dev-btn", onclick: () => { s.scatterErase = erase; this.refresh(true); } }, erase ? "Erase" : "Paint");
+      b.classList.toggle("active", s.scatterErase === erase);
+      return b;
+    }));
+    const slider = (label: string, min: number, max: number, step: number, value: number, set: (v: number) => void, fmt: (v: number) => string): HTMLElement => {
+      const out = h("span", {}, fmt(value));
+      const input = h("input", { type: "range", min: String(min), max: String(max), step: String(step), value: String(value) });
+      input.addEventListener("input", () => { set(Number(input.value)); out.textContent = fmt(Number(input.value)); });
+      return h("label", { className: "dev-field" }, label, input, out);
+    };
+    box.append(
+      mode,
+      slider("Brush", 1, 10, 1, s.scatterRadius, (v) => (s.scatterRadius = v), (v) => `${v * 2 + 1} wide`),
+      slider("Density", 0.01, 0.5, 0.01, s.scatterDensity, (v) => (s.scatterDensity = v), (v) => `${Math.round(v * 100)}%`),
+      h("h3", {}, "Mix (none ticked = selected prop)"),
+    );
+    const grid = h("div", { className: "dev-grid cols-2" });
+    for (const d of [...this.propDefs.values()].filter((x) => x.category === "nature")) {
+      const cb = h("input", { type: "checkbox", checked: s.scatterMix.includes(d.id) });
+      cb.addEventListener("change", () => {
+        s.scatterMix = cb.checked ? [...s.scatterMix, d.id] : s.scatterMix.filter((x) => x !== d.id);
+      });
+      grid.append(h("label", { className: "dev-check" }, cb, d.name));
+    }
+    box.append(grid, h("div", { className: "dev-hint" }, "Each cell rolls once per drag. Solid props never touch, so paths stay open. Undo works."));
+    return box;
   }
 
   private renderSelected(): void {
@@ -349,7 +390,14 @@ export class BuildPanel {
       h("div", { className: "dev-region-meta" }, `${sel.id} · ${sel.storeys.length} storey(s) · ${sel.stairs.length} stair(s)`),
       h("div", { className: "dev-field" }, "Roof", roof),
       h("div", { className: "dev-field" }, "Roof pitch", num(sel.roof.pitch, 0.1, (v) => this.tool.updateSelected({ roof: { pitch: Math.max(0.1, Math.min(2, v)) } }))),
-      h("div", { className: "dev-field" }, "Floor height", num(sel.baseY, 0.1, (v) => this.tool.updateSelected({ baseY: v }))),
+      // Height of the ground floor above the terrain (not the absolute world height, which was easy to break).
+      (() => {
+        const ground = this.tool.groundTop(sel);
+        const above = Math.round((sel.baseY - ground) * 100) / 100;
+        return h("div", { className: "dev-field" }, "Floor above ground",
+          num(above, 0.1, (v) => this.tool.updateSelected({ baseY: Math.round((ground + Math.max(-0.5, Math.min(8, v))) * 100) / 100 })),
+          h("button", { className: "dev-btn", title: "Put the floor just above the highest ground under the building", onclick: () => this.tool.updateSelected({ baseY: Math.round((ground + 0.1) * 100) / 100 }) }, "Snap to ground"));
+      })(),
       h("div", { className: "dev-field" }, "Storey height", num(sel.floorHeight, 0.1, (v) => this.tool.updateSelected({ floorHeight: Math.max(2, Math.min(6, v)) }))),
       h(
         "div",

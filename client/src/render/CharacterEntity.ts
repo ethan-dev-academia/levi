@@ -32,6 +32,9 @@ export class CharacterEntity {
   private gait = 0; // 0 = idle, 1 = full walk, eased
   private idleTime = 0;
   private lastX = NaN;
+  /** Cast / attack pose: seconds since it started, and which. */
+  private actT = Infinity;
+  private actKind: "thrust" | "swing" = "thrust";
   private lastZ = NaN;
   /** Sole vertices of each foot mesh (mesh-local), checked against the ground. */
   private readonly soles: Array<{ mesh: THREE.Object3D; points: THREE.Vector3[] }> = [];
@@ -48,6 +51,17 @@ export class CharacterEntity {
       geom,
       new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }),
     );
+  }
+
+  /** Play the cast pose: thrust the casting hand out (spells, shots) or swing the weapon arm (melee). */
+  playCast(kind: "thrust" | "swing"): void {
+    this.actT = 0;
+    this.actKind = kind;
+  }
+
+  setVisible(v: boolean): void {
+    this.model.root.visible = v;
+    this.shadow.visible = v;
   }
 
   addTo(parent: THREE.Object3D): void {
@@ -101,9 +115,31 @@ export class CharacterEntity {
       j.torso.scale.y = 1 + Math.sin(this.idleTime * 2.2) * 0.012 * (1 - this.gait);
     }
     if (j.head) j.head.rotation.x = -0.06 * this.gait;
+    this.actT += dt;
+    if (this.actT < 0.42) this.castPose(this.actT / 0.42);
     root.position.y += this.groundPenetration(heightAt);
 
     this.shadow.position.set(x, ground + 0.04, z);
+  }
+
+  /** Overlay the right arm (and a torso twist) on the walk for the cast pose. t: 0 → 1. */
+  private castPose(t: number): void {
+    const j = this.model.joints;
+    // Snap out fast, ease back slowly.
+    const k = t < 0.18 ? t / 0.18 : 1 - (t - 0.18) / 0.82;
+    const w = k * k * (3 - 2 * k);
+    if (this.actKind === "thrust") {
+      if (j.armR) j.armR.rotation.x = j.armR.rotation.x * (1 - w) - 1.45 * w;
+      if (j.forearmR) j.forearmR.rotation.x = j.forearmR.rotation.x * (1 - w) - 0.1 * w;
+      if (j.armL) j.armL.rotation.x = j.armL.rotation.x * (1 - w) - 0.5 * w;
+      if (j.torso) j.torso.rotation.y = -0.25 * w;
+    } else {
+      // Wind up high and behind, then cut down across the body.
+      const swingA = t < 0.18 ? -2.4 * (t / 0.18) : -2.4 + 3.0 * Math.min(1, (t - 0.18) / 0.25);
+      const fade = t < 0.5 ? 1 : 1 - (t - 0.5) / 0.5;
+      if (j.armR) j.armR.rotation.x = j.armR.rotation.x * (1 - fade) + swingA * fade;
+      if (j.torso) j.torso.rotation.y = (t < 0.18 ? 0.3 : 0.3 - 0.6 * Math.min(1, (t - 0.18) / 0.25)) * fade;
+    }
   }
 
   /** How far the lowest sole point sits below the terrain under it (≥ 0). */

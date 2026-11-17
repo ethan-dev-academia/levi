@@ -1,0 +1,10 @@
+{
+  "id": "blossom",
+  "name": "Blossom Tree",
+  "model": "nature-blossom",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 2.1
+}

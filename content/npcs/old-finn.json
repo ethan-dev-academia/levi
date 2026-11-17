@@ -1,0 +1,170 @@
+{
+  "id": "old-finn",
+  "name": "Old Finn",
+  "title": "Fisherman",
+  "location": "Docks",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c89070",
+    "hair": "#d8d4cc",
+    "top": "#4a6a8a",
+    "legs": "#3a4a5a",
+    "topTrim": "#c8b07a",
+    "boots": "#2a2018",
+    "belt": "#4a3220"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "first-catch-offer",
+      "label": "Offer: first-catch",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "first-catch",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "first-catch-o0"
+    },
+    {
+      "id": "first-catch-lesson",
+      "label": "First Catch: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "first-catch",
+          "step": "learn"
+        }
+      ],
+      "start": "first-catch-lesson"
+    },
+    {
+      "id": "first-catch-practice",
+      "label": "First Catch: practising",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "first-catch",
+          "step": "practice"
+        }
+      ],
+      "start": "first-catch-p"
+    },
+    {
+      "id": "first-catch-done",
+      "label": "First Catch: done",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "first-catch",
+          "step": "show"
+        }
+      ],
+      "start": "first-catch-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "old-finn-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "first-catch-o0",
+      "speaker": "npc",
+      "text": "New in town? I teach fishing, if you want to learn.",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me.",
+          "next": "first-catch-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "first-catch"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "first-catch-ok",
+      "speaker": "npc",
+      "text": "Then let's begin.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "first-catch-lesson",
+      "speaker": "npc",
+      "text": "Fishing's mostly sitting still. The rest is knowing where to sit.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "first-catch-p",
+      "speaker": "npc",
+      "text": "Go on, then. Practice makes perfect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "first-catch-done",
+      "speaker": "npc",
+      "text": "Three trout! You've got the patience for it.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "old-finn-hello",
+      "speaker": "npc",
+      "text": "Fishing's mostly sitting still. The rest is knowing where to sit.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    }
+  ]
+}

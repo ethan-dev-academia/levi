@@ -1,0 +1,10 @@
+{
+  "id": "grass-tuft",
+  "name": "Grass Tuft",
+  "model": "nature-grass-tuft",
+  "solid": false,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 0.3
+}

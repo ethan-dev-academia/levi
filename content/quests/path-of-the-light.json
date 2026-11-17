@@ -1,0 +1,78 @@
+{
+  "id": "path-of-the-light",
+  "name": "Path of the Light",
+  "category": "act",
+  "act": 0,
+  "summary": "There is something unusual about this world. Falcon can show you a type of unique skill in this world... magic.",
+  "start": "Falcon, at the Training Grounds",
+  "requirements": {
+    "quests": [
+      "path-of-the-arrow",
+      "path-of-the-sword"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "lesson",
+      "journal": "Falcon is going to show me magic. He called it light given shape, a gift from the Benefactor himself. He didn't sound sure.",
+      "objectives": [
+        {
+          "id": "light-lesson",
+          "text": "Listen to Falcon's lesson",
+          "kind": "talk",
+          "npc": "falcon-training",
+          "node": "light-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Light can be held, aimed and loosed. The wild pigs of Pig Hollow, south-west of the circle, should test whether I can.",
+      "objectives": [
+        {
+          "id": "light-pigs",
+          "text": "Defeat 4 wild pigs in Pig Hollow",
+          "kind": "defeat",
+          "enemy": "pig",
+          "qty": 4,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "Blade, bow and light. Falcon will want to see what I've learned.",
+      "objectives": [
+        {
+          "id": "light-report",
+          "text": "Return to Falcon",
+          "kind": "talk",
+          "npc": "falcon-training",
+          "node": "light-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "mage": 410,
+      "adventuring": 30
+    },
+    "coins": 0,
+    "items": [
+      {
+        "item": "linen-robe",
+        "qty": 1
+      },
+      {
+        "item": "linen-hood",
+        "qty": 1
+      }
+    ],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "falcon-training"
+}

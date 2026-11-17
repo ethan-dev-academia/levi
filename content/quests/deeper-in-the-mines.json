@@ -1,0 +1,54 @@
+{
+  "id": "deeper-in-the-mines",
+  "name": "Deeper in the Mines",
+  "category": "world",
+  "act": 1,
+  "summary": "There seems to be a whole lot of rats. There is something going on...",
+  "start": "Foreman Grell, at the mines",
+  "requirements": {
+    "quests": [
+      "rat-problem"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "deeper",
+      "journal": "Grell says the rats keep coming from the lower tunnels: the ones that were sealed years ago.",
+      "objectives": [
+        {
+          "id": "deep-rats",
+          "text": "Clear the lower tunnels",
+          "kind": "defeat",
+          "enemy": "rat",
+          "qty": 8,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "Those tunnels weren't dug by miners. The walls were gnawed smooth.",
+      "objectives": [
+        {
+          "id": "grell-deep",
+          "text": "Tell Foreman Grell what you found",
+          "kind": "talk",
+          "npc": "foreman-grell",
+          "node": "deep-report"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 35
+    },
+    "coins": 50,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "foreman-grell"
+}

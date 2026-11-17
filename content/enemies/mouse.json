@@ -1,33 +1,33 @@
 {
- "id": "mouse",
- "name": "Mouse",
- "level": 1,
- "model": "enemy-rodent",
- "scale": 0.55,
- "palette": {
-  "fur": "#9a8f82",
-  "belly": "#c9bfb2"
- },
- "stats": {
-  "maxHp": 14,
-  "armour": 0,
-  "moveSpeed": 3.2
- },
- "aggroRange": 3,
- "leashRange": 10,
- "xp": 4,
- "respawn": 15,
- "attacks": [
-  {
-   "id": "nibble",
-   "name": "Nibble",
-   "shape": "circle",
-   "anchor": "self",
-   "range": 1.2,
-   "radius": 0.9,
-   "windup": 0.7,
-   "damage": 2,
-   "cooldown": 2
-  }
- ]
+  "id": "mouse",
+  "name": "Mouse",
+  "level": 1,
+  "model": "enemy-rodent",
+  "scale": 0.55,
+  "palette": {
+    "fur": "#9a8f82",
+    "belly": "#c9bfb2"
+  },
+  "stats": {
+    "maxHp": 14,
+    "armour": 0,
+    "moveSpeed": 3.2
+  },
+  "aggroRange": 3,
+  "leashRange": 10,
+  "xp": 12,
+  "respawn": 15,
+  "attacks": [
+    {
+      "id": "nibble",
+      "name": "Nibble",
+      "shape": "circle",
+      "anchor": "self",
+      "range": 1.2,
+      "radius": 0.9,
+      "windup": 0.7,
+      "damage": 2,
+      "cooldown": 2
+    }
+  ]
 }

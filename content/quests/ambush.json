@@ -1,0 +1,70 @@
+{
+  "id": "ambush",
+  "name": "Ambush",
+  "category": "world",
+  "act": 1,
+  "summary": "The forest is too quiet.",
+  "start": "Captain Varro, at the city walls",
+  "requirements": {
+    "quests": [
+      "a-new-city"
+    ],
+    "skills": {},
+    "flags": [],
+    "combatLevel": 9,
+    "adventureLevel": 9
+  },
+  "steps": [
+    {
+      "id": "scout",
+      "journal": "Varro wants the forest road scouted before his supply carts go out. It's too quiet out there.",
+      "objectives": [
+        {
+          "id": "ambush-goblins",
+          "text": "Clear the goblins hiding along the road",
+          "kind": "defeat",
+          "enemy": "goblin",
+          "qty": 6,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "troll",
+      "journal": "The goblins were only the bait. Something huge is coming through the trees.",
+      "objectives": [
+        {
+          "id": "ambush-troll",
+          "text": "Defeat the hill troll",
+          "kind": "defeat",
+          "enemy": "troll",
+          "qty": 1,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "Whoever set this up knew which road the carts would take.",
+      "objectives": [
+        {
+          "id": "varro-ambush",
+          "text": "Report to Captain Varro",
+          "kind": "talk",
+          "npc": "captain-varro",
+          "node": "ambush-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 65
+    },
+    "coins": 150,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "captain-varro"
+}

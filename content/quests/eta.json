@@ -1,0 +1,74 @@
+{
+  "id": "eta",
+  "name": "Eta",
+  "category": "act",
+  "act": 1,
+  "summary": "The first emperor.",
+  "start": "Myrie, at the city",
+  "requirements": {
+    "quests": [
+      "ambush",
+      "a-new-city"
+    ],
+    "skills": {},
+    "flags": [],
+    "adventureLevel": 9
+  },
+  "steps": [
+    {
+      "id": "warning",
+      "journal": "Myrie says the army has a leader. Small, masked, and moving faster than anyone can follow.",
+      "objectives": [
+        {
+          "id": "myrie-eta",
+          "text": "Speak with Myrie",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "eta-warning"
+        }
+      ]
+    },
+    {
+      "id": "fight",
+      "journal": "Eta. The second Emperor I've seen, and the first I have to face alone.",
+      "objectives": [
+        {
+          "id": "eta",
+          "text": "Defeat Eta",
+          "kind": "defeat",
+          "enemy": "eta",
+          "qty": 1,
+          "boss": true
+        }
+      ]
+    },
+    {
+      "id": "after",
+      "journal": "As Eta fell, the mask cracked, and the face underneath looked almost relieved.",
+      "objectives": [
+        {
+          "id": "myrie-after",
+          "text": "Return to Myrie",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "eta-after"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "brawler": 300,
+      "ranger": 300,
+      "mage": 300,
+      "adventuring": 140
+    },
+    "coins": 500,
+    "items": [],
+    "skills": [],
+    "unlocks": [
+      "act-1-complete"
+    ]
+  },
+  "giver": "myrie"
+}

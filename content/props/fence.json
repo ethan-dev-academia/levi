@@ -1,0 +1,8 @@
+{
+  "id": "fence",
+  "name": "Fence",
+  "model": "prop-fence",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

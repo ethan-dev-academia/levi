@@ -1,0 +1,170 @@
+{
+  "id": "hilde-panmaker",
+  "name": "Hilde Panmaker",
+  "title": "Baker and Cook",
+  "location": "Bakery",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e0b090",
+    "hair": "#c89a5a",
+    "top": "#d8cfc0",
+    "legs": "#6a5040",
+    "topTrim": "#c8b07a",
+    "boots": "#2a2018",
+    "belt": "#4a3220"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "hearth-and-home-offer",
+      "label": "Offer: hearth-and-home",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "hearth-and-home",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "hearth-and-home-o0"
+    },
+    {
+      "id": "hearth-and-home-lesson",
+      "label": "Hearth and Home: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "hearth-and-home",
+          "step": "learn"
+        }
+      ],
+      "start": "hearth-and-home-lesson"
+    },
+    {
+      "id": "hearth-and-home-practice",
+      "label": "Hearth and Home: practising",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "hearth-and-home",
+          "step": "practice"
+        }
+      ],
+      "start": "hearth-and-home-p"
+    },
+    {
+      "id": "hearth-and-home-done",
+      "label": "Hearth and Home: done",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "hearth-and-home",
+          "step": "show"
+        }
+      ],
+      "start": "hearth-and-home-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "hilde-panmaker-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "hearth-and-home-o0",
+      "speaker": "npc",
+      "text": "New in town? I teach cooking, if you want to learn.",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me.",
+          "next": "hearth-and-home-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "hearth-and-home"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "hearth-and-home-ok",
+      "speaker": "npc",
+      "text": "Then let's begin.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "hearth-and-home-lesson",
+      "speaker": "npc",
+      "text": "Fire, food and timing. Burn it and you start again.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "hearth-and-home-p",
+      "speaker": "npc",
+      "text": "Go on, then. Practice makes perfect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "hearth-and-home-done",
+      "speaker": "npc",
+      "text": "Not burnt! Well, not much. You'll make a cook yet.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "hilde-panmaker-hello",
+      "speaker": "npc",
+      "text": "Fire, food and timing. Burn it and you start again.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    }
+  ]
+}

@@ -258,6 +258,7 @@ export function mountDevTools(ctx: DevContext): void {
   let buildDrag: { kind: "rect"; start: { cx: number; cz: number } } | { kind: "edges"; start: Edge } | null = null;
   /** Painting a spawn zone (left button held). */
   let zoneStroke = false;
+  let scatterStroke = false;
   let buildAt: (Vec2 & { y: number }) | null = null;
   const groundY = (x: number, z: number): number => ctx.data.buildings.groundHeight(ctx.data.hm, x, z);
   /** Cursor on the edit plane: the selected building's storey, else the ground. */
@@ -307,7 +308,11 @@ export function mountDevTools(ctx: DevContext): void {
     if (t === "room" || t === "floor" || t === "erase") buildDrag = { kind: "rect", start: c };
     else if (t === "wall" || t === "door" || t === "window") buildDrag = { kind: "edges", start: edgeAt(hit.x, hit.z) };
     else if (t === "stairs" || t === "ladder") report(builder.placeStair(c.cx, c.cz, t, OPPOSITE[cameraSide(hit.x, hit.z)]));
-    else if (t === "prop") report(builder.placeProp(c.cx, c.cz));
+    else if (t === "prop" && builder.scattering) {
+      builder.beginScatter();
+      scatterStroke = true;
+      builder.scatterAt(c.cx, c.cz);
+    } else if (t === "prop") report(builder.placeProp(c.cx, c.cz));
     else if (t === "npc") report(builder.placeNpc(c.cx, c.cz));
     else if (t === "item") report(builder.placeGroundItem(c.cx, c.cz));
     else if (t === "enemy") report(builder.placeEnemy(c.cx, c.cz));
@@ -350,6 +355,10 @@ export function mountDevTools(ctx: DevContext): void {
     if (e.button !== 0) return;
     updateNdc(e);
     if (buildDrag) finishBuildDrag();
+    if (scatterStroke) {
+      scatterStroke = false;
+      report(builder.endScatter());
+    }
     if (zoneStroke) {
       zoneStroke = false;
       builder.endZoneStroke();
@@ -510,6 +519,13 @@ export function mountDevTools(ctx: DevContext): void {
       } else if (sp) cells.push([sp.x, sp.z]);
       cells.push([c.cx, c.cz]);
       buildOverlay.setCells(cells, y, propFacing(builder.settings.rot));
+    } else if (t === "prop" && builder.scattering) {
+      if (scatterStroke) builder.scatterAt(c.cx, c.cz);
+      const r = builder.settings.scatterRadius;
+      const ring: Array<[number, number]> = [];
+      for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) if (dx * dx + dz * dz <= r * r + r) ring.push([c.cx + dx, c.cz + dz]);
+      buildOverlay.setColor(builder.settings.scatterErase ? 0xff5a4a : 0x6cc24a);
+      buildOverlay.setOutlines([ring], groundY, null);
     } else if (t === "prop") {
       buildOverlay.setCells([[c.cx, c.cz]], y, propFacing(builder.settings.rot));
     } else if (t === "zone") {

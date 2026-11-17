@@ -4,6 +4,7 @@ import { deleteContent, guard, saveContent, type EditorLookups } from "./fields.
 import { NpcEditor } from "./NpcEditor.js";
 import { questForm } from "./QuestForm.js";
 import { enemyForm } from "./EnemyForm.js";
+import { questFlow } from "./QuestFlow.js";
 
 export interface QuestEditorDeps {
   quests: Map<string, QuestDef>;
@@ -38,6 +39,9 @@ export class QuestEditor {
   /** Working copy of the selected definition (unsaved edits live here). */
   private work: QuestDef | NpcDef | EnemyDef | null = null;
   private isNew = false;
+  /** Quests tab: show the progression flow chart instead of the editor. */
+  private flow = false;
+  private readonly flowFilter = new Set<QuestDef["category"]>(["act", "world", "skill", "adventurer"]);
   private readonly list = h("div", { className: "qe-list" });
   private readonly main = h("div", { className: "qe-main" });
   private readonly tabs = h("div", { className: "qe-tabs" });
@@ -83,6 +87,8 @@ export class QuestEditor {
         h("button", { className: `dev-btn${this.tab === t ? " active" : ""}`, onclick: () => { this.tab = t; this.selected = null; this.work = null; this.render(); } },
           t === "quests" ? `Quests (${this.deps.quests.size})` : t === "npcs" ? `NPCs (${this.deps.npcs.size})` : `Enemies (${this.deps.enemies.size})`),
       ),
+      ...(this.tab === "quests" ? [h("button", { className: `dev-btn${this.flow ? " active" : ""}`, title: "See every quest as a progression chart", onclick: () => { this.flow = !this.flow; this.render(); } }, this.flow ? "◧ Editor" : "⇶ Flow view")] : []
+      ),
     );
     this.renderList();
     this.renderMain();
@@ -97,7 +103,8 @@ export class QuestEditor {
       all.sort((a, b) => order[a.category] - order[b.category] || a.act - b.act || a.name.localeCompare(b.name));
       let group = "";
       for (const quest of all) {
-        const g = quest.category === "act" ? `Act ${quest.act}` : quest.category[0]!.toUpperCase() + quest.category.slice(1);
+        const cat = quest.category[0]!.toUpperCase() + quest.category.slice(1);
+        const g = quest.category === "act" ? `Act ${quest.act}` : quest.category === "world" ? `World · Act ${quest.act}` : cat;
         if (g !== group) {
           group = g;
           this.list.append(h("div", { className: "qe-list-head" }, g));
@@ -158,6 +165,29 @@ export class QuestEditor {
   private renderMain(): void {
     this.main.replaceChildren();
     this.errors.textContent = "";
+    this.root.classList.toggle("qe-flow-mode", this.tab === "quests" && this.flow);
+    if (this.tab === "quests" && this.flow) {
+      const filters = h("div", { className: "qf-filters" }, "Show:",
+        ...(["act", "world", "skill", "adventurer"] as const).map((c) => {
+          const cb = h("input", { type: "checkbox", checked: this.flowFilter.has(c) });
+          cb.addEventListener("change", () => { if (cb.checked) this.flowFilter.add(c); else this.flowFilter.delete(c); this.renderMain(); });
+          return h("label", {}, cb, c);
+        }));
+      this.main.append(filters, questFlow({
+        quests: this.deps.quests,
+        status: (id) => this.deps.engine().status(id),
+        selected: this.selected,
+        open: (id) => {
+          const src = this.deps.quests.get(id);
+          this.selected = id;
+          this.isNew = false;
+          this.work = src ? structuredClone(src) : null;
+          this.flow = false;
+          this.render();
+        },
+      }, this.flowFilter));
+      return;
+    }
     const w = this.work;
     if (!w) {
       this.main.append(h("div", { className: "dev-empty qe-empty" },

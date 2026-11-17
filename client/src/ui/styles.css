@@ -1150,3 +1150,66 @@ body.dragging-skill .slot[data-ability] { border-color: var(--brass); box-shadow
 .sw-node.hidden-secret { border-style: dashed; border-color: #4a4260; opacity: 0.85; }
 .sw-q { font: 700 26px var(--serif); color: #6f6890; }
 .sw-secrets .sw-node { position: relative; }
+
+/* --- Quest chart (shared by the quest map and the F2 flow view) -------------------- */
+.qg-legend { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; font-size: 11px; color: var(--muted); margin: 6px 0; text-transform: capitalize; }
+.qg-legend span { display: flex; align-items: center; gap: 5px; }
+.qg-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
+.qg-legend .qg-hint { margin-left: auto; text-transform: none; }
+.qg-view { position: relative; flex: 1; min-height: 260px; overflow: hidden; background: #0d0f13; border: 1px solid var(--line); border-radius: 6px; cursor: grab; }
+.qg-view.dragging { cursor: grabbing; }
+.qg-canvas { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.qg-lines { position: absolute; left: 0; top: 0; pointer-events: none; color: #4a5060; }
+.qg-lines path { fill: none; stroke: currentColor; stroke-width: 1.6; }
+.qg-lines path.cross { stroke-dasharray: 5 4; }
+.qg-lines path.walked { color: #8a7a4a; }
+.qg-canvas.focus .qg-lines path { opacity: 0.12; }
+.qg-canvas.focus .qg-lines path.lit { opacity: 1; color: #e8d48a; stroke: #e8d48a; stroke-width: 2.2; }
+.qg-band { position: absolute; left: 0; border-top: 1px dashed #2a2f3a; }
+.qg-band-label { position: absolute; left: 8px; top: 3px; font: 700 10.5px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--brass); white-space: pre; }
+.qg-card {
+  position: absolute; width: 190px; height: 52px; box-sizing: border-box; padding: 6px 9px;
+  background: #181b22; border: 1px solid #323846; border-left: 4px solid #888; border-radius: 6px;
+  cursor: pointer; transition: opacity 0.1s, transform 0.1s;
+}
+.qg-card:hover { border-color: var(--brass); transform: translateY(-1px); }
+.qg-card.selected { box-shadow: 0 0 0 2px #8b5cf6; }
+.qg-card.key { background: #221f17; }
+.qg-card.done { opacity: 0.75; }
+.qg-card.available { border-style: dashed; border-left-style: solid; }
+.qg-canvas.focus .qg-card { opacity: 0.3; }
+.qg-canvas.focus .qg-card.lit { opacity: 1; }
+.qg-name { display: flex; align-items: center; gap: 6px; font: 600 12px var(--sans); color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qg-meta { margin-top: 3px; font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qg-dot { flex: 0 0 auto; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #3a4050; }
+.qg-dot.active { background: #e8c84a; }
+.qg-dot.done { background: #6cc24a; }
+.qg-dot.available { background: transparent; box-shadow: inset 0 0 0 1.5px #e8e4d8; }
+.qg-view.dev { background: #0e0c16; border-color: #2c2645; }
+
+/* --- Quest map window ----------------------------------------------------------------- */
+.quest-map-window {
+  position: absolute; left: 24px; right: 24px; top: 20px; bottom: 136px; z-index: 14;
+  display: flex; flex-direction: column; padding: 14px 18px 12px;
+  color: var(--text); background: linear-gradient(180deg, rgba(24, 28, 35, 0.97), rgba(12, 14, 18, 0.98));
+  border: 1px solid var(--brass-dim); border-radius: 10px; box-shadow: 0 0 0 1px #000, 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+.quest-map-window[hidden] { display: none; }
+.qm-head { display: flex; align-items: flex-start; gap: 10px; }
+.qm-head > div { flex: 1; }
+.qm-head h2 { margin: 0; font: 700 20px var(--serif); color: var(--brass); }
+.qm-head .menu-btn { margin: 0; }
+.qm-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.qm-empty { padding: 30px; text-align: center; color: var(--muted); }
+
+/* --- Quest book: All by act, key quests, hidden road ahead ------------------------------ */
+.qb-tabs { grid-template-columns: repeat(5, 1fr); }
+.qb-bar { display: flex; align-items: center; gap: 8px; margin: 4px 0 2px; }
+.qb-bar .qb-pins { flex: 1; margin: 0; }
+.qb-bar .qb-map { margin: 0; padding: 4px 10px; }
+.qb-act { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 0 5px; padding-bottom: 3px; border-bottom: 1px solid var(--line); font: 700 11px var(--sans); letter-spacing: 0.1em; text-transform: uppercase; color: var(--brass); }
+.qb-act b { font-size: 11.5px; letter-spacing: 0.02em; color: var(--text); }
+.quest-row.key .q-name { color: #f0d890; font-weight: 600; }
+.quest-row .q-key { color: var(--brass); margin-right: 5px; font-size: 10px; }
+.quest-row .q-cat { margin-left: auto; margin-right: 6px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.qb-hidden { margin: 3px 0 0 4px; font-size: 11px; font-style: italic; color: #6a7080; }

@@ -1,0 +1,39 @@
+{
+  "id": "catacomb-ghoul",
+  "name": "Catacomb Ghoul",
+  "level": 8,
+  "model": "humanoid",
+  "scale": 0.95,
+  "palette": {
+    "skin": "#a8b0a0",
+    "hair": "#3a3a34",
+    "top": "#4a4a42",
+    "topTrim": "#2a2a24",
+    "legs": "#3a3a32",
+    "boots": "#22221c",
+    "belt": "#2a2a24"
+  },
+  "stats": {
+    "maxHp": 80,
+    "armour": 6,
+    "moveSpeed": 2.8
+  },
+  "aggroRange": 6,
+  "leashRange": 14,
+  "xp": 28,
+  "respawn": 30,
+  "attacks": [
+    {
+      "id": "claw",
+      "name": "Claw",
+      "shape": "cone",
+      "tracking": "auto",
+      "range": 1.8,
+      "length": 2.2,
+      "angle": 50,
+      "windup": 0.8,
+      "damage": 8,
+      "cooldown": 2.4
+    }
+  ]
+}

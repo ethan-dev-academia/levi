@@ -1,0 +1,8 @@
+{
+  "id": "barricade",
+  "name": "Barricade",
+  "model": "prop-barricade",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

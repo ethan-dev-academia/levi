@@ -1,0 +1,170 @@
+{
+  "id": "rowan-fieldwise",
+  "name": "Rowan Fieldwise",
+  "title": "Forager",
+  "location": "Fields",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c8a080",
+    "hair": "#6a8a3a",
+    "top": "#5a7a3a",
+    "legs": "#4a5a2a",
+    "topTrim": "#c8b07a",
+    "boots": "#2a2018",
+    "belt": "#4a3220"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "from-the-wild-offer",
+      "label": "Offer: from-the-wild",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "from-the-wild",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "from-the-wild-o0"
+    },
+    {
+      "id": "from-the-wild-lesson",
+      "label": "From the Wild: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "from-the-wild",
+          "step": "learn"
+        }
+      ],
+      "start": "from-the-wild-lesson"
+    },
+    {
+      "id": "from-the-wild-practice",
+      "label": "From the Wild: practising",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "from-the-wild",
+          "step": "practice"
+        }
+      ],
+      "start": "from-the-wild-p"
+    },
+    {
+      "id": "from-the-wild-done",
+      "label": "From the Wild: done",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "from-the-wild",
+          "step": "show"
+        }
+      ],
+      "start": "from-the-wild-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "rowan-fieldwise-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "from-the-wild-o0",
+      "speaker": "npc",
+      "text": "New in town? I teach gathering, if you want to learn.",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me.",
+          "next": "from-the-wild-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "from-the-wild"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "from-the-wild-ok",
+      "speaker": "npc",
+      "text": "Then let's begin.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "from-the-wild-lesson",
+      "speaker": "npc",
+      "text": "The wild gives freely, if you know what to look for. Silverleaf grows in the shade.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "from-the-wild-p",
+      "speaker": "npc",
+      "text": "Go on, then. Practice makes perfect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "from-the-wild-done",
+      "speaker": "npc",
+      "text": "Silverleaf, and you didn't trample it. Well done.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "rowan-fieldwise-hello",
+      "speaker": "npc",
+      "text": "The wild gives freely, if you know what to look for. Silverleaf grows in the shade.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    }
+  ]
+}

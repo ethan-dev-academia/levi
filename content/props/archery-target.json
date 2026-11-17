@@ -1,0 +1,8 @@
+{
+  "id": "archery-target",
+  "name": "Archery Target",
+  "model": "prop-archery-target",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

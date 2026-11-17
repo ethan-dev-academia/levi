@@ -1,0 +1,170 @@
+{
+  "id": "ysolde-thread",
+  "name": "Ysolde Thread",
+  "title": "Crafter",
+  "location": "Workshops",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e8c0a0",
+    "hair": "#5a3a6a",
+    "top": "#7a5a8a",
+    "legs": "#4a3a5a",
+    "topTrim": "#c8b07a",
+    "boots": "#2a2018",
+    "belt": "#4a3220"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "needle-and-thread-offer",
+      "label": "Offer: needle-and-thread",
+      "when": [
+        {
+          "kind": "questStatus",
+          "quest": "needle-and-thread",
+          "status": "notStarted"
+        },
+        {
+          "kind": "questStatus",
+          "quest": "townsquare",
+          "status": "done"
+        }
+      ],
+      "start": "needle-and-thread-o0"
+    },
+    {
+      "id": "needle-and-thread-lesson",
+      "label": "Needle and Thread: lesson",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "needle-and-thread",
+          "step": "learn"
+        }
+      ],
+      "start": "needle-and-thread-lesson"
+    },
+    {
+      "id": "needle-and-thread-practice",
+      "label": "Needle and Thread: practising",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "needle-and-thread",
+          "step": "practice"
+        }
+      ],
+      "start": "needle-and-thread-p"
+    },
+    {
+      "id": "needle-and-thread-done",
+      "label": "Needle and Thread: done",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "needle-and-thread",
+          "step": "show"
+        }
+      ],
+      "start": "needle-and-thread-done"
+    },
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "ysolde-thread-hello"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "needle-and-thread-o0",
+      "speaker": "npc",
+      "text": "New in town? I teach crafting, if you want to learn.",
+      "next": null,
+      "options": [
+        {
+          "text": "Teach me.",
+          "next": "needle-and-thread-ok",
+          "when": [],
+          "effects": [
+            {
+              "kind": "startQuest",
+              "quest": "needle-and-thread"
+            }
+          ]
+        },
+        {
+          "text": "Not right now.",
+          "next": null,
+          "when": [],
+          "effects": []
+        }
+      ],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "needle-and-thread-ok",
+      "speaker": "npc",
+      "text": "Then let's begin.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 150
+      }
+    },
+    {
+      "id": "needle-and-thread-lesson",
+      "speaker": "npc",
+      "text": "Wood, thread, stone. Anything can be something, if you're clever.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "needle-and-thread-p",
+      "speaker": "npc",
+      "text": "Go on, then. Practice makes perfect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 560,
+        "y": 0
+      }
+    },
+    {
+      "id": "needle-and-thread-done",
+      "speaker": "npc",
+      "text": "Lovely logs. We'll make something useful of these.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 840,
+        "y": 0
+      }
+    },
+    {
+      "id": "ysolde-thread-hello",
+      "speaker": "npc",
+      "text": "Wood, thread, stone. Anything can be something, if you're clever.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 1120,
+        "y": 0
+      }
+    }
+  ]
+}

@@ -11,5 +11,6 @@
     "armour": 4,
     "attackDamage": 1,
     "energyRegen": 0.3
-  }
+  },
+  "rarity": "common"
 }

@@ -1,0 +1,10 @@
+{
+  "id": "bush",
+  "name": "Bush",
+  "model": "nature-bush",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 0.7
+}

@@ -1,0 +1,68 @@
+{
+  "id": "needle-and-thread",
+  "name": "Needle and Thread",
+  "category": "skill",
+  "act": 1,
+  "summary": "The town's crafting teacher is willing to show a newcomer the basics.",
+  "start": "Ysolde Thread, in the workshops",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "learn",
+      "journal": "I met the town's crafting teacher.",
+      "objectives": [
+        {
+          "id": "needle-and-thread-learn",
+          "text": "Learn the basics of Crafting",
+          "kind": "talk",
+          "npc": "ysolde-thread",
+          "node": "needle-and-thread-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Ysolde can make anything out of almost nothing. She wants to see if I can learn.",
+      "objectives": [
+        {
+          "id": "craft-logs",
+          "text": "Gather oak logs for Ysolde",
+          "kind": "collect",
+          "item": "oak-log",
+          "qty": 3,
+          "consume": true
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "journal": "Back to my teacher to show what I've done.",
+      "objectives": [
+        {
+          "id": "needle-and-thread-done",
+          "text": "Show your teacher",
+          "kind": "talk",
+          "npc": "ysolde-thread",
+          "node": "needle-and-thread-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "crafting": 200,
+      "adventuring": 20
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "ysolde-thread"
+}

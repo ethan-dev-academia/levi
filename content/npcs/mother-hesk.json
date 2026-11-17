@@ -16,6 +16,18 @@
   "scale": 1.0,
   "entries": [
     {
+      "id": "world-hesk",
+      "label": "The World Around Us",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "the-world-around-us",
+          "step": "errand"
+        }
+      ],
+      "start": "world-hesk"
+    },
+    {
       "id": "default",
       "label": "Default",
       "when": [],
@@ -34,6 +46,50 @@
         "x": 0,
         "y": 0
       }
+    },
+    {
+      "id": "world-hesk",
+      "speaker": "npc",
+      "text": "Maelis sent you? Sit down, dear, you look like the wind's still in your ears. You want to know about the world? Start with the Cathedrals.",
+      "next": "world-hesk-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 0
+      }
+    },
+    {
+      "id": "world-hesk-2",
+      "speaker": "npc",
+      "text": "Every town down there has one. They're where heroes wake up when they fall. You close your eyes on some battlefield and open them on a cold stone floor, safe and sound.",
+      "next": "world-hesk-3",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 150
+      }
+    },
+    {
+      "id": "world-hesk-3",
+      "speaker": "npc",
+      "text": "Nobody ever asks how the Benefactor knows exactly where you fell. Or why he's so keen to have you back on your feet.",
+      "next": "world-hesk-4",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 280,
+        "y": 300
+      }
+    },
+    {
+      "id": "world-hesk-4",
+      "speaker": "npc",
+      "text": "Don't look at me like that. I'm just an old woman who runs the highest inn in the world. Off you go, back to Maelis.",
+      "next": null,
+      "options": [],
+      "effects": []
     }
   ]
 }

@@ -1,0 +1,11 @@
+{
+  "id": "cathedral-sigil",
+  "name": "Cathedral Sigil",
+  "description": "Taken from a masked assassin. It's the mark of the Benefactor's Cathedral.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "talisman",
+  "color": "#e8d48a",
+  "value": 1
+}

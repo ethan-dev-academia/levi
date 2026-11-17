@@ -1,0 +1,68 @@
+{
+  "id": "hearth-and-home",
+  "name": "Hearth and Home",
+  "category": "skill",
+  "act": 1,
+  "summary": "The town's cooking teacher is willing to show a newcomer the basics.",
+  "start": "Hilde Panmaker, at the bakery",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "learn",
+      "journal": "I met the town's cooking teacher.",
+      "objectives": [
+        {
+          "id": "hearth-and-home-learn",
+          "text": "Learn the basics of Cooking",
+          "kind": "talk",
+          "npc": "hilde-panmaker",
+          "node": "hearth-and-home-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Hilde says a hero who can't feed themselves won't stay a hero for long.",
+      "objectives": [
+        {
+          "id": "cook-trout",
+          "text": "Cook trout",
+          "kind": "collect",
+          "item": "grilled-trout",
+          "qty": 2,
+          "consume": true
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "journal": "Back to my teacher to show what I've done.",
+      "objectives": [
+        {
+          "id": "hearth-and-home-done",
+          "text": "Show your teacher",
+          "kind": "talk",
+          "npc": "hilde-panmaker",
+          "node": "hearth-and-home-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "cooking": 200,
+      "adventuring": 20
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "hilde-panmaker"
+}

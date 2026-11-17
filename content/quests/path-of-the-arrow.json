@@ -4,31 +4,74 @@
   "category": "act",
   "act": 0,
   "summary": "You must reach them from afar. Hit them from afar and learn the art of the ranger from Falcon.",
-  "start": "",
+  "start": "Falcon, at the Training Grounds",
   "requirements": {
     "quests": [
-      "what-dims-below"
+      "path-of-the-sword"
     ],
     "skills": {},
     "flags": []
   },
   "steps": [
     {
-      "id": "step-1",
-      "journal": "What the player writes in their journal.",
+      "id": "lesson",
+      "journal": "The second art: the bow. Falcon says a good archer wins the fight before it starts.",
       "objectives": [
         {
-          "id": "talk-1",
-          "text": "Do the thing",
-          "kind": "trigger"
+          "id": "arrow-lesson",
+          "text": "Listen to Falcon's lesson",
+          "kind": "talk",
+          "npc": "falcon-training",
+          "node": "arrow-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "A shortbow and a quiver of arrows. The rats live in the Rat Warren, north-west of the circle. Keep them at the end of my aim and never let them close.",
+      "objectives": [
+        {
+          "id": "arrow-rats",
+          "text": "Defeat 6 rats in the Rat Warren",
+          "kind": "defeat",
+          "enemy": "rat",
+          "qty": 6,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "My fingers are raw from the string. Back to Falcon.",
+      "objectives": [
+        {
+          "id": "arrow-report",
+          "text": "Return to Falcon",
+          "kind": "talk",
+          "npc": "falcon-training",
+          "node": "arrow-done"
         }
       ]
     }
   ],
   "rewards": {
-    "xp": {},
+    "xp": {
+      "ranger": 430,
+      "adventuring": 30
+    },
     "coins": 0,
-    "items": [],
+    "items": [
+      {
+        "item": "leather-jerkin",
+        "qty": 1
+      },
+      {
+        "item": "hunters-quiver",
+        "qty": 1
+      }
+    ],
+    "skills": [],
     "unlocks": []
-  }
+  },
+  "giver": "falcon-training"
 }

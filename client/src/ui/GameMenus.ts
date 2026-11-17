@@ -28,6 +28,7 @@ import {
 import type { ItemUi } from "./ItemUi.js";
 import { ICONS, type TabDef } from "./SidePanel.js";
 import { skillIcon } from "./skillIcons.js";
+import { playerQuestStatus } from "./QuestMapWindow.js";
 
 export interface MenuDeps {
   character(): Character;
@@ -39,6 +40,8 @@ export interface MenuDeps {
   engine(): QuestEngine;
   /** Open a combat path's skill tree window. */
   openTree(style: CombatStyle): void;
+  /** Open the quest map window. */
+  openQuestMap(): void;
   /** Display names of Acts ("Falcon's Landing"...). */
   actNames: ReadonlyMap<number, string>;
 }
@@ -191,9 +194,18 @@ function skillsTab(d: MenuDeps): TabDef {
 
 const CATEGORY_LABEL: Record<QuestCategory, string> = { act: "Act", skill: "Skill", world: "World", adventurer: "Adventurer" };
 
+type BookSection = "all" | QuestCategory;
+
+/** Quest book view state (module-level so the quest map can point the book at a quest). */
+const book: { section: BookSection; open: string | null } = { section: "all", open: null };
+
+/** Show a quest in the book: switches to All and expands it (call before opening the Quests tab). */
+export function focusQuestInBook(id: string): void {
+  book.section = "all";
+  book.open = id;
+}
+
 function questsTab(d: MenuDeps): TabDef {
-  let section: QuestCategory = "act";
-  let open: string | null = null;
   return {
     id: "quests",
     title: "Quests",
@@ -202,52 +214,66 @@ function questsTab(d: MenuDeps): TabDef {
       const c = d.character();
       const eng = d.engine();
       const all = [...d.quests.values()];
-      const status = (q: QuestDef): "done" | "active" | "available" | "locked" => {
-        const st = eng.status(q.id);
-        if (st !== "notStarted") return st;
-        return eng.missing(q).length === 0 ? "available" : "locked";
-      };
+      const status = (q: QuestDef): "done" | "active" | "available" | "locked" => playerQuestStatus(eng, q);
       const rerender = (): void => {
         root.querySelectorAll(":scope > :not(h3)").forEach((n) => n.remove());
         this.render(root);
       };
 
-      // Section tabs with completion counts.
+      // Sections: All (default) or one category, each with done / total.
       const tabs = el("div", "qb-tabs");
-      for (const cat of QUEST_CATEGORIES) {
-        const list = all.filter((q) => q.category === cat);
+      for (const sec of ["all", ...QUEST_CATEGORIES] as const) {
+        const list = sec === "all" ? all : all.filter((q) => q.category === sec);
         const done = list.filter((q) => status(q) === "done").length;
-        const b = el("button", `qb-tab${cat === section ? " active" : ""}`);
-        b.append(el("span", "", CATEGORY_LABEL[cat]), el("small", "", `${done}/${list.length}`));
-        b.addEventListener("click", () => { section = cat; open = null; rerender(); });
+        const b = el("button", `qb-tab${sec === book.section ? " active" : ""}`);
+        b.append(el("span", "", sec === "all" ? "All" : CATEGORY_LABEL[sec]), el("small", "", `${done}/${list.length}`));
+        b.addEventListener("click", () => { book.section = sec; book.open = null; rerender(); });
         tabs.append(b);
       }
-      root.append(tabs, el("div", "menu-foot qb-pins", `Pinned ${c.save.pinned.length}/2 · ★ pins a quest to your screen`));
+      const mapBtn = el("button", "menu-btn qb-map", "Quest map");
+      mapBtn.addEventListener("click", () => d.openQuestMap());
+      const bar = el("div", "qb-bar");
+      bar.append(el("div", "menu-foot qb-pins", `Pinned ${c.save.pinned.length}/2 · ★ pins a quest to your screen`), mapBtn);
+      root.append(tabs, bar);
 
-      const order = { active: 0, available: 1, locked: 2, done: 3 } as const;
-      const list = all.filter((q) => q.category === section).sort((a, b) => a.act - b.act || order[status(a)] - order[status(b)] || a.name.localeCompare(b.name));
-      if (list.length === 0) root.append(el("div", "menu-foot", "No quests here yet."));
-
-      let lastAct = -1;
-      for (const q of list) {
-        if (section === "act" && q.act !== lastAct) {
-          lastAct = q.act;
-          root.append(el("h4", "qb-act", `Act ${q.act}${d.actNames.get(q.act) ? ` · ${d.actNames.get(q.act)}` : ""}`));
+      const inSection = all.filter((q) => book.section === "all" || q.category === book.section);
+      if (inSection.length === 0) root.append(el("div", "menu-foot", "No quests here yet."));
+      // Grouped by act. Act quests are the act's key story beats and come first.
+      const order = { active: 0, available: 1, done: 2, locked: 3 } as const;
+      const acts = [...new Set(inSection.map((q) => q.act))].sort((a, b) => a - b);
+      for (const act of acts) {
+        const inAct = inSection.filter((q) => q.act === act);
+        const doneN = inAct.filter((q) => status(q) === "done").length;
+        const shown = inAct.filter((q) => status(q) !== "locked");
+        // Acts you haven't reached yet stay a mystery.
+        if (shown.length === 0 && doneN === 0) continue;
+        const head = el("div", "qb-act");
+        head.append(el("span", "", `Act ${act}${d.actNames.get(act) ? ` · ${d.actNames.get(act)}` : ""}`), el("b", "", `${doneN}/${inAct.length}`));
+        root.append(head);
+        shown.sort((a, b) => (a.category === "act" ? 0 : 1) - (b.category === "act" ? 0 : 1) || order[status(a)] - order[status(b)] || a.name.localeCompare(b.name));
+        for (const q of shown) {
+          const s = status(q);
+          const row = el("div", `quest-row ${s}${q.category === "act" ? " key" : ""}`);
+          const pinned = c.save.pinned.includes(q.id);
+          const pin = el("button", `q-pin${pinned ? " on" : ""}`, pinned ? "★" : "☆");
+          pin.title = s !== "active" ? "Only active quests can be pinned" : pinned ? "Unpin" : "Pin to screen";
+          pin.disabled = s !== "active";
+          pin.addEventListener("click", (e) => {
+            e.stopPropagation();
+            d.send({ type: "pinQuest", quest: q.id, pinned: !pinned });
+          });
+          const name = el("span", "q-name", q.name);
+          if (q.category === "act") name.prepend(el("span", "q-key", "◆"));
+          row.append(el("span", "q-dot"), name);
+          if (book.section === "all" && q.category !== "act") row.append(el("span", "q-cat", CATEGORY_LABEL[q.category]));
+          row.append(pin);
+          row.title = q.category === "act" ? "Act quest: a key part of this act's story" : "";
+          row.addEventListener("click", () => { book.open = book.open === q.id ? null : q.id; rerender(); });
+          root.append(row);
+          if (book.open === q.id) root.append(questDetail(d, c, eng, q, s));
         }
-        const s = status(q);
-        const row = el("div", `quest-row ${s}`);
-        const pinned = c.save.pinned.includes(q.id);
-        const pin = el("button", `q-pin${pinned ? " on" : ""}`, pinned ? "★" : "☆");
-        pin.title = s !== "active" ? "Only active quests can be pinned" : pinned ? "Unpin" : "Pin to screen";
-        pin.disabled = s !== "active";
-        pin.addEventListener("click", (e) => {
-          e.stopPropagation();
-          d.send({ type: "pinQuest", quest: q.id, pinned: !pinned });
-        });
-        row.append(el("span", "q-dot"), el("span", "q-name", q.name), pin);
-        row.addEventListener("click", () => { open = open === q.id ? null : q.id; rerender(); });
-        root.append(row);
-        if (open === q.id) root.append(questDetail(d, c, eng, q, s));
+        const hidden = inAct.length - shown.length;
+        if (hidden > 0) root.append(el("div", "qb-hidden", `${hidden} more to discover`));
       }
     },
   };
@@ -255,7 +281,8 @@ function questsTab(d: MenuDeps): TabDef {
 
 function questDetail(d: MenuDeps, c: Character, eng: QuestEngine, q: QuestDef, s: string): HTMLElement {
   const box = el("div", "quest-detail");
-  if (q.summary) box.append(el("div", "qd-summary", q.summary));
+  // The summary only shows once you've started the quest: before that it spoils the story.
+  if (q.summary && (s === "active" || s === "done")) box.append(el("div", "qd-summary", q.summary));
   // Requirements, each ticked or not.
   const r = q.requirements;
   const reqs: Array<[string, boolean]> = [

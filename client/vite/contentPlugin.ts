@@ -38,6 +38,8 @@ const LOOPBACK = new Set(["127.0.0.1", "::1", "::ffff:127.0.0.1"]);
 export function contentPlugin(contentRoot: string): Plugin {
   let config: ResolvedConfig;
   const root = path.resolve(contentRoot);
+  /** Content folders the F1/F2 editors write to (they update the game themselves). */
+  const EDITOR_OWNED = ["items", "dev", "npcs", "quests", "enemies"];
 
   const inside = (p: string): boolean => {
     const rel = path.relative(root, p);
@@ -208,11 +210,26 @@ export function contentPlugin(contentRoot: string): Plugin {
     // game themselves; don't let Vite reload the page (and lose editor state).
     handleHotUpdate(ctx) {
       const rel = path.relative(root, ctx.file);
-      const editorOwned = ["items", "dev", "npcs", "quests", "enemies"].some((d) => rel.startsWith(`${d}${path.sep}`));
+      const editorOwned = EDITOR_OWNED.some((d) => rel.startsWith(`${d}${path.sep}`));
       if (!rel.startsWith("..") && editorOwned) return [];
       return undefined;
     },
     configureServer(server) {
+      // A file created or deleted in an editor-owned folder changes the content
+      // lists (import.meta.glob). The hot-update skip above would hide that, so
+      // mark every module that globs content as stale: the next page load picks
+      // up the new list, without forcing a reload on the open editor now.
+      const onListChange = (file: string): void => {
+        const rel = path.relative(root, file);
+        if (rel.startsWith("..") || !EDITOR_OWNED.some((d) => rel.startsWith(`${d}${path.sep}`))) return;
+        for (const mod of server.moduleGraph.idToModuleMap.values()) {
+          if (mod.file && mod.file.replace(/\\/g, "/").endsWith("/src/content/registry.ts")) server.moduleGraph.invalidateModule(mod);
+        }
+      };
+      // The content folder sits outside the client root: watch all of it so new files are seen.
+      server.watcher.add(root);
+      server.watcher.on("add", onListChange);
+      server.watcher.on("unlink", onListChange);
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? "").split("?")[0] ?? "";
         if (req.method === "GET" && url.startsWith("/content/")) {

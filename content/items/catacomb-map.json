@@ -1,0 +1,11 @@
+{
+  "id": "catacomb-map",
+  "name": "Catacomb Map",
+  "description": "Scraps of maps pieced together. Every entrance leads to the same place.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "map",
+  "color": "#b8a07a",
+  "value": 1
+}

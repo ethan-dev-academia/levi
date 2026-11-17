@@ -99,7 +99,7 @@ export function conditionList(list: Condition[], l: EditorLookups, changed: () =
     switch (c.kind) {
       case "questStatus":
         row.append(selectInput(c.quest, questOptions(l), (v) => set({ ...c, quest: v })),
-          selectInput(c.status, [["notStarted", "not started"], ["active", "active"], ["done", "done"]], (v) => set({ ...c, status: v as typeof c.status })));
+          selectInput(c.status, [["notStarted", "not started"], ["active", "active"], ["done", "done"], ["started", "started (active or done)"], ["notDone", "not done yet"]], (v) => set({ ...c, status: v as typeof c.status })));
         break;
       case "questStep":
         row.append(selectInput(c.quest, questOptions(l), (v) => set({ ...c, quest: v, step: l.quests.get(v)?.steps[0]?.id ?? "" })),

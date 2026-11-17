@@ -1,0 +1,68 @@
+{
+  "id": "first-catch",
+  "name": "First Catch",
+  "category": "skill",
+  "act": 1,
+  "summary": "The town's fishing teacher is willing to show a newcomer the basics.",
+  "start": "Old Finn, at the docks",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "learn",
+      "journal": "I met the town's fishing teacher.",
+      "objectives": [
+        {
+          "id": "first-catch-learn",
+          "text": "Learn the basics of Fishing",
+          "kind": "talk",
+          "npc": "old-finn",
+          "node": "first-catch-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Old Finn says patience is most of fishing, and the rest is knowing where the fish think you aren't.",
+      "objectives": [
+        {
+          "id": "catch-trout",
+          "text": "Catch raw trout",
+          "kind": "collect",
+          "item": "raw-trout",
+          "qty": 3,
+          "consume": false
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "journal": "Back to my teacher to show what I've done.",
+      "objectives": [
+        {
+          "id": "first-catch-done",
+          "text": "Show your teacher",
+          "kind": "talk",
+          "npc": "old-finn",
+          "node": "first-catch-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "fishing": 200,
+      "adventuring": 20
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "old-finn"
+}

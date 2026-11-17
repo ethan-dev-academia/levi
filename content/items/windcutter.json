@@ -1,0 +1,16 @@
+{
+  "id": "windcutter",
+  "name": "Windcutter",
+  "kind": "weapon",
+  "icon": "bow",
+  "color": "#9fd0a0",
+  "description": "A falcon-feathered bow. Arrows loosed from it seem to find the wind on their own.",
+  "slot": "weapon",
+  "weaponType": "bow",
+  "rarity": "rare",
+  "stats": {
+    "attackDamage": 12,
+    "critChance": 8,
+    "critMultiplier": 0.15
+  }
+}

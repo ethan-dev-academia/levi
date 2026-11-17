@@ -6,6 +6,79 @@ import { buildModel, type BuiltModel } from "./ModelBuilder.js";
 interface PlacedProp {
   inst: PropInstance;
   model: BuiltModel;
+  /** Trees: current opacity and their own material (faded per tree). */
+  fade?: { mat: THREE.MeshLambertMaterial; alpha: number; radius: number; height: number } | undefined;
+}
+
+/** Opacity of a tree you're standing under or that hides you. Much lower than roofs: you barely see it. */
+const UNDER_TREE_OPACITY = 0.08;
+const FADE_RATE = 8;
+
+/** Stable 0..1 hash of a string (+ salt), for per-placement variety. */
+function hash01(id: string, salt: number): number {
+  let h = 2166136261 ^ salt;
+  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619);
+  h = Math.imul(h ^ (h >>> 13), 0x5bd1e995);
+  return ((h ^ (h >>> 15)) >>> 0) / 4294967296;
+}
+
+/**
+ * This placement's own version of a nature model: canopy lumps shift and
+ * resize, the whole tree stretches taller or squatter, and each colour slot
+ * drifts a little in hue and lightness. Same species, never the same tree.
+ */
+function varyModel(def: ModelDef, seed: string): ModelDef {
+  let n = 0;
+  const r = (): number => hash01(seed, 100 + n++);
+  const palette: Record<string, string> = {};
+  const c = new THREE.Color();
+  const hsl = { h: 0, s: 0, l: 0 };
+  for (const [slot, hex] of Object.entries(def.palette)) {
+    c.set(hex).getHSL(hsl);
+    c.setHSL((hsl.h + (r() - 0.5) * 0.06 + 1) % 1, Math.min(1, Math.max(0, hsl.s * (0.85 + r() * 0.3))), Math.min(1, Math.max(0, hsl.l * (0.88 + r() * 0.24))));
+    palette[slot] = `#${c.getHexString()}`;
+  }
+  const stretch = 0.85 + r() * 0.4;
+  const parts = def.parts.map((p) => {
+    // Anything sitting up off the ground (canopy lumps, upper tiers, branches) wanders a bit.
+    const high = p.pos[1] > 0.6;
+    const k = high ? 0.8 + r() * 0.45 : 0.92 + r() * 0.16;
+    const j = high ? 0.35 : 0;
+    return {
+      ...p,
+      pos: [p.pos[0] * 1.1 + (r() - 0.5) * j, p.pos[1] * stretch, p.pos[2] * 1.1 + (r() - 0.5) * j] as [number, number, number],
+      rings: p.rings.map(([y, rx, rz]) => [y * (high ? 1 : stretch), rx * k, rz * k] as [number, number, number]),
+      rot: [p.rot[0] + (r() - 0.5) * (high ? 14 : 4), p.rot[1] + r() * 360 * (high ? 1 : 0), p.rot[2] + (r() - 0.5) * (high ? 14 : 4)] as [number, number, number],
+      phase: p.phase + r() * 60,
+    };
+  });
+  return { ...def, palette, parts };
+}
+
+/** A whole model baked into one vertex-coloured geometry (one draw call per placement). */
+function bakeModel(def: ModelDef): THREE.BufferGeometry {
+  const built = buildModel(def);
+  built.root.updateMatrixWorld(true);
+  const pos: number[] = [];
+  const col: number[] = [];
+  built.root.traverse((o) => {
+    if (!(o instanceof THREE.Mesh)) return;
+    const g = (o.geometry as THREE.BufferGeometry).toNonIndexed().applyMatrix4(o.matrixWorld);
+    const c = (o.material as THREE.MeshLambertMaterial).color;
+    const p = g.getAttribute("position");
+    for (let i = 0; i < p.count; i++) {
+      pos.push(p.getX(i), p.getY(i), p.getZ(i));
+      col.push(c.r, c.g, c.b);
+    }
+    g.dispose();
+  });
+  built.dispose();
+  const out = new THREE.BufferGeometry();
+  out.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  out.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+  out.computeVertexNormals();
+  out.computeBoundingBox();
+  return out;
 }
 
 /**
@@ -16,6 +89,8 @@ export class PropLayer {
   readonly group = new THREE.Group();
   private placed: PlacedProp[] = [];
   private readonly raycaster = new THREE.Raycaster();
+  /** Baked nature models, shared by every placement of that model. */
+  private readonly baked = new Map<string, THREE.BufferGeometry>();
 
   constructor(
     private readonly index: BuildingIndex,
@@ -41,10 +116,21 @@ export class PropLayer {
       p.model.dispose();
     }
     this.placed = [];
+    // Forget the baked shapes of props that are gone.
+    const live = new Set(this.index.props.map((p) => `${p.id}|${this.models.get(this.defs.get(p.prop)?.model ?? "")?.id}`));
+    for (const [k, g] of this.baked) {
+      if (live.has(k)) continue;
+      g.dispose();
+      this.baked.delete(k);
+    }
     for (const inst of this.index.props) {
       const def = this.defs.get(inst.prop);
       const modelDef = def && this.models.get(def.model);
       if (!modelDef) continue;
+      if (def.category === "nature") {
+        this.placeNature(inst, def, modelDef);
+        continue;
+      }
       const model = buildModel(modelDef);
       model.root.position.set(inst.x + 0.5, this.baseY(inst), inst.z + 0.5);
       model.root.rotation.y = (-inst.rot * Math.PI) / 2;
@@ -54,10 +140,68 @@ export class PropLayer {
     }
   }
 
-  /** Hide props on storeys the building layer has cut away. */
-  update(buildings: BuildingLayer): void {
-    for (const { inst, model } of this.placed) {
+  /**
+   * Trees, rocks, flowers: one merged mesh each, with a random turn, size and
+   * tint per placement so a grove never looks copy-pasted.
+   */
+  private placeNature(inst: PropInstance, def: PropDef, modelDef: ModelDef): void {
+    // Each placement gets its own shape and colours (cached by placement + model, so rebuilds are cheap).
+    const key = `${inst.id}|${modelDef.id}`;
+    let geom = this.baked.get(key);
+    if (!geom) this.baked.set(key, (geom = bakeModel(varyModel(modelDef, inst.id))));
+    const tint = 0.92 + hash01(inst.id, 3) * 0.14;
+    const warm = (hash01(inst.id, 4) - 0.5) * 0.08;
+    const mat = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, color: new THREE.Color(tint + warm, tint, tint - warm) });
+    const mesh = new THREE.Mesh(geom, mat);
+    const root = new THREE.Group();
+    root.add(mesh);
+    const scale = 0.82 + hash01(inst.id, 1) * 0.4;
+    root.scale.setScalar(scale);
+    // Small offset inside the cell too, so rows of trees don't line up on the grid.
+    const ox = (hash01(inst.id, 5) - 0.5) * 0.35;
+    const oz = (hash01(inst.id, 6) - 0.5) * 0.35;
+    root.position.set(inst.x + 0.5 + ox, this.baseY(inst) - 0.05, inst.z + 0.5 + oz);
+    root.rotation.y = hash01(inst.id, 2) * Math.PI * 2 + (-inst.rot * Math.PI) / 2;
+    root.userData = { propId: inst.id };
+    this.group.add(root);
+    const model: BuiltModel = { root, joints: {}, dispose: () => mat.dispose() };
+    const height = (geom.boundingBox?.max.y ?? 3) * scale;
+    this.placed.push({ inst, model, fade: def.fade ? { mat, alpha: 1, radius: def.canopy * scale, height } : undefined });
+  }
+
+  /**
+   * Hide props on storeys the building layer has cut away, and fade trees
+   * that you're standing under or that stand between you and the camera.
+   */
+  update(buildings: BuildingLayer, viewer?: { x: number; z: number; y: number }, camera?: THREE.Vector3, dt = 0): void {
+    for (const p of this.placed) {
+      const { inst, model } = p;
       model.root.visible = inst.storey === 0 || !inst.building || buildings.isStoreyVisible(inst.building, inst.storey);
+      const f = p.fade;
+      if (!f || !viewer || !camera) continue;
+      const tx = model.root.position.x;
+      const tz = model.root.position.z;
+      const dx = viewer.x - tx;
+      const dz = viewer.z - tz;
+      let hide = dx * dx + dz * dz < (f.radius + 0.6) * (f.radius + 0.6);
+      if (!hide) {
+        // Between you and the camera: the camera→you ray passes through the canopy.
+        const cx = camera.x - viewer.x, cy = camera.y - viewer.y, cz = camera.z - viewer.z;
+        const len2 = cx * cx + cy * cy + cz * cz;
+        const ty = model.root.position.y + f.height * 0.65;
+        const t = Math.max(0, Math.min(1, ((tx - viewer.x) * cx + (ty - viewer.y) * cy + (tz - viewer.z) * cz) / (len2 || 1)));
+        const qx = viewer.x + cx * t - tx, qy = viewer.y + cy * t - ty, qz = viewer.z + cz * t - tz;
+        hide = t > 0.02 && qx * qx + qz * qz + qy * qy * 0.4 < f.radius * f.radius;
+      }
+      const target = hide ? UNDER_TREE_OPACITY : 1;
+      f.alpha += (target - f.alpha) * (1 - Math.exp(-dt * FADE_RATE));
+      const fading = f.alpha < 0.995;
+      f.mat.opacity = f.alpha;
+      if (f.mat.transparent !== fading) {
+        f.mat.transparent = fading;
+        f.mat.depthWrite = !fading;
+        f.mat.needsUpdate = true;
+      }
     }
   }
 

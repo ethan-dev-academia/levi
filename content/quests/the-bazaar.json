@@ -1,0 +1,55 @@
+{
+  "id": "the-bazaar",
+  "name": "The Bazaar",
+  "category": "act",
+  "act": 2,
+  "summary": "You arrive in the city of Argon and you find a interesting site. It's the bazaar!",
+  "start": "Myrie, on the road to Argon",
+  "requirements": {
+    "quests": [
+      "eta"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "arrive",
+      "journal": "We made it to Argon, the city of merchants. Myrie dragged me straight to the bazaar.",
+      "objectives": [
+        {
+          "id": "bazaar-tour",
+          "text": "Explore the bazaar with Myrie",
+          "kind": "talk",
+          "npc": "myrie",
+          "node": "bazaar-tour"
+        }
+      ]
+    },
+    {
+      "id": "broker",
+      "journal": "Everything in Argon can be bought, sold or bid on. Myrie wants me to meet the broker who runs the auction stalls.",
+      "objectives": [
+        {
+          "id": "broker-meet",
+          "text": "Speak with Broker Sallow",
+          "kind": "talk",
+          "npc": "broker-sallow",
+          "node": "meet"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 50
+    },
+    "coins": 100,
+    "items": [],
+    "skills": [],
+    "unlocks": [
+      "bazaar-open"
+    ]
+  },
+  "giver": "myrie"
+}

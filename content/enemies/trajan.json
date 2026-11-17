@@ -1,0 +1,75 @@
+{
+  "id": "trajan",
+  "name": "Trajan, Servant of the Emperor",
+  "level": 10,
+  "model": "humanoid",
+  "scale": 1.35,
+  "palette": {
+    "skin": "#c8a088",
+    "hair": "#2a2420",
+    "top": "#5a5a64",
+    "topTrim": "#b89a4a",
+    "legs": "#3a3a44",
+    "boots": "#22222a",
+    "belt": "#5a1a1a"
+  },
+  "stats": {
+    "maxHp": 900,
+    "armour": 20,
+    "moveSpeed": 2.6
+  },
+  "aggroRange": 10,
+  "leashRange": 20,
+  "xp": 400,
+  "respawn": 300,
+  "attacks": [
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "shape": "cone",
+      "tracking": "auto",
+      "range": 2.6,
+      "length": 3.4,
+      "angle": 70,
+      "windup": 1.1,
+      "damage": 20,
+      "cooldown": 3
+    },
+    {
+      "id": "judgement",
+      "name": "Judgement",
+      "shape": "circle",
+      "tracking": "auto",
+      "anchor": "target",
+      "range": 12,
+      "radius": 2.6,
+      "windup": 1.6,
+      "damage": 26,
+      "cooldown": 6
+    },
+    {
+      "id": "decree",
+      "name": "Decree",
+      "shape": "line",
+      "tracking": "auto",
+      "range": 10,
+      "length": 12,
+      "width": 2,
+      "windup": 1.4,
+      "damage": 24,
+      "cooldown": 7
+    },
+    {
+      "id": "quake",
+      "name": "Quake",
+      "shape": "circle",
+      "tracking": "auto",
+      "anchor": "self",
+      "range": 3,
+      "radius": 4.2,
+      "windup": 1.8,
+      "damage": 30,
+      "cooldown": 10
+    }
+  ]
+}

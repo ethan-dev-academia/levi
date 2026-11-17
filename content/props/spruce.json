@@ -1,0 +1,10 @@
+{
+  "id": "spruce",
+  "name": "Spruce",
+  "model": "nature-spruce",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": true,
+  "canopy": 1.5
+}

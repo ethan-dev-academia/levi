@@ -1,0 +1,68 @@
+{
+  "id": "from-the-wild",
+  "name": "From the Wild",
+  "category": "skill",
+  "act": 1,
+  "summary": "The town's gathering teacher is willing to show a newcomer the basics.",
+  "start": "Rowan Fieldwise, by the fields",
+  "requirements": {
+    "quests": [
+      "townsquare"
+    ],
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "learn",
+      "journal": "I met the town's gathering teacher.",
+      "objectives": [
+        {
+          "id": "from-the-wild-learn",
+          "text": "Learn the basics of Gathering",
+          "kind": "talk",
+          "npc": "rowan-fieldwise",
+          "node": "from-the-wild-lesson"
+        }
+      ]
+    },
+    {
+      "id": "practice",
+      "journal": "Rowan says the wild gives freely if you know what to look for.",
+      "objectives": [
+        {
+          "id": "gather-leaf",
+          "text": "Gather silverleaf",
+          "kind": "collect",
+          "item": "silverleaf",
+          "qty": 5,
+          "consume": true
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "journal": "Back to my teacher to show what I've done.",
+      "objectives": [
+        {
+          "id": "from-the-wild-done",
+          "text": "Show your teacher",
+          "kind": "talk",
+          "npc": "rowan-fieldwise",
+          "node": "from-the-wild-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "gathering": 200,
+      "adventuring": 20
+    },
+    "coins": 0,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  },
+  "giver": "rowan-fieldwise"
+}

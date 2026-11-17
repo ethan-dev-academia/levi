@@ -94,6 +94,8 @@ export class NpcLayer {
     dt: number,
     /** Live position (wandering NPCs); null = standing on their spot. */
     position: (spawnId: string) => { x: number; z: number; dirX: number; dirZ: number; home: boolean } | null,
+    /** Quest-gated NPCs that aren't around right now are hidden. */
+    shown: (spawnId: string) => boolean = () => true,
   ): void {
     const rect = this.tagHost.getBoundingClientRect();
     for (const p of this.placed) {
@@ -101,8 +103,8 @@ export class NpcLayer {
       const live = position(s.id);
       const x = live ? live.x : s.x + 0.5;
       const z = live ? live.z : s.z + 0.5;
-      const visible = s.storey === 0 || !s.building || buildings.isStoreyVisible(s.building, s.storey);
-      p.entity.model.root.visible = visible;
+      const visible = shown(s.id) && (s.storey === 0 || !s.building || buildings.isStoreyVisible(s.building, s.storey));
+      p.entity.setVisible(visible);
       let dirX = live && !live.home ? live.dirX : Math.sin(p.yaw);
       let dirZ = live && !live.home ? live.dirZ : Math.cos(p.yaw);
       if (talkingTo === s.id) {

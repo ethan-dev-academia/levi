@@ -1,0 +1,11 @@
+{
+  "id": "maelis-letter",
+  "name": "Maelis's Letter",
+  "description": "A folded letter in a careful hand, addressed to Archivist Maelis. The seal is unbroken.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "envelope",
+  "color": "#e8dcc0",
+  "value": 1
+}

@@ -316,6 +316,7 @@ export class LocalSim {
   npcOnCell(cx: number, cz: number, storey: number, building: string | null): NpcSpawn | undefined {
     for (const w of this.npcWalkers().values()) {
       const s = w.spawn;
+      if (!this.npcShown(s)) continue;
       if (s.storey !== storey || (storey > 0 && s.building !== building)) continue;
       const [x, z] = w.cell();
       if (x === cx && z === cz) return s;
@@ -335,7 +336,7 @@ export class LocalSim {
       w.tick(TICK_SEC, grid, held, (cx, cz) => {
         if (cx === pcx && cz === pcz && p.storey === s.storey) return true;
         for (const o of walkers.values()) {
-          if (o === w || o.spawn.storey !== s.storey) continue;
+          if (o === w || o.spawn.storey !== s.storey || !this.npcShown(o.spawn)) continue;
           const [ox, oz] = o.cell();
           if (ox === cx && oz === cz) return true;
         }
@@ -347,7 +348,7 @@ export class LocalSim {
   private startTalk(spawnId: string): void {
     const spawn = this.buildings.npcs.find((n) => n.id === spawnId);
     const npc = spawn ? this.world.npcs.get(spawn.npc) : undefined;
-    if (!spawn || !npc) return;
+    if (!spawn || !npc || !this.npcShown(spawn)) return;
     if (!this.near(this.npcTarget(spawn))) {
       this.events.message("You need to be next to them.");
       return;
@@ -408,7 +409,12 @@ export class LocalSim {
 
   /** Still lying there for this player? */
   isGroundItemAvailable(g: GroundItem): boolean {
-    return !this.character.save.pickedUp.includes(this.groundKey(g));
+    return !this.character.save.pickedUp.includes(this.groundKey(g)) && this.quests.checkAll(g.visibleWhen);
+  }
+
+  /** Is this placed NPC in the world right now (quest-gated placements)? */
+  npcShown(spawn: NpcSpawn): boolean {
+    return spawn.visibleWhen.length === 0 || this.quests.checkAll(spawn.visibleWhen);
   }
 
   private pickup(id: string): Result {
@@ -485,6 +491,7 @@ export class LocalSim {
     p.dirX = dx / d;
     p.dirZ = dz / d;
     const speed = b.style === "mage" ? 18 : b.style === "ranger" ? 26 : 32;
+    this.combatEvents.push({ kind: "cast", style: b.style, x: p.x, z: p.z, dirX: p.dirX, dirZ: p.dirZ, skill: true, melee: false });
     this.combat.fire({
       x: p.x + p.dirX * 0.4, z: p.z + p.dirZ * 0.4, dirX: p.dirX, dirZ: p.dirZ, speed,
       left: s.cast.range, width: Math.max(0.3, s.cast.width), pierce: s.cast.pierce, homing: null,
@@ -526,6 +533,7 @@ export class LocalSim {
     this.attackCd = 1.2;
     const style = this.character.style;
     const pay = this.payload(style, 3, 0.6, style === "mage" ? "magic" : "attack");
+    this.combatEvents.push({ kind: "cast", style, x: p.x, z: p.z, dirX: p.dirX, dirZ: p.dirZ, skill: false, melee: this.attackRange() <= 2 });
     if (this.attackRange() > 2) {
       this.combat.fire({ x: p.x, z: p.z, dirX: p.dirX, dirZ: p.dirZ, speed: 16, left: 99, width: 0.3, pierce: false, homing: e.spawn.id, payload: pay, visual: style });
     } else {
@@ -551,7 +559,8 @@ export class LocalSim {
       this.combatEvents.push(ev);
       if (ev.kind === "damage" && ev.target === "enemy") this.enterCombat(8);
       if (ev.kind === "dummyHit") {
-        if (c.addXp(ev.style, 2) > 0) this.events.message(`${DISCIPLINE_NAMES[ev.style]} level ${c.level(ev.style)}!`, "quest");
+        // Dummies teach the basics only: no XP past level 2, so they can't be farmed.
+        if (c.level(ev.style) < 3 && c.addXp(ev.style, 2) > 0) this.events.message(`${DISCIPLINE_NAMES[ev.style]} level ${c.level(ev.style)}!`, "quest");
         this.version++;
       }
       if (ev.kind === "kill") {

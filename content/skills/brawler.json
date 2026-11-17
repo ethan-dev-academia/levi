@@ -294,22 +294,5 @@
       "requires": []
     }
   ],
-  "secrets": [
-    {
-      "id": "oath-of-the-sundered-sky",
-      "name": "Oath of the Sundered Sky",
-      "cost": 90,
-      "cooldown": 120,
-      "cast": {
-        "kind": "circle",
-        "radius": 5,
-        "damage": 340,
-        "duration": 1,
-        "scaling": "attack",
-        "ratio": 4.2
-      },
-      "description": "Drive your blade into the ground and break the earth around you.",
-      "lore": "A promise so heavy the island remembers it."
-    }
-  ]
+  "secrets": []
 }

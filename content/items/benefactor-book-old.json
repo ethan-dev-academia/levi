@@ -1,0 +1,11 @@
+{
+  "id": "benefactor-book-old",
+  "name": "The Great Benefactor (First Printing)",
+  "description": "A battered first printing. Some pages read differently from the copies sold today.",
+  "kind": "quest",
+  "tier": 1,
+  "rarity": "common",
+  "icon": "tome",
+  "color": "#8a6a4a",
+  "value": 1
+}

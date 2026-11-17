@@ -1,0 +1,69 @@
+{
+  "id": "the-first-dungeon",
+  "name": "The First Dungeon",
+  "category": "world",
+  "act": 1,
+  "summary": "The witch dropped a scroll. On deeper inspection, it leads you to a staircase going under the town.",
+  "start": "Drali, in the southern forest",
+  "giver": "drali",
+  "requirements": {
+    "quests": [
+      "the-forest-witch",
+      "the-rat-king"
+    ],
+    "adventureLevel": 9,
+    "skills": {},
+    "flags": []
+  },
+  "steps": [
+    {
+      "id": "stairs",
+      "journal": "The witch's scroll shows a hidden stairway under the town. Drali will meet me there.",
+      "objectives": [
+        {
+          "id": "drali-stairs",
+          "text": "Meet Drali at the hidden stairway",
+          "kind": "talk",
+          "npc": "drali",
+          "node": "stairs"
+        }
+      ]
+    },
+    {
+      "id": "descend",
+      "journal": "Below the town, the tunnels open into old stone halls. Things that should be dead are walking.",
+      "objectives": [
+        {
+          "id": "first-ghouls",
+          "text": "Fight through the first halls",
+          "kind": "defeat",
+          "enemy": "catacomb-ghoul",
+          "qty": 6,
+          "boss": false
+        }
+      ]
+    },
+    {
+      "id": "report",
+      "journal": "We made it through the first halls. Drali wants to talk about what this place is.",
+      "objectives": [
+        {
+          "id": "drali-dungeon",
+          "text": "Speak with Drali",
+          "kind": "talk",
+          "npc": "drali",
+          "node": "dungeon-done"
+        }
+      ]
+    }
+  ],
+  "rewards": {
+    "xp": {
+      "adventuring": 50
+    },
+    "coins": 80,
+    "items": [],
+    "skills": [],
+    "unlocks": []
+  }
+}

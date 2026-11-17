@@ -19,7 +19,14 @@ export const PropDefSchema = z.object({
   /** Holds loot the player can take (chests). Number of slots in its window. */
   container: z.object({ slots: z.number().int().min(1).max(20) }).optional(),
   /** Editor palette grouping. */
-  category: z.enum(["furniture", "storage", "decor", "signage"]).default("decor"),
+  category: z.enum(["furniture", "storage", "decor", "signage", "nature"]).default("decor"),
+  /**
+   * Trees: fade almost away while you stand under the canopy or it hides you
+   * from the camera. Nature props also get a random turn, size and tint per placement.
+   */
+  fade: z.boolean().default(false),
+  /** Canopy radius (world units) used for the fade. */
+  canopy: z.number().positive().max(8).default(1),
 });
 
 /** One slot of designer-set loot: item id and how many (gear: always 1). */
