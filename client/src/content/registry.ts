@@ -1,5 +1,6 @@
 import {
   ActsConfigSchema,
+  type AdventuringSkill,
   AdventuringConfigSchema,
   NpcDefSchema,
   EnemyDefSchema,
@@ -68,6 +69,8 @@ export interface ContentRegistry {
   enemies: ReadonlyMap<string, EnemyDef>;
   encounters: ReadonlyMap<string, EncounterDef>;
   adventureCaps: readonly AdventureCap[];
+  /** Adventuring's skills (sprint...), by id. */
+  adventuringSkills: ReadonlyMap<string, AdventuringSkill>;
   /** Act number → name ("Falcon's Landing"). */
   actNames: ReadonlyMap<number, string>;
 }
@@ -85,6 +88,15 @@ function loadAdventureCaps(): AdventureCap[] {
   const r = AdventuringConfigSchema.safeParse(raw);
   if (!r.success) throw new Error(`[content] invalid adventuring.json: ${r.error.issues.map((i) => i.message).join("; ")}`);
   return r.data.caps;
+}
+
+/** Adventuring's own skills (the `skills` list in content/progression/adventuring.json). */
+function loadAdventuringSkills(): ReadonlyMap<string, AdventuringSkill> {
+  const raw = Object.entries(progressionFiles).find(([p]) => p.endsWith("/adventuring.json"))?.[1];
+  if (!raw) return new Map();
+  const r = AdventuringConfigSchema.safeParse(raw);
+  if (!r.success) throw new Error(`[content] invalid adventuring.json: ${r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`);
+  return new Map(r.data.skills.map((sk) => [sk.id, sk]));
 }
 
 /** One skill tree per combat style, keyed by style. */
@@ -114,6 +126,7 @@ export function loadContent(): ContentRegistry {
     enemies: loadAll("enemy", enemyFiles, EnemyDefSchema),
     encounters: loadAll("encounter", encounterFiles, EncounterDefSchema),
     adventureCaps: loadAdventureCaps(),
+    adventuringSkills: loadAdventuringSkills(),
     actNames: loadActNames(),
   };
   for (const p of reg.props.values()) {

@@ -8,7 +8,7 @@ const ID = /^[a-z0-9_-]+$/;
  * combat system (next step) interprets each `kind`.
  */
 export const CastSchema = z.object({
-  kind: z.enum(["basic", "line", "multi", "cone", "circle", "charge", "shield", "dash", "buff", "aura", "summon"]),
+  kind: z.enum(["basic", "line", "multi", "cone", "circle", "charge", "shield", "dash", "buff", "aura", "summon", "sprint"]),
   /** World units. */
   range: z.number().min(0).max(40).default(0),
   width: z.number().min(0).max(10).default(0),
@@ -23,7 +23,7 @@ export const CastSchema = z.object({
   ratio: z.number().min(0).max(10).default(0),
   /** Line skillshots: keep going through every enemy (melee sweeps). */
   pierce: z.boolean().default(false),
-  /** Shield absorb / buff strength. */
+  /** Shield absorb / buff strength (sprint: % faster). */
   amount: z.number().min(0).max(10000).default(0),
   /** Seconds (charge time, buff duration...). */
   duration: z.number().min(0).max(60).default(0),
@@ -84,6 +84,17 @@ export const SkillTreeSchema = z
     }
   });
 
+/**
+ * Adventuring skills: usable whatever weapon you hold (sprint...). `tier` is
+ * the Adventuring level that unlocks it. Costs come out of your current pool
+ * (mana for mages, energy otherwise). Listed in content/progression/adventuring.json.
+ */
+export const AdventuringSkillSchema = SkillDefSchema.extend({
+  tier: z.number().int().min(1).max(60),
+  /** Key it starts on for new heroes (and once for existing ones). */
+  defaultKey: z.enum(["Q", "W", "E", "R", "D", "F"]).optional(),
+});
+export type AdventuringSkill = z.infer<typeof AdventuringSkillSchema>;
 export type Cast = z.infer<typeof CastSchema>;
 export type SkillDef = z.infer<typeof SkillDefSchema>;
 export type SkillTree = z.infer<typeof SkillTreeSchema>;

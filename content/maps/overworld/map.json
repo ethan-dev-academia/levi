@@ -1,6 +1,6 @@
 {
   "id": "overworld",
-  "name": "Levi Vale",
+  "name": "The Layland",
   "cols": 3072,
   "rows": 3072,
   "cellSize": 1,
@@ -637,16 +637,28 @@
       "subtitle": "Where the Benefactor's heroes first set foot"
     },
     {
-      "id": "the-layland",
-      "name": "The Layland",
+      "id": "trifectia",
+      "name": "Trifectia",
       "kind": "island",
       "bounds": {
         "x0": 770,
         "z0": 40,
+        "x1": 1576,
+        "z1": 1820
+      },
+      "subtitle": "Land of the Grand Cathedral"
+    },
+    {
+      "id": "avia",
+      "name": "Avia",
+      "kind": "island",
+      "bounds": {
+        "x0": 1576,
+        "z0": 40,
         "x1": 2440,
         "z1": 1820
       },
-      "subtitle": "The world beneath the clouds"
+      "subtitle": "The lands beyond the Cathedral"
     },
     {
       "id": "grand-cathedral",

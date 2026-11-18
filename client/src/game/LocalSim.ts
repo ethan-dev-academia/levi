@@ -27,6 +27,7 @@ import {
   type Result,
   type AbilitySlot,
   type CombatStyle,
+  type SkillDef,
   type DialogueNode,
   type GroundItem,
   type Intent,
@@ -139,6 +140,9 @@ export class LocalSim {
   private attackRepath = 0;
   /** Skill id → tick it's ready again. */
   private readyAt = new Map<string, number>();
+  /** Sprint: running faster until this tick, by this fraction. */
+  private sprintUntil = 0;
+  private sprintBoost = 0;
   /** Cooldown length (ticks) of each skill's last use, for the HUD sweep. */
   private cdLength = new Map<string, number>();
   /** Scripted story fights (the prologue's Alpha fight). */
@@ -160,6 +164,8 @@ export class LocalSim {
       if (b) events.banner?.(b);
     });
     for (const d of DISCIPLINES) this.levels.set(d, character.level(d));
+    // Sprint and friends start on their keys (once; unbinding is respected).
+    character.ensureAdventuringKit();
     // Older saves: put active quests on the tracker if nothing is pinned.
     if (character.save.pinned.length === 0) {
       character.save.pinned = Object.keys(character.save.quests).filter((id) => this.quests.status(id) === "active" && world.quests.has(id)).slice(-MAX_PINNED).reverse();
@@ -640,11 +646,13 @@ export class LocalSim {
     const b = c.barSlot(slot);
     const weapon = { mage: "a staff or wand", ranger: "a bow or gun", brawler: "a sword or dagger" } as const;
     if (!b) return this.events.message(`Nothing is on ${slot}. Drag a skill there from a skill tree.`);
-    if (!b.usable) return this.events.message(`${b.skill.name} needs ${weapon[b.style]}.`);
     const s = b.skill;
+    const style = b.style;
+    if (style === "adventuring") return this.castAdventuring(s);
+    if (!b.usable) return this.events.message(`${b.skill.name} needs ${weapon[style]}.`);
     if (s.cast.kind !== "line") return this.events.message(`${s.name} isn't ready to use yet (coming soon).`);
     if ((this.readyAt.get(s.id) ?? 0) > this.ticks) return; // still cooling down: silent, the HUD shows it
-    const pool = b.style === "mage" ? "mana" : "energy";
+    const pool = c.poolFor(style);
     if (c.save.vitals[pool] < s.cost) return this.events.message(`Not enough ${pool}.`);
     const p = this.player;
     const dx = aimX - p.x;
@@ -657,14 +665,36 @@ export class LocalSim {
     this.cdLength.set(s.id, Math.max(1, len));
     p.dirX = dx / d;
     p.dirZ = dz / d;
-    const speed = b.style === "mage" ? 18 : b.style === "ranger" ? 26 : 32;
-    this.combatEvents.push({ kind: "cast", style: b.style, x: p.x, z: p.z, dirX: p.dirX, dirZ: p.dirZ, skill: true, melee: false });
+    const speed = style === "mage" ? 18 : style === "ranger" ? 26 : 32;
+    this.combatEvents.push({ kind: "cast", style, x: p.x, z: p.z, dirX: p.dirX, dirZ: p.dirZ, skill: true, melee: false });
     this.combat.fire({
       x: p.x + p.dirX * 0.4, z: p.z + p.dirZ * 0.4, dirX: p.dirX, dirZ: p.dirZ, speed,
       left: s.cast.range, width: Math.max(0.3, s.cast.width), pierce: s.cast.pierce, homing: null,
-      payload: this.payload(b.style, s.cast.damage, s.cast.ratio, s.cast.scaling), visual: b.style,
+      payload: this.payload(style, s.cast.damage, s.cast.ratio, s.cast.scaling), visual: style,
     });
     this.version++;
+  }
+
+  /** Adventuring skills: no weapon needed, paid from whichever pool your weapon uses. */
+  private castAdventuring(s: SkillDef): void {
+    if ((this.readyAt.get(s.id) ?? 0) > this.ticks) return;
+    if (s.cast.kind !== "sprint") return this.events.message(`${s.name} isn't ready to use yet (coming soon).`);
+    if (this.locked) return;
+    const c = this.character;
+    const pool = c.poolFor("adventuring");
+    if (c.save.vitals[pool] < s.cost) return this.events.message(`Not enough ${pool}.`);
+    c.save.vitals[pool] -= s.cost;
+    const len = this.cdTicks(s.cooldown);
+    this.readyAt.set(s.id, this.ticks + len);
+    this.cdLength.set(s.id, Math.max(1, len));
+    this.sprintUntil = this.ticks + Math.round(s.cast.duration / TICK_SEC);
+    this.sprintBoost = s.cast.amount / 100;
+    this.version++;
+  }
+
+  /** Seconds of sprint left (0 = walking). */
+  get sprintLeft(): number {
+    return Math.max(0, (this.sprintUntil - this.ticks) * TICK_SEC);
   }
 
   /** Auto-attack range: ranged weapons (staff, wand, bow, gun) reach further. */
@@ -863,7 +893,7 @@ export class LocalSim {
     p.prevX = p.x;
     p.prevZ = p.z;
     if (this.locked) p.path = [];
-    advanceAlongPath(p, PLAYER_MOVE_SPEED * TICK_SEC);
+    advanceAlongPath(p, PLAYER_MOVE_SPEED * (this.ticks < this.sprintUntil ? 1 + this.sprintBoost : 1) * TICK_SEC);
     for (const e of this.encounters) e.confine(p);
     this.tickNpcs();
     this.tickCombat();

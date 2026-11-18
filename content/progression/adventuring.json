@@ -7,5 +7,22 @@
       ],
       "penalty": 5
     }
+  ],
+  "skills": [
+    {
+      "id": "sprint",
+      "name": "Sprint",
+      "tier": 1,
+      "defaultKey": "D",
+      "cost": 15,
+      "cooldown": 30,
+      "cast": {
+        "kind": "sprint",
+        "amount": 30,
+        "duration": 15
+      },
+      "description": "Break into a run: move 30% faster for 15 seconds. Costs mana if you carry a staff or wand, energy otherwise.",
+      "lore": "Every hero learns to run before they learn to fight. Falcon insists on it."
+    }
   ]
 }

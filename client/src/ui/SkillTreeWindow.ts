@@ -11,6 +11,7 @@ import {
   type CombatStyle,
   type Intent,
   type SkillDef,
+  type SkillSource,
 } from "@levi/shared";
 import { skillIcon } from "./skillIcons.js";
 
@@ -40,7 +41,7 @@ export class SkillTreeWindow {
   private readonly root = el("div", "skill-window");
   private style: CombatStyle | null = null;
   private selected: string | null = null;
-  private drag: { skill: SkillDef; style: CombatStyle; x: number; y: number; ghost: HTMLElement | null; from: AbilitySlot | null } | null = null;
+  private drag: { skill: SkillDef; style: SkillSource; x: number; y: number; ghost: HTMLElement | null; from: AbilitySlot | null } | null = null;
 
   constructor(host: HTMLElement, private readonly deps: SkillTreeDeps) {
     this.root.hidden = true;
@@ -86,6 +87,13 @@ export class SkillTreeWindow {
       e.preventDefault();
       this.drag = { skill: b.skill, style: b.style, x: e.clientX, y: e.clientY, ghost: null, from: key };
     });
+  }
+
+  /** Start dragging a skill from elsewhere (e.g. Adventuring's skills in the Skills tab) onto the bar. */
+  beginDrag(skill: SkillDef, style: SkillSource, e: PointerEvent): void {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    this.drag = { skill, style, x: e.clientX, y: e.clientY, ghost: null, from: null };
   }
 
   // --- Rendering -------------------------------------------------------------------------------

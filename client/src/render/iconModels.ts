@@ -1,4 +1,4 @@
-import type { CombatStyle, FacetRing, ITEM_ICONS, ModelPart, SkillDef } from "@levi/shared";
+import type { FacetRing, ITEM_ICONS, ModelPart, SkillDef, SkillSource } from "@levi/shared";
 import type { IconModel } from "./IconRenderer.js";
 
 /**
@@ -292,7 +292,8 @@ export function itemModel(icon: ItemIcon, main: string): IconModel {
 }
 
 /** Base colours per path: light (mage), the vigil's green, the oath's red. */
-const SKILL_COLOURS: Record<CombatStyle, { main: string; accent: string }> = {
+const SKILL_COLOURS: Record<SkillSource, { main: string; accent: string }> = {
+  adventuring: { main: "#5fb8d0", accent: "#d8f2f8" },
   mage: { main: "#f2d77a", accent: "#fff6d6" },
   ranger: { main: "#5fb04a", accent: "#c9e8a0" },
   brawler: { main: "#c9473a", accent: "#e8b0a0" },
@@ -305,7 +306,7 @@ function hash(s: string): number {
 }
 
 /** A skill's icon model, coloured by its path; sibling skills come out mirrored. */
-export function skillModel(skill: SkillDef, style: CombatStyle): IconModel {
+export function skillModel(skill: SkillDef, style: SkillSource): IconModel {
   const { main, accent } = SKILL_COLOURS[style];
   const v = hash(skill.id);
   const k = new Kit();
@@ -390,6 +391,18 @@ export function skillModel(skill: SkillDef, style: CombatStyle): IconModel {
       }
       k.loop(shade(main, -0.25), [0, 0], 1.15, 0.05, 12);
       return k.done({ ...view, pitch: 20 });
+    case "sprint": {
+      // A winged boot with speed streaks behind it.
+      k.lathe(main, [[0.3, 0.25, 0.27], [1.15, 0.27, 0.29], [1.32, 0.31, 0.33]], { sides: 6, pos: [-0.18, 0, 0] });
+      k.box(main, 1.05, 0.38, 0.52, [0.18, 0.22, 0]);
+      k.box(shade(main, -0.4), 1.14, 0.12, 0.58, [0.2, 0.04, 0]);
+      k.lathe(shade(main, -0.3), [[1.18, 0.31, 0.33], [1.32, 0.33, 0.35]], { sides: 6, twist: false, pos: [-0.18, 0, 0] });
+      for (const [y, len] of [[1.15, 0.85], [0.95, 0.7], [0.75, 0.55]] as const) {
+        k.lathe(accent, [[0, 0.03, 0.02], [len * 0.35, 0.16, 0.03], [len, 0, 0]], { sides: 4, twist: false, pos: [-0.45, y, 0], rot: [0, 0, 70] });
+      }
+      for (const [y, len] of [[0.55, 0.9], [0.25, 1.1], [-0.05, 0.75]] as const) k.shard(accent, [-0.75 - len, y], [-0.75, y], 0.07, 0.04, 0.8);
+      return k.done({ ...view, mirror: false, yaw: 25 });
+    }
     case "summon":
       k.lathe("#8a6a4a", [[-1.6, 0.14, 0.14], [0.6, 0.16, 0.16]], { sides: 6 });
       k.loop(shade(main, -0.25), [0, 1.15], 0.55, 0.1, 8);

@@ -10,7 +10,7 @@ import {
   type ItemStack,
 } from "../schemas/item.js";
 import { HOTBAR_SIZE, INVENTORY_SIZE, PLAYER_SAVE_VERSION, type PlayerSave } from "../schemas/player.js";
-import type { SkillDef, SkillTree } from "../schemas/skillTree.js";
+import type { AdventuringSkill, SkillDef, SkillTree } from "../schemas/skillTree.js";
 import {
   acceptsGroup,
   adventureLevelForXp,
@@ -23,6 +23,7 @@ import {
   type AdventureCap,
   type CombatStyle,
   type Discipline,
+  type SkillSource,
 } from "./disciplines.js";
 import { sumStats, type Stats } from "./stats.js";
 
@@ -32,6 +33,8 @@ export interface GameData {
   trees: ReadonlyMap<CombatStyle, SkillTree>;
   /** Adventuring soft caps (content/progression.json). */
   adventureCaps?: readonly AdventureCap[];
+  /** Adventuring's skills (sprint...), unlocked by Adventuring level. */
+  adventuringSkills?: ReadonlyMap<string, AdventuringSkill>;
 }
 
 export type SlotRef = { area: "inv"; index: number } | { area: "hot"; index: number } | { area: "eq"; slot: EquipSlot };
@@ -402,7 +405,8 @@ export class Character {
   }
 
   /** A skill of a path, tree or secret. */
-  findSkill(style: CombatStyle, id: string): SkillDef | undefined {
+  findSkill(style: SkillSource, id: string): SkillDef | undefined {
+    if (style === "adventuring") return this.data.adventuringSkills?.get(id);
     const t = this.tree(style);
     return t?.skills.find((s) => s.id === id) ?? t?.secrets.find((s) => s.id === id);
   }
@@ -416,7 +420,11 @@ export class Character {
     return ok(`You have learned a secret art: ${s.name}!`);
   }
 
-  isUnlocked(style: CombatStyle, id: string): boolean {
+  isUnlocked(style: SkillSource, id: string): boolean {
+    if (style === "adventuring") {
+      const s = this.data.adventuringSkills?.get(id);
+      return !!s && this.level("adventuring") >= s.tier;
+    }
     return this.save.skills[style].includes(id);
   }
 
@@ -459,7 +467,7 @@ export class Character {
   }
 
   /** Put an unlocked skill on a key (null clears). A skill sits on one key at most. */
-  setLoadout(style: CombatStyle, key: AbilitySlot, skill: string | null, inCombat: boolean): Result {
+  setLoadout(style: SkillSource, key: AbilitySlot, skill: string | null, inCombat: boolean): Result {
     if (inCombat) return fail(COMBAT_LOCK);
     const bar = this.save.bar;
     if (skill === null) {
@@ -474,14 +482,39 @@ export class Character {
   }
 
   /** What's on a key (any path), with whether your weapon lets you use it. */
-  barSlot(key: AbilitySlot): { skill: SkillDef; style: CombatStyle; usable: boolean } | undefined {
+  barSlot(key: AbilitySlot): { skill: SkillDef; style: SkillSource; usable: boolean } | undefined {
     const e = this.save.bar[key];
     const skill = e ? this.findSkill(e.style, e.skill) : undefined;
-    return e && skill && this.isUnlocked(e.style, skill.id) ? { skill, style: e.style, usable: e.style === this.style } : undefined;
+    return e && skill && this.isUnlocked(e.style, skill.id) ? { skill, style: e.style, usable: e.style === "adventuring" || e.style === this.style } : undefined;
+  }
+
+  /**
+   * Put Adventuring skills on their default keys, once each (new heroes and
+   * older saves alike; unbinding one later is respected). Returns whether the bar changed.
+   */
+  ensureAdventuringKit(): boolean {
+    let changed = false;
+    for (const s of this.data.adventuringSkills?.values() ?? []) {
+      const flag = `kit-${s.id}`;
+      if (!s.defaultKey || this.save.worldFlags.includes(flag) || !this.isUnlocked("adventuring", s.id)) continue;
+      this.save.worldFlags.push(flag);
+      if (this.keyOf("adventuring", s.id)) continue;
+      const key = !this.save.bar[s.defaultKey] ? s.defaultKey : (["D", "F", "R", "E", "W", "Q"] as const).find((k) => !this.save.bar[k]);
+      if (!key) continue;
+      this.save.bar[key] = { style: "adventuring", skill: s.id };
+      changed = true;
+    }
+    return changed;
+  }
+
+  /** The pool a bar skill spends: its path's, or (Adventuring skills) whatever your weapon uses. */
+  poolFor(source: SkillSource): "mana" | "energy" {
+    const style = source === "adventuring" ? this.style : source;
+    return style === "mage" ? "mana" : "energy";
   }
 
   /** Key a skill sits on, if any. */
-  keyOf(style: CombatStyle, skill: string): AbilitySlot | undefined {
+  keyOf(style: SkillSource, skill: string): AbilitySlot | undefined {
     return (Object.keys(this.save.bar) as AbilitySlot[]).find((k) => this.save.bar[k]?.style === style && this.save.bar[k]?.skill === skill);
   }
 

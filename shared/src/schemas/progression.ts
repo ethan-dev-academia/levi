@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { AdventuringSkillSchema } from "./skillTree.js";
 
 /**
  * content/progression/adventuring.json: Adventuring soft caps. Past `level`,
@@ -14,6 +15,8 @@ export const AdventuringConfigSchema = z.object({
       }),
     )
     .default([]),
+  /** Adventuring's own skills (sprint...), unlocked by Adventuring level. */
+  skills: z.array(AdventuringSkillSchema).max(32).default([]),
 });
 export type AdventuringConfig = z.infer<typeof AdventuringConfigSchema>;
 

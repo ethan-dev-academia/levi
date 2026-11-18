@@ -23,6 +23,7 @@ import {
   type QuestCategory,
   type QuestDef,
   type QuestEngine,
+  type AdventuringSkill,
   type SkillDef,
 } from "@levi/shared";
 import type { ItemUi } from "./ItemUi.js";
@@ -40,6 +41,10 @@ export interface MenuDeps {
   engine(): QuestEngine;
   /** Open a combat path's skill tree window. */
   openTree(style: CombatStyle): void;
+  /** Adventuring's own skills (sprint...). */
+  adventuringSkills: ReadonlyMap<string, AdventuringSkill>;
+  /** Start dragging a skill onto the Q W E R D F bar. */
+  dragSkill(skill: SkillDef, style: "adventuring", e: PointerEvent): void;
   /** Open the quest map window. */
   openQuestMap(): void;
   /** Display names of Acts ("Falcon's Landing"...). */
@@ -188,6 +193,35 @@ function skillsTab(d: MenuDeps): TabDef {
       const adv = levelRow(c, "adventuring");
       adv.title += " · Only from quests";
       root.append(adv);
+      // Adventuring's skills: no weapon needed. Drag onto the bar or pick a key.
+      const advLevel = c.level("adventuring");
+      for (const s of d.adventuringSkills.values()) {
+        const unlocked = c.isUnlocked("adventuring", s.id);
+        const row = el("div", `adv-skill${unlocked ? "" : " locked"}`);
+        const icon = el("div", "adv-skill-icon");
+        icon.append(skillIcon(s, "adventuring"));
+        icon.title = unlocked ? "Drag onto your bar" : "";
+        if (unlocked) icon.addEventListener("pointerdown", (e) => d.dragSkill(s, "adventuring", e));
+        const body = el("div", "adv-skill-body");
+        const key = c.keyOf("adventuring", s.id);
+        body.append(
+          el("b", "", s.name),
+          el("span", "adv-skill-meta", unlocked ? `${s.cost} ${c.poolFor("adventuring")} · ${s.cooldown}s cooldown${key ? ` · on ${key}` : ""}` : `Adventuring level ${s.tier} (you're ${advLevel})`),
+          el("span", "adv-skill-desc", s.description),
+        );
+        if (unlocked) {
+          const keys = el("div", "sd-keys");
+          for (const k of ABILITY_SLOTS) {
+            const on = key === k;
+            const b = el("button", `sd-key${on ? " on" : ""}`, k);
+            b.addEventListener("click", () => d.send({ type: "setLoadout", style: "adventuring", key: k, skill: on ? null : s.id }));
+            keys.append(b);
+          }
+          body.append(keys);
+        }
+        row.append(icon, body);
+        root.append(row);
+      }
     },
   };
 }

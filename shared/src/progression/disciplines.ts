@@ -3,6 +3,9 @@
  * for the moment: the style of the weapon you hold.
  */
 export const COMBAT_STYLES = ["ranger", "brawler", "mage"] as const;
+/** Where a bar skill comes from: a combat path's tree, or Adventuring (sprint...). */
+export const SKILL_SOURCES = [...COMBAT_STYLES, "adventuring"] as const;
+export type SkillSource = (typeof SKILL_SOURCES)[number];
 export type CombatStyle = (typeof COMBAT_STYLES)[number];
 
 export const PEACEFUL_SKILLS = ["cooking", "fishing", "smithing", "mining", "crafting", "gathering"] as const;

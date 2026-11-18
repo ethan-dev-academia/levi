@@ -1,4 +1,4 @@
-import type { CombatStyle, SkillDef } from "@levi/shared";
+import type { CombatStyle, SkillDef, SkillSource } from "@levi/shared";
 import { iconElement, iconImage } from "../render/IconRenderer.js";
 import { skillModel } from "../render/iconModels.js";
 
@@ -69,9 +69,9 @@ function hash(s: string): number {
 }
 
 /** A skill's icon: a little faceted 3D model, coloured by its path (flat fallback without WebGL). */
-export function skillIcon(skill: SkillDef, style: CombatStyle): Element {
+export function skillIcon(skill: SkillDef, style: SkillSource): Element {
   const url = iconImage(`skill:${style}:${skill.id}:${skill.cast.kind}`, () => skillModel(skill, style));
-  return url ? iconElement(url, "skill-icon") : flatSkillIcon(skill, style);
+  return url ? iconElement(url, "skill-icon") : flatSkillIcon(skill, style === "adventuring" ? "ranger" : style);
 }
 
 /** Faceted, triangle-built flat icon for a skill (fallback). */

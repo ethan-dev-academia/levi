@@ -1,4 +1,4 @@
-# Levi
+# Leviathan
 
 A low-poly 2.5D browser MMO: 3D flat-shaded terrain, 2D pixel billboard sprites,
 LoL-style controls, OSRS-style progression. All content is JSON.

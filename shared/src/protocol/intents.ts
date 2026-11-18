@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { COMBAT_STYLES, DISCIPLINES } from "../progression/disciplines.js";
+import { COMBAT_STYLES, DISCIPLINES, SKILL_SOURCES } from "../progression/disciplines.js";
 import { EQUIP_SLOTS } from "../schemas/item.js";
 import { PLAYER_NAME } from "../schemas/player.js";
 import { ABILITY_SLOTS, type ItemSlot } from "./constants.js";
@@ -65,7 +65,7 @@ export const UseSlotIntentSchema = z.object({ type: z.literal("useSlot"), from: 
 export const UnlockSkillIntentSchema = z.object({ type: z.literal("unlockSkill"), style: z.enum(COMBAT_STYLES), skill: SKILL_ID });
 export const ResetSkillsIntentSchema = z.object({ type: z.literal("resetSkills"), style: z.enum(COMBAT_STYLES) });
 export const SetLoadoutIntentSchema = z.object({
-  type: z.literal("setLoadout"), style: z.enum(COMBAT_STYLES), key: z.enum(ABILITY_SLOTS), skill: SKILL_ID.nullable(),
+  type: z.literal("setLoadout"), style: z.enum(SKILL_SOURCES), key: z.enum(ABILITY_SLOTS), skill: SKILL_ID.nullable(),
 });
 /** Take loot from a container prop (index -1 = take all). Server checks you're next to it. */
 export const LootTakeIntentSchema = z.object({

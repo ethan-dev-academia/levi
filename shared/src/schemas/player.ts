@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ABILITY_SLOTS } from "../protocol/constants.js";
+import { SKILL_SOURCES } from "../progression/disciplines.js";
 import { ItemStackSchema } from "./item.js";
 
 const ID = /^[a-z0-9_-]+$/;
@@ -52,7 +53,7 @@ export const PlayerSaveSchema = z.object({
    * The one Q W E R D F bar: each key holds a skill from any path. Skills
    * whose path doesn't match your weapon show but can't be used.
    */
-  bar: z.record(z.enum(ABILITY_SLOTS), z.object({ style: z.enum(["ranger", "brawler", "mage"]), skill: z.string().regex(ID).max(64) })).default({}),
+  bar: z.record(z.enum(ABILITY_SLOTS), z.object({ style: z.enum(SKILL_SOURCES), skill: z.string().regex(ID).max(64) })).default({}),
   /** Quest progress: active stage index, or "done". */
   quests: z.record(z.string().regex(ID), z.object({ stage: z.union([z.number().int().min(0), z.literal("done")]), progress: z.record(z.string(), z.number().int()).default({}) })).default({}),
   /** World unlocks earned through the story (regions, shops, NPCs...). */

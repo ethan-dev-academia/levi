@@ -1,15 +1,22 @@
 
-const BARK_LIFE = 7; // seconds on screen (plus a little per word)
-const MAX_BARKS = 4;
+const BARK_LIFE = 5.5; // seconds on screen once fully typed (plus a little per word)
+const MAX_BARKS = 2;
+/** Characters per second as a line types itself out. */
+const TYPE_SPEED = 48;
 
 interface Shown {
   el: HTMLElement;
   left: number;
+  /** The typed part and the not-yet-typed part (kept invisible so the line never reflows). */
+  typed: HTMLElement;
+  rest: HTMLElement;
+  text: string;
+  chars: number;
 }
 
 /**
- * Story presentation over the game view: lines that appear on their own at
- * the side while you fight, cinematic bars during cutscenes, a boss health
+ * Story presentation over the game view: subtitles centred low on the screen
+ * (speaker above, the line typing itself out, no box), one at a time, cinematic bars during cutscenes, a boss health
  * bar, a white flash and a red flicker when you're hit.
  */
 export class StoryOverlay {
@@ -51,15 +58,25 @@ export class StoryOverlay {
 
   /** `speaker` picks the colour: falcon, alpha, you, voice. */
   bark(speaker: string, name: string, text: string): void {
+    // The line before steps aside for the new one.
+    for (const b of this.barks) {
+      b.left = Math.min(b.left, 0.4);
+      b.el.classList.add("out");
+    }
     const el = document.createElement("div");
     el.className = `story-bark ${speaker}`;
     const who = document.createElement("b");
     who.textContent = name;
     const line = document.createElement("span");
-    line.textContent = text;
+    const typed = document.createElement("span");
+    const rest = document.createElement("span");
+    rest.className = "untyped";
+    rest.textContent = text;
+    line.append(typed, rest);
     el.append(who, line);
     this.feed.append(el);
-    this.barks.push({ el, left: BARK_LIFE + text.split(/\s+/).length * 0.12 });
+    const typing = text.length / TYPE_SPEED;
+    this.barks.push({ el, typed, rest, text, chars: 0, left: typing + BARK_LIFE + text.split(/\s+/).length * 0.12 });
     while (this.barks.length > MAX_BARKS) this.barks.shift()!.el.remove();
     requestAnimationFrame(() => el.classList.add("in"));
   }
@@ -88,6 +105,12 @@ export class StoryOverlay {
     for (let i = this.barks.length - 1; i >= 0; i--) {
       const b = this.barks[i]!;
       b.left -= dt;
+      if (b.chars < b.text.length) {
+        b.chars = Math.min(b.text.length, b.chars + dt * TYPE_SPEED);
+        const n = Math.floor(b.chars);
+        b.typed.textContent = b.text.slice(0, n);
+        b.rest.textContent = b.text.slice(n);
+      }
       if (b.left < 0.6) b.el.classList.add("out");
       if (b.left <= 0) {
         b.el.remove();

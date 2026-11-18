@@ -152,7 +152,7 @@ async function boot(): Promise<void> {
 
   // --- Simulation + intent pipeline ---------------------------------
   // Character: restored from this browser's save (server-owned in Step 2).
-  const gameData = { items: content.items, trees: content.trees, adventureCaps: content.adventureCaps };
+  const gameData = { items: content.items, trees: content.trees, adventureCaps: content.adventureCaps, adventuringSkills: content.adventuringSkills };
   const saved = loadSave();
   const character = saved && saved.location.map === START_MAP ? new Character(saved, gameData) : createCharacter(gameData, START_MAP, data.def.spawn);
   const loc = character.save.location;
@@ -229,6 +229,8 @@ async function boot(): Promise<void> {
         engine: () => sim.quests,
         actNames: content.actNames,
         openTree: (style) => skillTree.open(style),
+        adventuringSkills: content.adventuringSkills,
+        dragSkill: (skill, style, e) => skillTree.beginDrag(skill, style, e),
         openQuestMap: () => questMap.toggle(),
       },
       controlsTab,
@@ -266,8 +268,8 @@ async function boot(): Promise<void> {
     for (const key of ABILITY_SLOTS) {
       const b = c.barSlot(key);
       if (b) {
-        const res = b.style === "mage" ? "mana" : "energy";
-        const needs = { mage: "a staff or wand", ranger: "a bow or gun", brawler: "a sword or dagger" }[b.style];
+        const res = c.poolFor(b.style);
+        const needs = { mage: "a staff or wand", ranger: "a bow or gun", brawler: "a sword or dagger", adventuring: "" }[b.style];
         hud.setAbility(key, b.skill.name, b.usable ? `${b.skill.cost} ${res} · ${b.skill.cooldown}s` : `Needs ${needs}`, skillIcon(b.skill, b.style), b.usable);
       } else hud.setAbility(key, null);
     }
@@ -535,7 +537,11 @@ async function boot(): Promise<void> {
   });
   if (!sim.character.save.worldFlags.includes("seen-arrival") && sim.quests.status("a-feather-on-the-wind") === "active") {
     intro.start(sim.player.x, sim.player.z, orbit.yaw);
+    sound.story("arrival");
   }
+  // Each turn of a story encounter gets its own (unresolved) chord.
+  let lastPhase: string | null = null;
+  const PHASE_BEATS = { crash: "dread", fight: "fight", rescue: "rescue", farewell: "farewell" } as const;
 
   // One-time tutorial tips, offered at the moment they're useful.
   const tips = new Tips(stage);
@@ -665,6 +671,11 @@ async function boot(): Promise<void> {
       encounterView.update(enc, alpha, dt);
       ambience.setViewport(stage.getBoundingClientRect().height);
       ambience.update(dt, { x, z }, data.buildings.props, (pp) => props.baseY(pp));
+      const phase = enc?.phase ?? null;
+      if (phase !== lastPhase) {
+        lastPhase = phase;
+        if (phase && phase in PHASE_BEATS) sound.story(PHASE_BEATS[phase as keyof typeof PHASE_BEATS]);
+      }
       const bossState = enc?.phase === "fight" ? sim.combat.enemies.get(enc.bossId) : undefined;
       story.setBoss(bossState ? { name: bossState.def.name, title: enc?.def.bossTitle ?? "", fraction: bossState.hp / bossState.def.stats.maxHp } : null);
       story.update(dt);
@@ -685,6 +696,12 @@ async function boot(): Promise<void> {
         combatFx.setAim({ x, z }, to, aimSkill.skill.cast.range, aimSkill.skill.cast.width, aimSkill.skill.cast.pierce, ready);
       } else combatFx.setAim(null, null);
       for (const key of ABILITY_SLOTS) hud.setCooldown(key, sim.cooldownFraction(key));
+      // Sprint's key glows while you're running.
+      const sprinting = sim.sprintLeft > 0;
+      for (const key of ABILITY_SLOTS) {
+        const b = sim.character.save.bar[key];
+        hud.abilitySlot(key).classList.toggle("active", sprinting && b?.style === "adventuring" && b.skill === "sprint");
+      }
       const talk = sim.talk;
       if (talk) {
         const isPlayer = talk.node.speaker === "player";
@@ -739,7 +756,7 @@ async function boot(): Promise<void> {
       announcer.update(dt);
       // High winds up on the sky island, a breeze below.
       sound.setWind(data.def.regions.some((r) => r.kind === "sky" && x >= r.bounds.x0 && x < r.bounds.x1 && z >= r.bounds.z0 && z < r.bounds.z1) ? 1 : 0.45);
-      sound.update(dt, p.storey === 0 && !p.building);
+      sound.update(dt, p.storey === 0 && !p.building && !sim.encounter && !intro.active);
       tipCheck -= dt;
       if (tipCheck <= 0 && !intro.active) {
         tipCheck = 0.5;
@@ -752,7 +769,7 @@ async function boot(): Promise<void> {
 
   // The world is ready: lift the loading screen.
   loadingDone();
-  chat.add("Welcome to Levi.", "system");
+  chat.add("Welcome to Leviathan.", "system");
   chat.add("Right-click to walk. Middle-drag or arrow keys to turn the camera. M for the world map.");
 }
 
