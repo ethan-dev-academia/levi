@@ -1,0 +1,8 @@
+{
+  "id": "pew",
+  "name": "Pew",
+  "model": "prop-pew",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

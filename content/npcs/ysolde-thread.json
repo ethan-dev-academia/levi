@@ -110,7 +110,7 @@
       "id": "needle-and-thread-ok",
       "speaker": "npc",
       "text": "Then let's begin.",
-      "next": null,
+      "next": "needle-and-thread-lesson",
       "options": [],
       "effects": [],
       "pos": {

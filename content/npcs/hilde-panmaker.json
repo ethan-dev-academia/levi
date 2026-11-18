@@ -110,7 +110,7 @@
       "id": "hearth-and-home-ok",
       "speaker": "npc",
       "text": "Then let's begin.",
-      "next": null,
+      "next": "hearth-and-home-lesson",
       "options": [],
       "effects": [],
       "pos": {

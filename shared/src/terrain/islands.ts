@@ -15,12 +15,19 @@ export function regionCellRect(data: MapData, r: Region): CellRect {
   };
 }
 
-/** First region containing world point (x, z), or null. */
+/** Region containing world point (x, z): the smallest one when regions nest (a town inside a continent), or null. */
 export function regionAt(regions: readonly Region[], x: number, z: number): Region | null {
+  let best: Region | null = null;
+  let bestArea = Infinity;
   for (const r of regions) {
-    if (x >= r.bounds.x0 && x < r.bounds.x1 && z >= r.bounds.z0 && z < r.bounds.z1) return r;
+    if (x < r.bounds.x0 || x >= r.bounds.x1 || z < r.bounds.z0 || z >= r.bounds.z1) continue;
+    const area = (r.bounds.x1 - r.bounds.x0) * (r.bounds.z1 - r.bounds.z0);
+    if (area < bestArea) {
+      best = r;
+      bestArea = area;
+    }
   }
-  return null;
+  return best;
 }
 
 export interface FloatResult {

@@ -1,4 +1,6 @@
 import { ART_CHARS, type ITEM_ICONS, type ItemArt, type ItemDef } from "@levi/shared";
+import { iconElement, iconImage } from "../render/IconRenderer.js";
+import { itemModel } from "../render/iconModels.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -94,7 +96,25 @@ export function artSvg(art: ItemArt): SVGSVGElement {
   return svg;
 }
 
-/** An item's picture: its pixel art if it has some, else its tinted glyph. */
-export function itemGraphic(def: Pick<ItemDef, "icon" | "color" | "art">): SVGSVGElement {
-  return def.art ? artSvg(def.art) : itemIcon(def.icon, def.color);
+/** A low-poly 3D render of an item kind in its colour (data URL; "" without WebGL). */
+export function itemModelImage(icon: (typeof ITEM_ICONS)[number], color: string): string {
+  return iconImage(`item:${icon}:${color}`, () => itemModel(icon, color));
+}
+
+/** An item's picture: its pixel art if it has some, else a little faceted model of it. */
+export function itemGraphic(def: Pick<ItemDef, "icon" | "color" | "art">): Element {
+  if (def.art) return artSvg(def.art);
+  const url = itemModelImage(def.icon, def.color);
+  return url ? iconElement(url, "item-icon item-model") : itemIcon(def.icon, def.color);
+}
+
+/** The same picture as an image URL (for textures). */
+export function itemImageUrl(def: Pick<ItemDef, "icon" | "color" | "art">): string {
+  const url = def.art ? "" : itemModelImage(def.icon, def.color);
+  if (url) return url;
+  const svg = def.art ? artSvg(def.art) : itemIcon(def.icon, def.color);
+  svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+  svg.setAttribute("width", "128");
+  svg.setAttribute("height", "128");
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(svg))}`;
 }

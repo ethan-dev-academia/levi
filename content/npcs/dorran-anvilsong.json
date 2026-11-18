@@ -110,7 +110,7 @@
       "id": "hammer-and-anvil-ok",
       "speaker": "npc",
       "text": "Then let's begin.",
-      "next": null,
+      "next": "hammer-and-anvil-lesson",
       "options": [],
       "effects": [],
       "pos": {

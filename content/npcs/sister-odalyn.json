@@ -85,8 +85,8 @@
     {
       "id": "welcome-to-the-cathedral-ok",
       "speaker": "npc",
-      "text": "You're in the Cathedral. Here, let me help you up.",
-      "next": null,
+      "text": "Slowly now. Here, let me help you up.",
+      "next": "wake",
       "options": [],
       "effects": [],
       "pos": {
@@ -154,5 +154,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Light keep you.",
+    "Every hero who falls wakes here. Every one.",
+    "Quietly, please. This is a holy place."
   ]
 }

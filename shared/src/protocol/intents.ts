@@ -85,6 +85,10 @@ export const PickupIntentSchema = z.object({ type: z.literal("pickup"), item: NP
 /** Pin/unpin a quest on the on-screen tracker (max 2). */
 export const PinQuestIntentSchema = z.object({ type: z.literal("pinQuest"), quest: NPC_SPAWN, pinned: z.boolean() });
 
+/** A one-off story moment finished playing (e.g. the arrival); the server only accepts known beats. */
+export const STORY_BEATS = ["arrival"] as const;
+export const BeatIntentSchema = z.object({ type: z.literal("beat"), beat: z.enum(STORY_BEATS) });
+
 export const FriendIntentSchema = z.object({ type: z.enum(["addFriend", "removeFriend"]), name: z.string().regex(PLAYER_NAME) });
 
 export const IntentSchema = z.discriminatedUnion("type", [
@@ -102,6 +106,7 @@ export const IntentSchema = z.discriminatedUnion("type", [
   TalkEndIntentSchema,
   PickupIntentSchema,
   PinQuestIntentSchema,
+  BeatIntentSchema,
   FriendIntentSchema.extend({ type: z.literal("addFriend") }),
   FriendIntentSchema.extend({ type: z.literal("removeFriend") }),
   MoveIntentSchema,

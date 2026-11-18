@@ -1,0 +1,10 @@
+{
+  "id": "rubble",
+  "name": "Rubble",
+  "model": "nature-rubble",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 0.7
+}

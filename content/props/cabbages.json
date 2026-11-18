@@ -1,0 +1,8 @@
+{
+  "id": "cabbages",
+  "name": "Cabbages",
+  "model": "prop-cabbages",
+  "solid": false,
+  "readable": false,
+  "category": "nature"
+}

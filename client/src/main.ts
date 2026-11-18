@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { ABILITY_SLOTS, buildWalkGrid, Character, lerp, regionAt, storeyY, type AbilitySlot, type EnemyDef, type ItemDef, type ItemSlot, type NpcDef, type QuestDef, type Region } from "@levi/shared";
 import { OrbitCamera } from "./camera/OrbitCamera.js";
 import { loadMap } from "./content/mapLoader.js";
+import { loadingDone, loadingFailed, loadingProgress, loadingStage } from "./loading.js";
 import { getOrThrow, loadContent } from "./content/registry.js";
 import { startGameLoop } from "./game/GameLoop.js";
 import { LocalSim } from "./game/LocalSim.js";
@@ -37,6 +38,14 @@ import { NpcLayer } from "./render/NpcLayer.js";
 import { GroundItemLayer } from "./render/GroundItemLayer.js";
 import { EnemyLayer } from "./render/EnemyLayer.js";
 import { CombatFx } from "./render/CombatFx.js";
+import { EncounterView } from "./render/EncounterView.js";
+import { Ambience } from "./render/Ambience.js";
+import { StoryOverlay } from "./ui/StoryOverlay.js";
+import { Announcer } from "./ui/Announcer.js";
+import { ArrivalIntro } from "./game/ArrivalIntro.js";
+import { Tips } from "./ui/Tips.js";
+import { Sound } from "./audio/Sound.js";
+import { storyCamera } from "./game/storyCamera.js";
 import { createCharacter, loadSave, storeSave } from "./game/characterStore.js";
 import { interactionAtCell, isAdjacent, resolveInteraction, type Interaction, type InteractionContext } from "./game/Interactions.js";
 import { ICONS, SidePanel, textTab } from "./ui/SidePanel.js";
@@ -58,14 +67,19 @@ async function boot(): Promise<void> {
   );
 
   // --- Content ------------------------------------------------------
+  await loadingStage(0.04, "Opening the Archive…");
   const content = loadContent();
   const heroModel = getOrThrow(content.models, "humanoid", "model");
-  const data = await loadMap(START_MAP);
+  await loadingStage(0.08, "Charting the islands…");
+  const data = await loadMap(START_MAP, (f) => loadingProgress(0.08 + f * 0.52));
   // `data.def` is read live everywhere below: dev undo can replace it.
   const { hm } = data;
+  await loadingStage(0.62, "Laying the roads…");
   const walk = buildWalkGrid(data);
   const topo = new TerrainTopology(data);
+  await loadingStage(0.72, "Drawing the map…");
   const mapImage = new MapImage(data, walk, topo);
+  await loadingStage(0.8, "Raising the land…");
 
   // --- UI -----------------------------------------------------------
   mountSidebarResize(el("side", HTMLElement));
@@ -85,16 +99,18 @@ async function boot(): Promise<void> {
     "Right-click item: Options",
     "Drag items: Move / swap",
     "S: Stop",
+    "N: Sound on / off",
     "Enter: Chat",
   ]);
 
+  await loadingStage(0.88, "Waking the townsfolk…");
   // --- World --------------------------------------------------------
   const stage = el("stage", HTMLElement);
   const canvas = el("viewport", HTMLCanvasElement);
   const world = new WorldRenderer(canvas);
   const terrain = new ChunkedTerrain(data, walk, topo);
   const water = createWater(hm, data.def.waterLevel);
-  const clouds = new Clouds();
+  const clouds = new Clouds((x, z) => Math.max(data.def.waterLevel, data.buildings.groundHeight(hm, x, z)));
   clouds.rebuild(data.def.regions);
   const buildings = new BuildingLayer(data.buildings, hm);
   const props = new PropLayer(data.buildings, hm, content.models, content.props);
@@ -103,6 +119,25 @@ async function boot(): Promise<void> {
   const enemyLayer = new EnemyLayer(data.buildings, hm, content.models, stage);
   const combatFx = new CombatFx((x, z) => data.buildings.groundHeight(hm, x, z), stage);
   world.scene.add(terrain.group, water, clouds.group, buildings.group, props.group, npcLayer.group, groundItems.group, enemyLayer.group, combatFx.group);
+  // Story encounters: one view, playing whichever encounter is running (Falcon's look comes from his NPC).
+  const encounterDef = [...content.encounters.values()][0];
+  const falconNpc = encounterDef ? content.npcs.get(encounterDef.falconNpc) : undefined;
+  const encounterView = new EncounterView(
+    (x, z) => data.buildings.groundHeight(hm, x, z),
+    getOrThrow(content.models, falconNpc?.model ?? "humanoid", "model"),
+    falconNpc?.palette ?? {},
+    falconNpc?.scale ?? 1,
+  );
+  world.scene.add(encounterView.group);
+  // Birds over the island, the town and the Cathedral; glowing lamps; campfire smoke; motes.
+  const ambience = new Ambience((ax, az) => data.buildings.groundHeight(hm, ax, az), [
+    { x: 520, y: 112, z: 300, radius: 70, count: 9 },
+    { x: 540, y: 98, z: 372, radius: 26, count: 6 },
+    { x: 1010, y: 62, z: 470, radius: 50, count: 11 },
+  ]);
+  world.scene.add(ambience.group);
+  const story = new StoryOverlay(stage);
+  let heroTilt = 0;
   const reader = new ReadPopup(stage);
 
   const hero = new CharacterEntity(heroModel);
@@ -124,14 +159,24 @@ async function boot(): Promise<void> {
   const savedBuilding = loc.building ? data.buildings.get(loc.building) : undefined;
   const upstairs = loc.storey > 0 && savedBuilding?.grids[loc.storey]?.isWalkable(Math.floor(loc.x), Math.floor(loc.z));
   const startPos = upstairs || walk.isWalkable(Math.floor(loc.x), Math.floor(loc.z)) ? { x: loc.x, z: loc.z } : data.def.spawn;
-  const sim = new LocalSim(walk, data.buildings, startPos, { message: (t, k) => chat.add(t, k ?? "game") }, character, {
+  const announcer = new Announcer(stage);
+  const sound = new Sound();
+  const sim = new LocalSim(walk, data.buildings, startPos, { message: (t, k) => chat.add(t, k ?? "game"), banner: (b) => {
+    announcer.announce(b.kind, b.title, b.detail);
+    if (b.kind === "start") sound.questStart();
+    else if (b.kind === "complete") sound.questComplete();
+    else sound.levelUp();
+  } }, character, {
     map: START_MAP,
     propDefs: content.props,
     npcs: content.npcs,
     quests: content.quests,
     enemies: content.enemies,
+    encounters: content.encounters,
     respawn: data.def.spawn,
+    respawns: () => data.def.respawns,
     regionAt: (x, z) => regionAt(data.def.regions, x, z)?.id ?? null,
+    regionsAt: (x, z) => data.def.regions.filter((r) => x >= r.bounds.x0 && x < r.bounds.x1 && z >= r.bounds.z0 && z < r.bounds.z1).map((r) => r.id),
   });
   const interactCtx: InteractionContext = {
     buildings: data.buildings,
@@ -201,7 +246,11 @@ async function boot(): Promise<void> {
     send: (i) => intents.send(i),
   });
 
-  const tracker = new QuestTracker(stage, () => panel.open("quests"));
+  const tracker = new QuestTracker(stage, () => panel.open("quests"), (id) => {
+    const t = sim.questTargets().find((q) => q.quest === id);
+    if (t) worldMap.focusOn(t);
+    else chat.add("There's nowhere to mark for that one: it happens wherever you are.", "system");
+  });
   for (const key of ABILITY_SLOTS) skillTree.bindHudSlot(hud.abilitySlot(key), key);
   const dialogue = new DialogueBox(stage, {
     choose: (option) => intents.send({ type: "talkNext", option }),
@@ -270,6 +319,7 @@ async function boot(): Promise<void> {
 
   const pointer = new PointerInput(canvas, {
     onMoveCommand: (ndc, initial) => {
+      if (intro.active) return;
       if (initial) {
         attackPress = false;
         const hitGround = picker.pick(ndc.x, ndc.y);
@@ -333,6 +383,10 @@ async function boot(): Promise<void> {
       ...(import.meta.env.DEV ? { onTeleport: (w: { x: number; z: number }) => sim.teleport(w.x, w.z) } : {}),
     },
     () => data.def.regions,
+    () => {
+      const prefix = `${START_MAP}:`;
+      return new Set(sim.character.save.discovered.filter((k) => k.startsWith(prefix)).map((k) => k.slice(prefix.length)));
+    },
   );
 
   /**
@@ -367,6 +421,7 @@ async function boot(): Promise<void> {
   let aiming: AbilitySlot | null = null;
   for (const [code, slot] of castKeys) {
     keys.bind(code, () => {
+      if (intro.active) return;
       const b = sim.character.barSlot(slot);
       if (b?.usable && b.skill.cast.kind === "line") {
         aiming = slot;
@@ -392,6 +447,7 @@ async function boot(): Promise<void> {
     });
   }
   keys.bind("KeyS", () => intents.send({ type: "stop" }));
+  keys.bind("KeyN", () => chat.add(sound.toggleMute() ? "Sound off." : "Sound on.", "system"));
   keys.bind("Enter", () => chat.focus());
   keys.bind("KeyM", () => worldMap.toggle(sim.player));
   keys.bind("Escape", () => {
@@ -433,13 +489,89 @@ async function boot(): Promise<void> {
 
   // --- Region tracking ----------------------------------------------
   let currentRegion: Region | null = null;
+  let firstRegion = true;
+  const discoveredAtBoot = new Set(sim.character.save.discovered);
+  const titleShownAt = new Map<string, number>();
   const trackRegion = (x: number, z: number): void => {
     const r = regionAt(data.def.regions, x, z);
     if (r?.id !== currentRegion?.id) {
       currentRegion = r;
-      if (r) chat.add(`You arrive at ${r.name}.`, "system");
+      if (r) {
+        chat.add(`You arrive at ${r.name}.`, "system");
+        // Big lands get a full title card the first time (and when you log in);
+        // small named places (a meadow, the town) a lighter one, not too often.
+        const area = (r.bounds.x1 - r.bounds.x0) * (r.bounds.z1 - r.bounds.z0);
+        const minor = area < 20000;
+        const now = performance.now();
+        const fresh = firstRegion || (!discoveredAtBoot.has(`${START_MAP}:${r.id}`) && !titleShownAt.has(r.id));
+        firstRegion = false;
+        if (!intro.active && (minor ? now - (titleShownAt.get(r.id) ?? -1e9) > 90_000 : fresh)) {
+          titleShownAt.set(r.id, now);
+          announcer.regionTitle(r.name, r.subtitle ?? "", minor);
+          if (!minor) sound.arrive();
+        }
+      }
     }
   };
+
+  // A new hero's first moments (plays once; the server remembers it was seen).
+  const intro = new ArrivalIntro({
+    cinematic: (on) => {
+      story.setCinematic(on);
+      clouds.setDriftersVisible(!on);
+    },
+    whiteFlash: (a, b, c) => story.whiteFlash(a, b, c),
+    voice: (text) => story.bark("voice", "A Voice", text),
+    pillar: (px, pz, s) => encounterView.pillar(px, pz, s),
+    title: () => {
+      // The land itself (Falcon's Landing), not the town you're standing in.
+      const p = sim.player;
+      const around = data.def.regions.filter((r) => p.x >= r.bounds.x0 && p.x < r.bounds.x1 && p.z >= r.bounds.z0 && p.z < r.bounds.z1);
+      const area = (r: Region): number => (r.bounds.x1 - r.bounds.x0) * (r.bounds.z1 - r.bounds.z0);
+      const r = around.sort((a, b) => area(b) - area(a))[0];
+      if (r) announcer.regionTitle(r.name, r.subtitle ?? "");
+    },
+    done: () => intents.send({ type: "beat", beat: "arrival" }),
+  });
+  if (!sim.character.save.worldFlags.includes("seen-arrival") && sim.quests.status("a-feather-on-the-wind") === "active") {
+    intro.start(sim.player.x, sim.player.z, orbit.yaw);
+  }
+
+  // One-time tutorial tips, offered at the moment they're useful.
+  const tips = new Tips(stage);
+  let tipCheck = 0;
+  const offerTips = (): void => {
+    const c = sim.character;
+    const p = sim.player;
+    tips.offer("walk", "Right-click the ground to walk there (hold it to keep walking). Middle-drag or the arrow keys turn the camera; the wheel zooms.");
+    if (c.save.pinned.length > 0) {
+      tips.offer("quests", "Your newest quest pins itself at the top right. A gold ! or ? floats over people with something for you, and gold diamonds on the minimap and world map (M) show where to go.");
+    }
+    const weapon = c.save.equipment.weapon?.item;
+    const spare = c.save.inventory.some((s) => s && c.def(s.item)?.weaponType && s.item !== weapon);
+    if (spare) tips.offer("equip", "You have a new weapon. Open the Character tab (the shield) and click it in your bag to equip it. Each weapon type has its own skill tree.");
+    if (weapon && weapon !== "basic-staff" && c.def(weapon)?.weaponType) {
+      tips.offer("skills", "Open the Skills tab and click a combat style to see its skill tree. Drag a skill onto Q W E R, then hold the key to aim and release to cast.");
+    }
+    let enemy = false;
+    let dummy = false;
+    for (const e of sim.combat.enemies.values()) {
+      if (e.mode === "dead" || e.scripted) continue;
+      const d = Math.hypot(e.x - p.x, e.z - p.z);
+      if (e.def.dummy && d < 9) dummy = true;
+      else if (!e.def.dummy && d < 14) enemy = true;
+    }
+    if (dummy) tips.offer("dummy", "Training dummies never fight back. Right-click one to attack it, and try your skills on it.");
+    if (enemy) tips.offer("combat", "Right-click an enemy to attack it. Enemies mark the ground red before they strike: step out of the red to avoid the hit.");
+    if (!sim.encounter && c.save.vitals.hp < c.stats.maxHp * 0.5) {
+      tips.offer("health", "Health comes back slowly on its own. Food and tonics on your hotbar (keys 1-4) heal much faster.");
+    }
+  };
+
+  // Where pinned quests point (refreshed a few times a second; wanderers move).
+  let targets: ReturnType<typeof sim.questTargets> = [];
+  let targetsAge = 99;
+  let targetsVersion = -1;
 
   // --- Loop ---------------------------------------------------------
   const focus = new THREE.Vector3();
@@ -451,13 +583,46 @@ async function boot(): Promise<void> {
       const x = lerp(p.prevX, p.x, alpha);
       const z = lerp(p.prevZ, p.z, alpha);
 
+      // Story encounter: what happened this tick, then the cutscene camera.
+      const enc = sim.encounter;
+      for (const e of sim.encounters) {
+        const evs = e.drainEvents();
+        for (const ev of evs) {
+          if (ev.kind === "bark") story.bark(ev.speaker, ev.name, ev.text);
+          else if (ev.kind === "cinematic") story.setCinematic(ev.on);
+        }
+        encounterView.handle(evs, {
+          shake: (power, dur) => orbit.shake(power, dur),
+          debris: (dur) => {
+            const flag = e.def.arenaFlag;
+            props.dropIn((inst) => !!inst.visibleWhen?.some((c) => c.kind === "flag" && c.flag === flag), dur, (rx, rz) => {
+              encounterView.rockLanded(rx, rz);
+              orbit.shake(0.18, 0.25);
+            });
+          },
+          playerHit: () => story.hit(),
+          flash: (a, b, c) => story.whiteFlash(a, b, c),
+          player: () => ({ x: sim.player.x, z: sim.player.z }),
+        });
+      }
+      const heroLift = encounterView.playerLift(enc, alpha, x, z);
+      heroTilt += ((enc?.flight ? 0.75 : 0) - heroTilt) * (1 - Math.exp(-dt * 6));
+      hero.lift = heroLift;
+      hero.tilt = heroTilt;
+      const introShot = intro.update(dt);
+      const cut = introShot
+        ? { shot: introShot, focus: { x, y: surfaceAt(x, z) + 1.2, z } }
+        : storyCamera(enc, alpha, { x, z }, (sx, sz) => data.buildings.groundHeight(hm, sx, sz), heroLift);
+      orbit.setShot(cut?.shot ?? null);
+
       if (cameraOverride) {
         cameraOverride.update(dt);
         const f = cameraOverride.focus();
         terrain.update(f.x, f.z);
       } else {
         orbit.rotateByKeys(keys.axis("ArrowRight", "ArrowLeft"), keys.axis("ArrowDown", "ArrowUp"), dt);
-        focus.set(x, surfaceAt(x, z) + 1.2, z);
+        if (cut) focus.set(cut.focus.x, cut.focus.y, cut.focus.z);
+        else focus.set(x, surfaceAt(x, z) + 1.2, z);
         orbit.update(dt, focus);
         terrain.update(x, z);
       }
@@ -483,16 +648,26 @@ async function boot(): Promise<void> {
 
       hero.update(surfaceAt, x, z, p.dirX, p.dirZ, dt);
       buildings.update({ x, z, storey: p.storey, building: p.building }, world.camera.position, dt);
-      props.update(buildings, { x, z, y: surfaceAt(x, z) + 1 }, world.camera.position, dt);
+      props.update(buildings, { x, z, y: surfaceAt(x, z) + 1 }, world.camera.position, dt, (inst) => sim.propShown(inst));
       npcLayer.update(world.camera, { x, z }, sim.talk?.spawn.id ?? null, buildings, dt, (id) => {
         const w = sim.npcWalkers().get(id);
         return w ? { x: lerp(w.prevX, w.x, alpha), z: lerp(w.prevZ, w.z, alpha), dirX: w.dirX, dirZ: w.dirZ, home: w.spawn.wander === "none" } : null;
       }, (id) => {
         const s = sim.npcWalkers().get(id)?.spawn;
         return !s || sim.npcShown(s);
+      }, (id) => {
+        const s = sim.npcWalkers().get(id)?.spawn;
+        return s ? sim.npcMarker(s) : null;
       });
       groundItems.update(dt, (g) => sim.isGroundItemAvailable(g), buildings);
-      enemyLayer.update(sim.combat, world.camera, { x, z }, alpha, dt);
+      enemyLayer.update(sim.combat, world.camera, { x, z }, alpha, dt, encounterView.bossLook(enc, alpha));
+      encounterView.setViewport(stage.getBoundingClientRect().height);
+      encounterView.update(enc, alpha, dt);
+      ambience.setViewport(stage.getBoundingClientRect().height);
+      ambience.update(dt, { x, z }, data.buildings.props, (pp) => props.baseY(pp));
+      const bossState = enc?.phase === "fight" ? sim.combat.enemies.get(enc.bossId) : undefined;
+      story.setBoss(bossState ? { name: bossState.def.name, title: enc?.def.bossTitle ?? "", fraction: bossState.hp / bossState.def.stats.maxHp } : null);
+      story.update(dt);
       const fresh = sim.combatEvents;
       sim.combatEvents = [];
       for (const e of fresh) if (e.kind === "cast") hero.playCast(e.melee || e.style === "brawler" ? "swing" : "thrust");
@@ -553,18 +728,37 @@ async function boot(): Promise<void> {
       for (const hook of frameHooks) hook(dt);
 
       const dest = sim.destination();
-      minimap.draw({ x, z }, orbit.yaw, dest);
-      worldMap.draw({ x, z }, dest);
+      targetsAge += dt;
+      if (targetsAge > 0.4 || sim.version !== targetsVersion) {
+        targets = sim.questTargets();
+        targetsAge = 0;
+        targetsVersion = sim.version;
+      }
+      minimap.draw({ x, z }, orbit.yaw, dest, targets);
+      worldMap.draw({ x, z }, dest, targets);
+      announcer.update(dt);
+      // High winds up on the sky island, a breeze below.
+      sound.setWind(data.def.regions.some((r) => r.kind === "sky" && x >= r.bounds.x0 && x < r.bounds.x1 && z >= r.bounds.z0 && z < r.bounds.z1) ? 1 : 0.45);
+      sound.update(dt, p.storey === 0 && !p.building);
+      tipCheck -= dt;
+      if (tipCheck <= 0 && !intro.active) {
+        tipCheck = 0.5;
+        offerTips();
+      }
+      tips.update(dt, intro.active || sim.locked || !!sim.encounter || dialogue.isOpen);
       world.render();
     },
   });
 
+  // The world is ready: lift the loading screen.
+  loadingDone();
   chat.add("Welcome to Levi.", "system");
   chat.add("Right-click to walk. Middle-drag or arrow keys to turn the camera. M for the world map.");
 }
 
 boot().catch((e: unknown) => {
   console.error(e);
+  loadingFailed(String(e));
   const log = document.getElementById("chat-log");
   if (log) log.textContent = `Failed to start: ${String(e)}`;
 });

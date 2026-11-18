@@ -161,7 +161,7 @@
       "id": "the-world-around-us-ok",
       "speaker": "npc",
       "text": "Then sit, and listen.",
-      "next": null,
+      "next": "world-lesson",
       "options": [],
       "effects": [],
       "pos": {
@@ -319,5 +319,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Hm? Oh. Don't touch the shelves, please.",
+    "Every book in here was carried up from the Layland by hand.",
+    "Wind's from the south again. Close the shutters."
   ]
 }

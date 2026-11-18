@@ -3,7 +3,7 @@
   "name": "Operation Survive",
   "category": "act",
   "act": 0,
-  "summary": "Survive.",
+  "summary": "Falcon threw himself in front of the blast meant for you.",
   "start": "Continues from The First Emperor",
   "requirements": {
     "quests": [
@@ -14,26 +14,24 @@
   },
   "steps": [
     {
-      "id": "survive",
-      "journal": "No blade, arrow or spell of mine even scratches him. Falcon says to stay alive, nothing more.",
+      "id": "saved",
+      "journal": "I couldn't keep up with her. When Alpha took aim at me, Falcon threw himself in the way.",
       "objectives": [
         {
-          "id": "survive-alpha",
-          "text": "Survive Alpha's onslaught",
+          "id": "falcon-dives",
+          "text": "Falcon dives in",
           "kind": "trigger"
         }
       ]
     },
     {
       "id": "fall",
-      "journal": "Falcon took the blow meant for me.",
+      "journal": "Falcon took the blow meant for me. He's using the last of his strength to send me away.",
       "objectives": [
         {
-          "id": "falcon-falls",
-          "text": "Reach Falcon",
-          "kind": "talk",
-          "npc": "falcon-overlook",
-          "node": "falcon-falls"
+          "id": "falcon-farewell",
+          "text": "Hear Falcon's last words",
+          "kind": "trigger"
         }
       ]
     }

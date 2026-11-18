@@ -1,0 +1,8 @@
+{
+  "id": "woodpile",
+  "name": "Woodpile",
+  "model": "prop-woodpile",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

@@ -68,7 +68,15 @@ export class EnemyLayer {
     for (const id of [...this.shown.keys()]) this.drop(id);
   }
 
-  update(world: CombatWorld, camera: THREE.Camera, player: { x: number; z: number }, alpha: number, dt: number): void {
+  update(
+    world: CombatWorld,
+    camera: THREE.Camera,
+    player: { x: number; z: number },
+    alpha: number,
+    dt: number,
+    /** Story overrides for scripted enemies: height above ground and held pose. */
+    look?: (id: string, x: number, z: number) => { lift: number; pose: "none" | "channel" } | null,
+  ): void {
     for (const id of [...this.shown.keys()]) {
       const e = world.enemies.get(id);
       if (!e || e.def.id !== this.shown.get(id)!.defId) this.drop(id);
@@ -90,9 +98,12 @@ export class EnemyLayer {
       const x = lerp(e.prevX, e.x, alpha);
       const z = lerp(e.prevZ, e.z, alpha);
       const heightAt = (hx: number, hz: number): number => this.index.groundHeight(this.hm, hx, hz);
+      const lk = e.scripted && look ? look(e.spawn.id, x, z) : null;
+      s.entity.lift = lk?.lift ?? 0;
+      s.entity.pose = lk?.pose ?? "none";
       s.entity.update(heightAt, x, z, e.dirX, e.dirZ, dt);
       const top = (e.def.dummy ? 2.05 : 1.2 + 0.9 * e.def.scale) * (e.def.model === "humanoid" ? 1.45 : 1);
-      s.head.set(x, heightAt(x, z) + top, z);
+      s.head.set(x, heightAt(x, z) + top + s.entity.lift, z);
 
       const hurt = e.hp < e.def.stats.maxHp || e.mode === "chase" || e.mode === "windup";
       const near = Math.hypot(player.x - x, player.z - z) < TAG_RANGE;

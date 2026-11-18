@@ -1,6 +1,9 @@
 import {
   advanceAlongPath,
   CombatWorld,
+  StoryEncounter,
+  type EncounterDef,
+  type Respawn,
   NpcWalker,
   WEAPON_STYLE,
   type CombatEvent,
@@ -9,6 +12,10 @@ import {
   propFacing,
   QuestEngine,
   DISCIPLINE_NAMES,
+  DISCIPLINES,
+  MAX_PINNED,
+  type Discipline,
+  type QuestBanner,
   findPath,
   PLAYER_MOVE_SPEED,
   propFrontCell,
@@ -43,8 +50,21 @@ export interface PlayerState extends Mover {
   building: string | null;
 }
 
+/** A big centred announcement: quest started/complete, or a level gained. */
+export type Banner = QuestBanner | { kind: "level"; title: string; detail: string };
+
 export interface SimEvents {
   message(text: string, kind?: "quest" | "system"): void;
+  banner?(b: Banner): void;
+}
+
+/** A place on the map a pinned quest wants you to go. */
+export interface QuestTarget {
+  quest: string;
+  x: number;
+  z: number;
+  /** What's there ("Falcon", "Mouse Meadow"). */
+  label: string;
 }
 
 /** What the world around the sim provides (static content + map lookups). */
@@ -54,10 +74,16 @@ export interface SimWorld {
   npcs: ReadonlyMap<string, NpcDef>;
   quests: ReadonlyMap<string, QuestDef>;
   enemies: ReadonlyMap<string, EnemyDef>;
-  /** Where you wake up after being knocked out. */
+  /** Scripted story fights (content/encounters). */
+  encounters: ReadonlyMap<string, EncounterDef>;
+  /** Where you wake up after being knocked out (when no respawn point applies). */
   respawn: Vec2;
+  /** Story-gated respawn points (the Cathedral after the prologue). Read live. */
+  respawns?: () => readonly Respawn[];
   /** Region id at a point (for "reach" objectives). */
   regionAt(x: number, z: number): string | null;
+  /** Every region containing a point (a town and the island around it): all count as discovered. */
+  regionsAt?(x: number, z: number): string[];
 }
 
 /** An open conversation. */
@@ -68,6 +94,10 @@ export interface TalkState {
 }
 
 const MAX_FRIENDS = 200;
+
+/** What you can't do while a cutscene plays. */
+const LOCKED_OUT: ReadonlySet<Intent["type"]> = new Set(["move", "climb", "cast", "attack", "talk", "useItem", "pickup", "lootTake"]);
+
 
 /** Within this distance of a stair's access cell centre counts as "there". */
 const CLIMB_REACH = 0.75;
@@ -111,6 +141,11 @@ export class LocalSim {
   private readyAt = new Map<string, number>();
   /** Cooldown length (ticks) of each skill's last use, for the HUD sweep. */
   private cdLength = new Map<string, number>();
+  /** Scripted story fights (the prologue's Alpha fight). */
+  readonly encounters: StoryEncounter[] = [];
+  /** Last known level per discipline (to announce level-ups from any source). */
+  private readonly levels = new Map<Discipline, number>();
+  private markerCache: { version: number; marks: Map<string, "!" | "?" | null> } = { version: -1, marks: new Map() };
 
   constructor(
     private readonly ground: WalkGrid,
@@ -120,11 +155,52 @@ export class LocalSim {
     readonly character: Character,
     private readonly world: SimWorld,
   ) {
-    this.quests = new QuestEngine(character, { quests: world.quests, npcs: world.npcs }, (t, k) => events.message(t, k));
+    this.quests = new QuestEngine(character, { quests: world.quests, npcs: world.npcs }, (t, k, b) => {
+      events.message(t, k);
+      if (b) events.banner?.(b);
+    });
+    for (const d of DISCIPLINES) this.levels.set(d, character.level(d));
+    // Older saves: put active quests on the tracker if nothing is pinned.
+    if (character.save.pinned.length === 0) {
+      character.save.pinned = Object.keys(character.save.quests).filter((id) => this.quests.status(id) === "active" && world.quests.has(id)).slice(-MAX_PINNED).reverse();
+    }
     this.combat = new CombatWorld(world.enemies, 7);
     this.player = {
       x: spawn.x, z: spawn.z, prevX: spawn.x, prevZ: spawn.z, path: [], dirX: 0, dirZ: 1, storey: 0, building: null,
     };
+    for (const def of world.encounters.values()) {
+      this.encounters.push(
+        new StoryEncounter(def, {
+          player: this.player,
+          quests: this.quests,
+          flags: () => character.save.worldFlags,
+          hp: () => character.save.vitals.hp,
+          setHp: (v) => {
+            character.save.vitals.hp = v;
+            this.enterCombat(8);
+          },
+          combat: this.combat,
+          boss: world.enemies.get(def.boss),
+          npcPos: (npc) => {
+            const s = this.buildings.npcs.find((n) => n.npc === npc);
+            return s ? { x: s.x, z: s.z } : null;
+          },
+          talking: () => this.talk !== null,
+          teleport: (x, z) => this.teleport(x, z),
+          message: (t) => events.message(t, "system"),
+        }),
+      );
+    }
+  }
+
+  /** A cutscene beat is playing: the player can't act. */
+  get locked(): boolean {
+    return this.encounters.some((e) => e.locked);
+  }
+
+  /** The story encounter playing right now, if any. */
+  get encounter(): StoryEncounter | null {
+    return this.encounters.find((e) => e.active) ?? null;
   }
 
   /** Walk grid of the storey the player is on. */
@@ -135,6 +211,7 @@ export class LocalSim {
   }
 
   apply(intent: Intent): void {
+    if (this.locked && LOCKED_OUT.has(intent.type)) return;
     switch (intent.type) {
       case "move": {
         this.climb = null;
@@ -202,6 +279,12 @@ export class LocalSim {
       case "pinQuest":
         this.report(this.pin(intent.quest, intent.pinned));
         break;
+      case "beat": {
+        const flag = `seen-${intent.beat}`;
+        if (!this.character.save.worldFlags.includes(flag)) this.character.save.worldFlags.push(flag);
+        this.version++;
+        break;
+      }
       case "addFriend":
       case "removeFriend":
         this.report(this.friend(intent.type === "addFriend", intent.name));
@@ -408,12 +491,96 @@ export class LocalSim {
   }
 
   /** Still lying there for this player? */
+  /**
+   * What floats over an NPC: "?" = a quest wants you to talk to them now,
+   * "!" = they have a quest for you. Recomputed only when something changed.
+   */
+  npcMarker(spawn: NpcSpawn): "!" | "?" | null {
+    if (this.markerCache.version !== this.version) this.markerCache = { version: this.version, marks: new Map() };
+    const cached = this.markerCache.marks.get(spawn.npc);
+    if (cached !== undefined) return cached;
+    const mark = this.computeMarker(spawn.npc);
+    this.markerCache.marks.set(spawn.npc, mark);
+    return mark;
+  }
+
+  private computeMarker(npcId: string): "!" | "?" | null {
+    const q = this.quests;
+    for (const id of Object.keys(this.character.save.quests)) {
+      const def = this.world.quests.get(id);
+      const step = def ? q.step(def) : null;
+      if (!def || !step) continue;
+      for (const o of step.objectives) if (o.kind === "talk" && o.npc === npcId && !q.objectiveDone(def, o)) return "?";
+    }
+    const npc = this.world.npcs.get(npcId);
+    const start = npc ? q.entryNode(npc) : null;
+    if (!npc || !start) return null;
+    // Walk the conversation that would open: does it offer a quest you can take?
+    const seen = new Set<string>();
+    const todo = [start.id];
+    while (todo.length && seen.size < 40) {
+      const next = todo.pop();
+      const node = npc.nodes.find((n) => n.id === next);
+      if (!node || seen.has(node.id)) continue;
+      seen.add(node.id);
+      const effects = [...node.effects, ...node.options.filter((o) => q.checkAll(o.when)).flatMap((o) => o.effects)];
+      for (const e of effects) {
+        if (e.kind !== "startQuest" || q.status(e.quest) !== "notStarted") continue;
+        const def = this.world.quests.get(e.quest);
+        if (def && q.missing(def).length === 0) return "!";
+      }
+      if (node.next) todo.push(node.next);
+      for (const o of node.options) if (o.next && q.checkAll(o.when)) todo.push(o.next);
+    }
+    return null;
+  }
+
+  /** Where the pinned quests' current objectives point (minimap / world map markers). */
+  questTargets(): QuestTarget[] {
+    const out: QuestTarget[] = [];
+    const q = this.quests;
+    for (const id of this.character.save.pinned) {
+      const def = this.world.quests.get(id);
+      const step = def ? q.step(def) : null;
+      if (!def || !step) continue;
+      for (const o of step.objectives) {
+        if (q.objectiveDone(def, o)) continue;
+        if (o.kind === "talk") {
+          const s = this.buildings.npcs.find((n) => n.npc === o.npc && this.npcShown(n));
+          if (s) {
+            const t = this.npcTarget(s);
+            out.push({ quest: id, x: t.x + 0.5, z: t.z + 0.5, label: this.world.npcs.get(o.npc)?.name ?? o.npc });
+          }
+        } else if (o.kind === "defeat") {
+          for (const zn of this.buildings.zones) {
+            if (!zn.mobs.some((m) => m.enemy === o.enemy) || zn.cells.length === 0) continue;
+            let sx = 0, sz = 0;
+            for (const [cx, cz] of zn.cells) { sx += cx; sz += cz; }
+            out.push({ quest: id, x: sx / zn.cells.length + 0.5, z: sz / zn.cells.length + 0.5, label: zn.name });
+          }
+          for (const e of this.buildings.enemies) if (e.enemy === o.enemy) out.push({ quest: id, x: e.x + 0.5, z: e.z + 0.5, label: this.world.enemies.get(o.enemy)?.name ?? o.enemy });
+        } else if (o.kind === "pickup" || o.kind === "collect") {
+          for (const g of this.buildings.groundItems) if (g.item === o.item && this.isGroundItemAvailable(g)) out.push({ quest: id, x: g.x + 0.5, z: g.z + 0.5, label: this.character.def(o.item)?.name ?? o.item });
+        } else if (o.kind === "use") {
+          for (const p of this.buildings.props) if (p.prop === o.prop) out.push({ quest: id, x: p.x + 0.5, z: p.z + 0.5, label: this.world.propDefs.get(o.prop)?.name ?? o.prop });
+        }
+      }
+    }
+    return out;
+  }
+
+  /** Is this placed prop in the world right now (quest-gated rubble...)? */
+  propShown(p: PropInstance): boolean {
+    return !p.visibleWhen?.length || this.quests.checkAll(p.visibleWhen);
+  }
+
   isGroundItemAvailable(g: GroundItem): boolean {
     return !this.character.save.pickedUp.includes(this.groundKey(g)) && this.quests.checkAll(g.visibleWhen);
   }
 
   /** Is this placed NPC in the world right now (quest-gated placements)? */
   npcShown(spawn: NpcSpawn): boolean {
+    if (this.encounters.some((e) => e.ownsFalcon && e.def.falconNpc === spawn.npc)) return false;
     return spawn.visibleWhen.length === 0 || this.quests.checkAll(spawn.visibleWhen);
   }
 
@@ -440,7 +607,7 @@ export class LocalSim {
     }
     if (list.includes(questId)) return { ok: true };
     if (this.quests.status(questId) !== "active") return { ok: false, msg: "Only active quests can be pinned." };
-    if (list.length >= 2) return { ok: false, msg: "You can pin 2 quests at a time. Unpin one first." };
+    if (list.length >= MAX_PINNED) return { ok: false, msg: `You can pin ${MAX_PINNED} quests at a time. Unpin one first.` };
     list.push(questId);
     return { ok: true };
   }
@@ -572,10 +739,12 @@ export class LocalSim {
         this.version++;
       }
     }
+    if (c.save.vitals.hp <= 0 && this.encounter) c.save.vitals.hp = 1; // story fights end on their own terms
     if (c.save.vitals.hp <= 0) {
       // Knocked out: wake at the respawn point, nothing lost.
-      this.events.message("You're knocked out... and wake up back at the Landing.", "system");
-      this.teleport(this.world.respawn.x, this.world.respawn.z);
+      const wake = this.respawnPoint();
+      this.events.message(`You're knocked out... and wake up at ${wake.name}.`, "system");
+      this.teleport(wake.x, wake.z);
       const st = c.stats;
       c.save.vitals.hp = st.maxHp;
       c.save.vitals.mana = st.maxMana;
@@ -584,6 +753,12 @@ export class LocalSim {
       this.attackTarget = null;
       this.version++;
     }
+  }
+
+  /** Where you'd wake up right now: the first respawn point whose conditions pass. */
+  respawnPoint(): { x: number; z: number; name: string } {
+    for (const r of this.world.respawns?.() ?? []) if (this.quests.checkAll(r.when)) return r;
+    return { ...this.world.respawn, name: "the Landing" };
   }
 
   /** In combat: gear, hotbar and skills are locked. */
@@ -687,15 +862,35 @@ export class LocalSim {
     this.character.regen(TICK_SEC);
     p.prevX = p.x;
     p.prevZ = p.z;
+    if (this.locked) p.path = [];
     advanceAlongPath(p, PLAYER_MOVE_SPEED * TICK_SEC);
+    for (const e of this.encounters) e.confine(p);
     this.tickNpcs();
     this.tickCombat();
+    for (const d of DISCIPLINES) {
+      const lvl = this.character.level(d);
+      const was = this.levels.get(d) ?? lvl;
+      if (lvl > was) this.events.banner?.({ kind: "level", title: `${DISCIPLINE_NAMES[d]} level ${lvl}`, detail: "" });
+      this.levels.set(d, lvl);
+    }
+    for (const e of this.encounters) {
+      const wasLocked = e.locked;
+      e.tick(TICK_SEC);
+      if (wasLocked !== e.locked) {
+        this.attackTarget = null;
+        this.version++;
+      }
+    }
     if (this.talk && (p.path.length > 0 || !this.near(this.npcTarget(this.talk.spawn)))) this.endTalk(false);
     const region = this.world.regionAt(p.x, p.z);
     if (region !== this.region) {
       this.region = region;
       if (region) {
         this.quests.event({ kind: "reach", region });
+        for (const id of this.world.regionsAt?.(p.x, p.z) ?? [region]) {
+          const key = `${this.world.map}:${id}`;
+          if (!this.character.save.discovered.includes(key)) this.character.save.discovered.push(key);
+        }
         this.version++;
       }
     }

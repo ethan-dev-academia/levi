@@ -7,6 +7,24 @@
     <link rel="stylesheet" href="/src/ui/styles.css" />
   </head>
   <body>
+    <div id="loading">
+      <div class="ld-art"><img id="ld-img" alt="" /></div>
+      <div class="ld-shade"></div>
+      <header class="ld-brand"><b>Levi</b><span>A world above the clouds</span></header>
+      <article class="ld-lore">
+        <small>From the Archive</small>
+        <h2 id="ld-title"></h2>
+        <i class="ld-rule"></i>
+        <p id="ld-text"></p>
+      </article>
+      <footer class="ld-foot">
+        <div class="ld-tip"><span>Tip</span><p id="ld-tip"></p></div>
+        <div class="ld-progress">
+          <div id="ld-status">Waking the world…</div>
+          <div class="ld-bar"><i id="ld-fill"></i></div>
+        </div>
+      </footer>
+    </div>
     <div id="app">
       <main id="stage">
         <canvas id="viewport"></canvas>
@@ -25,6 +43,7 @@
         <section id="tab-content"></section>
       </aside>
     </div>
+    <script type="module" src="/src/loading.ts"></script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

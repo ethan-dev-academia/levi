@@ -1,0 +1,8 @@
+{
+  "id": "fountain",
+  "name": "Fountain",
+  "model": "prop-fountain",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

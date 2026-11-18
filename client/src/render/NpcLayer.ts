@@ -3,6 +3,10 @@ import { propFacing, storeyY, type BuildingIndex, type Heightmap, type ModelDef,
 import type { BuildingLayer } from "./BuildingLayer.js";
 import { CharacterEntity } from "./CharacterEntity.js";
 
+/** Townsfolk mutter to themselves when you come this close. */
+const CHATTER_RANGE = 4.5;
+/** Quest marks (! ?) show within this distance. */
+const MARK_RANGE = 70;
 /** Nametags show within this distance of the player. */
 const NAMETAG_RANGE = 14;
 const TAG_HEIGHT = 2.25;
@@ -12,6 +16,12 @@ interface PlacedNpc {
   def: NpcDef;
   entity: CharacterEntity;
   tag: HTMLElement;
+  /** Floating ! / ? when a quest involves them. */
+  mark: HTMLElement;
+  /** Idle chatter bubble, its time left, and when they may speak again. */
+  bubble: HTMLElement;
+  talkLeft: number;
+  quietUntil: number;
   /** World point the tag / dialogue box anchors to. */
   head: THREE.Vector3;
   yaw: number;
@@ -23,6 +33,8 @@ interface PlacedNpc {
  * Turns to face the player while talking to them.
  */
 export class NpcLayer {
+  /** Seconds since start (chatter cooldowns). */
+  private clock = 0;
   readonly group = new THREE.Group();
   private placed: PlacedNpc[] = [];
   private readonly v = new THREE.Vector3();
@@ -51,6 +63,8 @@ export class NpcLayer {
       p.entity.dispose();
       this.group.remove(p.entity.model.root);
       p.tag.remove();
+      p.mark.remove();
+      p.bubble.remove();
     }
     this.group.clear();
     this.placed = [];
@@ -78,7 +92,15 @@ export class NpcLayer {
       tag.hidden = true;
       this.tagHost.append(tag);
       const [fx, fz] = propFacing(spawn.rot);
-      this.placed.push({ spawn, def, entity, tag, head: new THREE.Vector3(), yaw: Math.atan2(fx, fz) });
+      const mark = document.createElement("div");
+      mark.className = "npc-mark";
+      mark.hidden = true;
+      this.tagHost.append(mark);
+      const bubble = document.createElement("div");
+      bubble.className = "npc-bubble";
+      bubble.hidden = true;
+      this.tagHost.append(bubble);
+      this.placed.push({ spawn, def, entity, tag, mark, bubble, talkLeft: 0, quietUntil: Math.random() * 6, head: new THREE.Vector3(), yaw: Math.atan2(fx, fz) });
     }
   }
 
@@ -96,8 +118,11 @@ export class NpcLayer {
     position: (spawnId: string) => { x: number; z: number; dirX: number; dirZ: number; home: boolean } | null,
     /** Quest-gated NPCs that aren't around right now are hidden. */
     shown: (spawnId: string) => boolean = () => true,
+    /** "!" = has a quest for you, "?" = a quest wants you to talk to them. */
+    marker: (spawnId: string) => "!" | "?" | null = () => null,
   ): void {
     const rect = this.tagHost.getBoundingClientRect();
+    this.clock += dt;
     for (const p of this.placed) {
       const s = p.spawn;
       const live = position(s.id);
@@ -127,9 +152,33 @@ export class NpcLayer {
       this.v.copy(p.head).project(camera);
       const onScreen = this.v.z < 1 && Math.abs(this.v.x) < 1.1 && Math.abs(this.v.y) < 1.1;
       p.tag.hidden = !(near && onScreen) || talkingTo === s.id;
+      const sx = ((this.v.x + 1) / 2) * rect.width;
+      const sy = ((1 - this.v.y) / 2) * rect.height;
       if (!p.tag.hidden) {
-        p.tag.style.left = `${((this.v.x + 1) / 2) * rect.width}px`;
-        p.tag.style.top = `${((1 - this.v.y) / 2) * rect.height}px`;
+        p.tag.style.left = `${sx}px`;
+        p.tag.style.top = `${sy}px`;
+      }
+      // Idle chatter: a line now and then when you pass close by.
+      const dist = Math.hypot(player.x - x, player.z - z);
+      if (p.talkLeft > 0) p.talkLeft -= dt;
+      else if (visible && dist < CHATTER_RANGE && talkingTo === null && this.clock >= p.quietUntil && p.def.chatter.length > 0) {
+        p.bubble.textContent = p.def.chatter[Math.floor(Math.random() * p.def.chatter.length)]!;
+        p.talkLeft = 4.5;
+        p.quietUntil = this.clock + 25 + Math.random() * 20;
+      }
+      p.bubble.hidden = !(p.talkLeft > 0 && onScreen && visible && talkingTo !== s.id);
+      if (!p.bubble.hidden) {
+        p.bubble.style.left = `${sx}px`;
+        p.bubble.style.top = `${sy - (p.tag.hidden ? 8 : 38)}px`;
+      }
+      // Quest marks show from much further away than names, so you can spot who to see.
+      const m = visible && onScreen && talkingTo !== s.id && Math.hypot(player.x - x, player.z - z) < MARK_RANGE ? marker(s.id) : null;
+      p.mark.hidden = !m;
+      if (m) {
+        if (p.mark.textContent !== m) p.mark.textContent = m;
+        p.mark.classList.toggle("turnin", m === "?");
+        p.mark.style.left = `${sx}px`;
+        p.mark.style.top = `${sy - (p.tag.hidden ? 4 : 34)}px`;
       }
     }
   }

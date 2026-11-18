@@ -20,9 +20,19 @@ export type QuestEvent =
 
 export type QuestStatus = "notStarted" | "active" | "done";
 
-export interface QuestNotify {
-  (text: string, kind?: "quest" | "system"): void;
+/** A big centred announcement (quest started / complete). */
+export interface QuestBanner {
+  kind: "start" | "complete";
+  title: string;
+  detail: string;
 }
+
+export interface QuestNotify {
+  (text: string, kind?: "quest" | "system", banner?: QuestBanner): void;
+}
+
+/** Most quests pinned on the tracker at once. */
+export const MAX_PINNED = 2;
 
 const ok = (msg?: string): Result => (msg === undefined ? { ok: true } : { ok: true, msg });
 const fail = (msg: string): Result => ({ ok: false, msg });
@@ -75,7 +85,9 @@ export class QuestEngine {
     const missing = this.missing(q);
     if (missing.length) return fail(`You can't start ${q.name} yet: ${missing.join(", ")}.`);
     this.c.save.quests[id] = { stage: 0, progress: {} };
-    this.notify(`Quest started: ${q.name}`, "quest");
+    // The newest quest goes to the top of the tracker.
+    this.c.save.pinned = [id, ...this.c.save.pinned.filter((p) => p !== id)].slice(0, MAX_PINNED);
+    this.notify(`Quest started: ${q.name}`, "quest", { kind: "start", title: q.name, detail: q.steps[0]?.objectives[0]?.text ?? "" });
     this.advance(q); // a step might already be satisfied (e.g. items in hand)
     return ok();
   }
@@ -176,7 +188,7 @@ export class QuestEngine {
     }
     for (const f of r.unlocks) if (!this.c.save.worldFlags.includes(f)) this.c.save.worldFlags.push(f);
     this.c.save.pinned = this.c.save.pinned.filter((p) => p !== q.id);
-    this.notify(`Quest complete: ${q.name}!${parts.length ? ` Rewards: ${parts.join(", ")}.` : ""}`, "quest");
+    this.notify(`Quest complete: ${q.name}!${parts.length ? ` Rewards: ${parts.join(", ")}.` : ""}`, "quest", { kind: "complete", title: q.name, detail: parts.join(" · ") });
   }
 
   // --- Dialogue conditions & effects ----------------------------------------------------------

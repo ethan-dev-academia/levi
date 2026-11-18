@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ConditionSchema } from "./npc.js";
 
 const ID = /^[a-z0-9_-]+$/;
 const cell = z.number().int().min(0).max(65535);
@@ -53,6 +54,11 @@ export const PropInstanceSchema = z.object({
   text: z.string().max(1000).optional(),
   /** Containers: the loot each player finds inside (their own copy). */
   loot: z.array(LootSlotSchema.nullable()).max(20).optional(),
+  /**
+   * Only there while these all hold for the player (e.g. rubble after a
+   * story event). Conditional props never block movement.
+   */
+  visibleWhen: z.array(ConditionSchema).max(8).optional(),
 });
 
 /** Cell step a prop with `rot` quarter turns faces (rot 0 = +Z / south). Matches the renderer. */

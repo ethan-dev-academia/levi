@@ -64,9 +64,22 @@ export class MapImage {
     }
     const img = this.ctx.createImageData(w, h);
     const col = new THREE.Color();
+    // Most of a big world is untouched open sea: one precomputed colour for it.
+    const base = def.baseHeight;
+    const sea = WATER_COLOR.clone().offsetHSL(0, 0, -Math.min(1, (def.waterLevel - base + 0.15) / 4) * 0.12).convertLinearToSRGB();
+    const seaR = sea.r * 255, seaG = sea.g * 255, seaB = sea.b * 255;
+    const deepSea = base <= def.waterLevel + 0.15;
     for (let cz = cz0; cz <= cz1; cz++) {
       for (let cx = cx0; cx <= cx1; cx++) {
         const ci = cz * def.cols + cx;
+        if (deepSea && this.data.holes[ci] !== 1 && this.skyDist[ci]! >= CLOUD_MAX && hm.vertex(cx, cz) === base && hm.vertex(cx + 1, cz + 1) === base) {
+          const i = ((cz - cz0) * w + (cx - cx0)) * 4;
+          img.data[i] = seaR;
+          img.data[i + 1] = seaG;
+          img.data[i + 2] = seaB;
+          img.data[i + 3] = 255;
+          continue;
+        }
         // Void looks straight down at the open sea, so it shares the sea's colour.
         const avg = this.data.holes[ci] === 1 ? Math.min(def.baseHeight, def.waterLevel) : (hm.vertex(cx, cz) + hm.vertex(cx + 1, cz + 1)) / 2;
         if (avg <= def.waterLevel + 0.15) {

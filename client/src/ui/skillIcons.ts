@@ -1,4 +1,6 @@
 import type { CombatStyle, SkillDef } from "@levi/shared";
+import { iconElement, iconImage } from "../render/IconRenderer.js";
+import { skillModel } from "../render/iconModels.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 type P = [number, number];
@@ -66,8 +68,14 @@ function hash(s: string): number {
   return h >>> 0;
 }
 
-/** Faceted, triangle-built icon for a skill, coloured by its path. */
-export function skillIcon(skill: SkillDef, style: CombatStyle): SVGSVGElement {
+/** A skill's icon: a little faceted 3D model, coloured by its path (flat fallback without WebGL). */
+export function skillIcon(skill: SkillDef, style: CombatStyle): Element {
+  const url = iconImage(`skill:${style}:${skill.id}:${skill.cast.kind}`, () => skillModel(skill, style));
+  return url ? iconElement(url, "skill-icon") : flatSkillIcon(skill, style);
+}
+
+/** Faceted, triangle-built flat icon for a skill (fallback). */
+function flatSkillIcon(skill: SkillDef, style: CombatStyle): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 32 32");
   svg.setAttribute("class", "skill-icon");

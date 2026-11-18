@@ -38,7 +38,7 @@ export class Minimap {
     canvas.addEventListener("contextmenu", (e) => e.preventDefault());
   }
 
-  draw(player: Vec2, yaw: number, destination: Vec2 | null): void {
+  draw(player: Vec2, yaw: number, destination: Vec2 | null, targets: readonly Vec2[] = []): void {
     this.center = { x: player.x, z: player.z };
     this.yaw = yaw;
     const { ctx, canvas, image } = this;
@@ -65,6 +65,35 @@ export class Minimap {
 
     ctx.fillStyle = "#fff";
     ctx.fillRect(w / 2 - 2, h / 2 - 2, 4, 4);
+
+    // Quest targets: gold diamonds; off the edge they ride the rim, pointing the way.
+    const rim = w / 2 - 9;
+    const c = Math.cos(yaw);
+    const s = Math.sin(yaw);
+    for (const t of targets) {
+      const dx = (t.x - player.x) * PX_PER_UNIT;
+      const dz = (t.z - player.z) * PX_PER_UNIT;
+      let sx = dx * c - dz * s;
+      let sy = dx * s + dz * c;
+      const d = Math.hypot(sx, sy);
+      const off = d > rim;
+      if (off) {
+        sx = (sx / d) * rim;
+        sy = (sy / d) * rim;
+      }
+      ctx.save();
+      ctx.translate(w / 2 + sx, h / 2 + sy);
+      ctx.rotate(off ? Math.atan2(sy, sx) + Math.PI / 4 : Math.PI / 4);
+      ctx.fillStyle = "#ffd24a";
+      ctx.strokeStyle = "#2a1c00";
+      ctx.lineWidth = 2;
+      const r = off ? 5 : 6;
+      ctx.beginPath();
+      ctx.rect(-r, -r, r * 2, r * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
 
     // North (-Z) marker riding the rim.
     const r = w / 2 - 12;

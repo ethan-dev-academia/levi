@@ -1,0 +1,8 @@
+{
+  "id": "flower-bed",
+  "name": "Flower Bed",
+  "model": "prop-flower-bed",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

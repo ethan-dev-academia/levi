@@ -1,0 +1,8 @@
+{
+  "id": "wheat",
+  "name": "Wheat",
+  "model": "prop-wheat",
+  "solid": false,
+  "readable": false,
+  "category": "nature"
+}

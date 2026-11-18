@@ -85,6 +85,8 @@ export const NpcDefSchema = z
     /** Colour-slot overrides on the base body (skin, hair, top...). */
     palette: z.record(z.string().regex(/^[a-zA-Z][a-zA-Z0-9]*$/), HEX).default({}),
     scale: z.number().min(0.6).max(1.6).default(1),
+    /** Things they say to no one in particular when you walk past (speech bubbles). */
+    chatter: z.array(z.string().min(1).max(140)).max(12).default([]),
     entries: z.array(DialogueEntrySchema).max(40).default([]),
     nodes: z.array(DialogueNodeSchema).max(400).default([]),
   })

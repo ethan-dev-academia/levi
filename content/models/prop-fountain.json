@@ -1,0 +1,157 @@
+{
+ "id": "prop-fountain",
+ "scale": 1,
+ "palette": {
+  "stone": "#cbc4b6",
+  "stoneLo": "#a39c8f",
+  "water": "#4f8fbf",
+  "foam": "#d8ecf6"
+ },
+ "parts": [
+  {
+   "id": "basin",
+   "color": "$stoneLo",
+   "sides": 14,
+   "twist": false,
+   "rings": [
+    [
+     0,
+     1.9,
+     1.9
+    ],
+    [
+     0.55,
+     1.9,
+     1.9
+    ],
+    [
+     0.55,
+     1.65,
+     1.65
+    ],
+    [
+     0.15,
+     1.65,
+     1.65
+    ]
+   ]
+  },
+  {
+   "id": "water",
+   "color": "$water",
+   "sides": 14,
+   "twist": false,
+   "rings": [
+    [
+     0,
+     1.66,
+     1.66
+    ],
+    [
+     0.42,
+     1.66,
+     1.66
+    ]
+   ]
+  },
+  {
+   "id": "stem",
+   "color": "$stone",
+   "sides": 8,
+   "twist": false,
+   "rings": [
+    [
+     0.3,
+     0.3,
+     0.3
+    ],
+    [
+     1.5,
+     0.22,
+     0.22
+    ]
+   ]
+  },
+  {
+   "id": "bowl",
+   "color": "$stone",
+   "sides": 10,
+   "twist": false,
+   "rings": [
+    [
+     1.4,
+     0.2,
+     0.2
+    ],
+    [
+     1.6,
+     0.75,
+     0.75
+    ],
+    [
+     1.75,
+     0.75,
+     0.75
+    ]
+   ]
+  },
+  {
+   "id": "bowlWater",
+   "color": "$water",
+   "sides": 10,
+   "twist": false,
+   "rings": [
+    [
+     1.5,
+     0.66,
+     0.66
+    ],
+    [
+     1.72,
+     0.66,
+     0.66
+    ]
+   ]
+  },
+  {
+   "id": "spout",
+   "color": "$stone",
+   "sides": 6,
+   "twist": false,
+   "rings": [
+    [
+     1.7,
+     0.12,
+     0.12
+    ],
+    [
+     2.4,
+     0.08,
+     0.08
+    ]
+   ]
+  },
+  {
+   "id": "spray",
+   "color": "$foam",
+   "sides": 6,
+   "rings": [
+    [
+     2.4,
+     0.05,
+     0.05
+    ],
+    [
+     2.6,
+     0.18,
+     0.18
+    ],
+    [
+     2.75,
+     0,
+     0
+    ]
+   ]
+  }
+ ]
+}

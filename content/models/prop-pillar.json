@@ -1,0 +1,202 @@
+{
+ "id": "prop-pillar",
+ "scale": 1,
+ "palette": {
+  "stone": "#d6cfc2",
+  "stoneLo": "#b3ab9d",
+  "gold": "#c9a24a"
+ },
+ "parts": [
+  {
+   "id": "plinth",
+   "color": "$stoneLo",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "rings": [
+    [
+     0,
+     0.672,
+     0.672
+    ],
+    [
+     0.35,
+     0.672,
+     0.672
+    ]
+   ],
+   "pos": [
+    0,
+    0,
+    0
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "id": "shaft",
+   "color": "$stone",
+   "sides": 8,
+   "twist": false,
+   "rings": [
+    [
+     0.35,
+     0.36,
+     0.36
+    ],
+    [
+     5.3,
+     0.33,
+     0.33
+    ]
+   ]
+  },
+  {
+   "id": "rib0",
+   "color": "$stoneLo",
+   "sides": 6,
+   "twist": false,
+   "rings": [
+    [
+     0.35,
+     0.12,
+     0.12
+    ],
+    [
+     5.3,
+     0.11,
+     0.11
+    ]
+   ],
+   "pos": [
+    0.33,
+    0,
+    0.0
+   ]
+  },
+  {
+   "id": "rib1",
+   "color": "$stoneLo",
+   "sides": 6,
+   "twist": false,
+   "rings": [
+    [
+     0.35,
+     0.12,
+     0.12
+    ],
+    [
+     5.3,
+     0.11,
+     0.11
+    ]
+   ],
+   "pos": [
+    0.0,
+    0,
+    0.33
+   ]
+  },
+  {
+   "id": "rib2",
+   "color": "$stoneLo",
+   "sides": 6,
+   "twist": false,
+   "rings": [
+    [
+     0.35,
+     0.12,
+     0.12
+    ],
+    [
+     5.3,
+     0.11,
+     0.11
+    ]
+   ],
+   "pos": [
+    -0.33,
+    0,
+    0.0
+   ]
+  },
+  {
+   "id": "rib3",
+   "color": "$stoneLo",
+   "sides": 6,
+   "twist": false,
+   "rings": [
+    [
+     0.35,
+     0.12,
+     0.12
+    ],
+    [
+     5.3,
+     0.11,
+     0.11
+    ]
+   ],
+   "pos": [
+    -0.0,
+    0,
+    -0.33
+   ]
+  },
+  {
+   "id": "capital",
+   "color": "$gold",
+   "sides": 8,
+   "twist": false,
+   "rings": [
+    [
+     5.3,
+     0.36,
+     0.36
+    ],
+    [
+     5.6,
+     0.5,
+     0.5
+    ],
+    [
+     5.75,
+     0.5,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "abacus",
+   "color": "$stoneLo",
+   "sides": 4,
+   "twist": false,
+   "phase": 45,
+   "rings": [
+    [
+     0,
+     0.707,
+     0.707
+    ],
+    [
+     0.25,
+     0.707,
+     0.707
+    ]
+   ],
+   "pos": [
+    0,
+    5.75,
+    0
+   ],
+   "rot": [
+    0,
+    0,
+    0
+   ]
+  }
+ ]
+}

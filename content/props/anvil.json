@@ -1,0 +1,8 @@
+{
+  "id": "anvil",
+  "name": "Anvil",
+  "model": "prop-anvil",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

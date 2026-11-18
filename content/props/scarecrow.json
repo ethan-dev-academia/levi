@@ -1,0 +1,8 @@
+{
+  "id": "scarecrow",
+  "name": "Scarecrow",
+  "model": "prop-scarecrow",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

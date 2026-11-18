@@ -97,7 +97,7 @@ export class Hud {
   }
 
   /** Show the skill bound to a key (null = empty). */
-  setAbility(key: AbilitySlot, name: string | null, detail = "", icon?: SVGSVGElement, usable = true): void {
+  setAbility(key: AbilitySlot, name: string | null, detail = "", icon?: Element, usable = true): void {
     const s = this.slots.get(key);
     if (!s) return;
     s.el.classList.toggle("inactive", !!name && !usable);

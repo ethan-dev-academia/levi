@@ -3,6 +3,8 @@ import {
   AdventuringConfigSchema,
   NpcDefSchema,
   EnemyDefSchema,
+  EncounterDefSchema,
+  type EncounterDef,
   type EnemyDef,
   type AdventureCap,
   type NpcDef,
@@ -35,6 +37,7 @@ const skillFiles = import.meta.glob<unknown>("../../../content/skills/*.json", {
 const questFiles = import.meta.glob<unknown>("../../../content/quests/*.json", { eager: true, import: "default" });
 const npcFiles = import.meta.glob<unknown>("../../../content/npcs/*.json", { eager: true, import: "default" });
 const enemyFiles = import.meta.glob<unknown>("../../../content/enemies/*.json", { eager: true, import: "default" });
+const encounterFiles = import.meta.glob<unknown>("../../../content/encounters/*.json", { eager: true, import: "default" });
 const progressionFiles = import.meta.glob<unknown>("../../../content/progression/*.json", { eager: true, import: "default" });
 
 function loadAll<T extends { id: string }>(
@@ -63,6 +66,7 @@ export interface ContentRegistry {
   quests: ReadonlyMap<string, QuestDef>;
   npcs: ReadonlyMap<string, NpcDef>;
   enemies: ReadonlyMap<string, EnemyDef>;
+  encounters: ReadonlyMap<string, EncounterDef>;
   adventureCaps: readonly AdventureCap[];
   /** Act number → name ("Falcon's Landing"). */
   actNames: ReadonlyMap<number, string>;
@@ -108,11 +112,15 @@ export function loadContent(): ContentRegistry {
     quests: loadAll("quest", questFiles, QuestDefSchema),
     npcs: loadAll("npc", npcFiles, NpcDefSchema),
     enemies: loadAll("enemy", enemyFiles, EnemyDefSchema),
+    encounters: loadAll("encounter", encounterFiles, EncounterDefSchema),
     adventureCaps: loadAdventureCaps(),
     actNames: loadActNames(),
   };
   for (const p of reg.props.values()) {
     if (!reg.models.has(p.model)) throw new Error(`[content] prop "${p.id}" uses unknown model "${p.model}"`);
+  }
+  for (const e of reg.encounters.values()) {
+    if (!reg.enemies.has(e.boss)) throw new Error(`[content] encounter "${e.id}" uses unknown enemy "${e.boss}"`);
   }
   return reg;
 }

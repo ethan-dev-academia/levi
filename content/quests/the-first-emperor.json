@@ -3,7 +3,7 @@
   "name": "The First Emperor",
   "category": "act",
   "act": 0,
-  "summary": "",
+  "summary": "The wind stopped. Then something fell out of the sky.",
   "start": "Falcon, on the mountain",
   "requirements": {
     "quests": [
@@ -15,24 +15,22 @@
   "steps": [
     {
       "id": "crash",
-      "journal": "Something fell out of the sky and hit the island like a hammer. Falcon went pale and said a single name: Alpha.",
+      "journal": "The wind stopped dead. Falcon went pale and told me to get behind him. Something was falling out of the sky, straight at the lookout.",
       "objectives": [
         {
-          "id": "alpha-named",
-          "text": "See what fell from the sky",
-          "kind": "talk",
-          "npc": "falcon-overlook",
-          "node": "alpha-arrives"
+          "id": "alpha-crash",
+          "text": "Stay with Falcon",
+          "kind": "trigger"
         }
       ]
     },
     {
       "id": "face",
-      "journal": "Alpha, one of the seven Emperors. Small enough to be mistaken for a child, until you feel the air around him. Falcon told me to stand behind him.",
+      "journal": "Alpha, one of the seven Emperors. Small enough to be mistaken for a child, until you feel the air around her. Her blast threw Falcon and me off the mountain, and the rockfall walled us in. Nothing I do even scratches her.",
       "objectives": [
         {
           "id": "alpha-face",
-          "text": "Face Alpha",
+          "text": "Survive Alpha",
           "kind": "trigger"
         }
       ]

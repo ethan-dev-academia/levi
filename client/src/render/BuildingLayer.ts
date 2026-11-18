@@ -80,6 +80,12 @@ export class BuildingLayer {
   update(viewer: ViewerState, camera: THREE.Vector3, dt: number): void {
     const cx = Math.floor(viewer.x);
     const cz = Math.floor(viewer.z);
+    // Inside one part of a grouped structure = inside all of it (open the whole cathedral).
+    let group: string | undefined;
+    for (const id of this.views.keys()) {
+      const info = this.index.get(id);
+      if (info?.def.group && (viewer.building === id || (viewer.storey === 0 && containsCell(info, cx, cz)))) group = info.def.group;
+    }
     for (const [id, view] of this.views) {
       const info = this.index.get(id);
       if (!info) continue;
@@ -90,7 +96,7 @@ export class BuildingLayer {
       if (edit && edit.building === id) {
         showUpTo = edit.storey;
         roofTarget = 0;
-      } else if (viewer.building === id || (viewer.storey === 0 && containsCell(info, cx, cz))) {
+      } else if (viewer.building === id || (viewer.storey === 0 && containsCell(info, cx, cz)) || (group !== undefined && info.def.group === group)) {
         showUpTo = viewer.storey;
         cutStorey = viewer.storey;
         // Below the top storey the roof would float over hidden floors: hide it.

@@ -1,0 +1,53 @@
+{
+  "id": "alpha-prologue",
+  "boss": "alpha-prologue",
+  "bossTitle": "One of the Seven Emperors",
+  "falconNpc": "falcon-overlook",
+  "arenaFlag": "alpha-arena",
+  "quests": {
+    "crash": { "quest": "the-first-emperor", "step": "crash", "objective": "alpha-crash" },
+    "fight": { "quest": "the-first-emperor", "step": "face", "objective": "alpha-face" },
+    "rescue": { "quest": "operation-survive", "step": "saved", "objective": "falcon-dives" },
+    "farewell": { "quest": "operation-survive", "step": "fall", "objective": "falcon-farewell" }
+  },
+  "lookout": { "x": 590.5, "z": 318.5 },
+  "triggerRadius": 14,
+  "impact": { "x": 583.5, "z": 317.5 },
+  "arena": { "x": 634.5, "z": 305.5, "radius": 11 },
+  "playerLand": { "x": 627.5, "z": 309.5 },
+  "falconLand": { "x": 630.5, "z": 313.5 },
+  "falconRest": { "x": 627.5, "z": 313.5 },
+  "bossHome": { "x": 640.5, "z": 302.5 },
+  "rescueHp": 40,
+  "bulletDamage": 8,
+  "hitGrace": 0.55,
+  "exit": { "x": 1051.5, "z": 470.0 },
+  "exitMessage": "Light, then cold stone. You wake on the altar of a vast cathedral.",
+  "speakers": { "falcon": "Falcon", "alpha": "Alpha", "you": "You" },
+  "barks": [
+    { "phase": "crash", "at": 0.2, "speaker": "falcon", "text": "Get behind me. NOW." },
+    { "phase": "crash", "at": 2.3, "speaker": "alpha", "text": "There you are, old bird. Hiding your little heroes up in the clouds." },
+    { "phase": "crash", "at": 5.4, "speaker": "falcon", "text": "...Alpha. That's impossible. The Emperors don't come here. They never come here." },
+    { "phase": "crash", "at": 8.4, "speaker": "alpha", "text": "Another one of his gifts. Show me what he gave you." },
+
+    { "phase": "fight", "at": 0.6, "speaker": "falcon", "text": "Stay behind me! Whatever happens, don't try to be a hero." },
+    { "phase": "fight", "at": 5.8, "speaker": "alpha", "text": "Sit down, Falcon. This isn't your dance." },
+    { "phase": "fight", "at": 8.4, "speaker": "falcon", "text": "Kid... move! Keep moving!" },
+    { "phase": "fight", "at": 14, "speaker": "falcon", "text": "Watch her hands, not the light. Slip through the gaps!" },
+    { "phase": "fight", "at": 21, "speaker": "alpha", "text": "Is this what he sends now? You barely flicker." },
+    { "phase": "fight", "at": 29, "speaker": "you", "text": "Nothing I throw even touches her..." },
+    { "phase": "fight", "at": 36, "speaker": "alpha", "text": "Dance for me a little longer." },
+    { "phase": "fight", "at": 45, "speaker": "falcon", "text": "Don't let her corner you against the rocks!" },
+    { "phase": "fight", "at": 56, "speaker": "alpha", "text": "He always did choose the stubborn ones." },
+    { "phase": "fight", "at": 70, "speaker": "alpha", "text": "Enough playing." },
+
+    { "phase": "rescue", "at": 0.1, "speaker": "alpha", "text": "Hold still." },
+    { "phase": "rescue", "at": 1.1, "speaker": "falcon", "text": "No-!" },
+    { "phase": "rescue", "at": 3.4, "speaker": "falcon", "text": "Agh... that one... was meant for you." },
+
+    { "phase": "farewell", "at": 0.6, "speaker": "falcon", "text": "Listen to me. I can't stop her. But I can still send you somewhere safe. The nearest Cathedral." },
+    { "phase": "farewell", "at": 4.4, "speaker": "alpha", "text": "You're spending the last of yourself on a stranger?" },
+    { "phase": "farewell", "at": 6.6, "speaker": "falcon", "text": "Remember what I told you. Keep your eyes... open..." },
+    { "phase": "farewell", "at": 9.2, "speaker": "alpha", "text": "Run, then. I'll find you again." }
+  ]
+}

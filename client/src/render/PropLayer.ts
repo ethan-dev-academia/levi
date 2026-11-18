@@ -8,7 +8,13 @@ interface PlacedProp {
   model: BuiltModel;
   /** Trees: current opacity and their own material (faded per tree). */
   fade?: { mat: THREE.MeshLambertMaterial; alpha: number; radius: number; height: number } | undefined;
+  /** Falling into place (rockfall): seconds to wait, then seconds into the fall. */
+  drop?: { wait: number; t: number; spin: number } | undefined;
 }
+
+/** How high dropped props start, and how long the fall takes. */
+const DROP_HEIGHT = 26;
+const DROP_TIME = 0.7;
 
 /** Opacity of a tree you're standing under or that hides you. Much lower than roofs: you barely see it. */
 const UNDER_TREE_OPACITY = 0.08;
@@ -173,10 +179,18 @@ export class PropLayer {
    * Hide props on storeys the building layer has cut away, and fade trees
    * that you're standing under or that stand between you and the camera.
    */
-  update(buildings: BuildingLayer, viewer?: { x: number; z: number; y: number }, camera?: THREE.Vector3, dt = 0): void {
+  update(
+    buildings: BuildingLayer,
+    viewer?: { x: number; z: number; y: number },
+    camera?: THREE.Vector3,
+    dt = 0,
+    shown?: (inst: PropInstance) => boolean,
+  ): void {
     for (const p of this.placed) {
       const { inst, model } = p;
-      model.root.visible = inst.storey === 0 || !inst.building || buildings.isStoreyVisible(inst.building, inst.storey);
+      model.root.visible =
+        (inst.storey === 0 || !inst.building || buildings.isStoreyVisible(inst.building, inst.storey)) && (!inst.visibleWhen?.length || !shown || shown(inst));
+      if (p.drop) this.tickDrop(p, dt);
       const f = p.fade;
       if (!f || !viewer || !camera) continue;
       const tx = model.root.position.x;
@@ -202,6 +216,42 @@ export class PropLayer {
         f.mat.depthWrite = !fading;
         f.mat.needsUpdate = true;
       }
+    }
+  }
+
+  /**
+   * Rockfall: the matching props fall out of the sky over `spread` seconds
+   * (each lands with `onLand`, for dust and shake).
+   */
+  dropIn(match: (inst: PropInstance) => boolean, spread: number, onLand?: (x: number, z: number, y: number) => void): void {
+    this.onLand = onLand ?? null;
+    for (const p of this.placed) {
+      if (match(p.inst)) p.drop = { wait: hash01(p.inst.id, 9) * spread, t: 0, spin: (hash01(p.inst.id, 10) - 0.5) * 6 };
+    }
+  }
+
+  private onLand: ((x: number, z: number, y: number) => void) | null = null;
+
+  private tickDrop(p: PlacedProp, dt: number): void {
+    const d = p.drop!;
+    const root = p.model.root;
+    const base = this.baseY(p.inst) - (p.fade !== undefined || this.defs.get(p.inst.prop)?.category === "nature" ? 0.05 : 0);
+    if (d.wait > 0) {
+      d.wait -= dt;
+      root.visible = false;
+      root.position.y = base + DROP_HEIGHT;
+      return;
+    }
+    d.t += dt;
+    const s = Math.min(1, d.t / DROP_TIME);
+    root.position.y = base + DROP_HEIGHT * (1 - s * s);
+    root.rotation.x = (1 - s) * d.spin * 0.3;
+    root.rotation.z = (1 - s) * d.spin * 0.2;
+    if (s >= 1) {
+      p.drop = undefined;
+      root.rotation.x = root.rotation.z = 0;
+      root.position.y = base;
+      this.onLand?.(root.position.x, root.position.z, base);
     }
   }
 

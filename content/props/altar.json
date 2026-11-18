@@ -1,0 +1,8 @@
+{
+  "id": "altar",
+  "name": "Altar",
+  "model": "prop-altar",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

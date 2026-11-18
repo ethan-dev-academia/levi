@@ -345,7 +345,7 @@
       "id": "path-of-the-arrow-ok",
       "speaker": "npc",
       "text": "Then listen closely.",
-      "next": null,
+      "next": "arrow-lesson",
       "options": [],
       "effects": [],
       "pos": {
@@ -488,7 +488,7 @@
       "id": "path-of-the-light-ok",
       "speaker": "npc",
       "text": "Good.",
-      "next": null,
+      "next": "light-lesson",
       "options": [],
       "effects": [],
       "pos": {
@@ -791,5 +791,10 @@
       "effects": []
     }
   ],
-  "looksLike": "falcon"
+  "looksLike": "falcon",
+  "chatter": [
+    "Again. Slower. Then faster.",
+    "A good fighter knows all three arts.",
+    "Watch the circle's stones. They've seen a lot of heroes."
+  ]
 }

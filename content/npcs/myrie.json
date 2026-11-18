@@ -357,7 +357,7 @@
       "id": "townsquare-ok",
       "speaker": "npc",
       "text": "Follow me!",
-      "next": null,
+      "next": "tour-market",
       "options": [],
       "effects": [],
       "pos": {
@@ -705,7 +705,7 @@
       "id": "a-new-city-ok",
       "speaker": "npc",
       "text": "Then listen.",
-      "next": null,
+      "next": "army",
       "options": [],
       "effects": [],
       "pos": {
@@ -747,7 +747,7 @@
       "id": "eta-ok",
       "speaker": "npc",
       "text": "Let me tell you what I saw.",
-      "next": null,
+      "next": "eta-warning",
       "options": [],
       "effects": [],
       "pos": {
@@ -861,7 +861,7 @@
       "id": "the-bazaar-ok",
       "speaker": "npc",
       "text": "You'll love it.",
-      "next": null,
+      "next": "bazaar-tour",
       "options": [],
       "effects": [],
       "pos": {
@@ -927,7 +927,7 @@
       "id": "masked-individual-ok",
       "speaker": "npc",
       "text": "Carefully.",
-      "next": null,
+      "next": "tail",
       "options": [],
       "effects": [],
       "pos": {
@@ -1013,5 +1013,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Isn't it huge? I still get lost in there.",
+    "Come on, there's so much to see!",
+    "Did you see the light come down? I did!"
   ]
 }

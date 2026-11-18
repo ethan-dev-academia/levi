@@ -110,7 +110,7 @@
       "id": "from-the-wild-ok",
       "speaker": "npc",
       "text": "Then let's begin.",
-      "next": null,
+      "next": "from-the-wild-lesson",
       "options": [],
       "effects": [],
       "pos": {

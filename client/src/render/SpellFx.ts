@@ -20,7 +20,7 @@ const PALETTE: Record<CombatStyle, StylePalette> = {
 };
 
 /** Soft round glow, drawn once onto a canvas. */
-function glowTexture(): THREE.Texture {
+export function glowTexture(): THREE.Texture {
   const c = document.createElement("canvas");
   c.width = c.height = 64;
   const g = c.getContext("2d")!;
@@ -51,7 +51,7 @@ interface Particle {
  * Additive glow particles with per-particle size, colour and fade, all in
  * one draw call. Fixed capacity; the oldest are recycled when it's full.
  */
-class ParticlePool {
+export class ParticlePool {
   readonly points: THREE.Points;
   private readonly list: Particle[] = [];
   private readonly pos: Float32Array;
@@ -59,7 +59,8 @@ class ParticlePool {
   private readonly size: Float32Array;
   private readonly geom = new THREE.BufferGeometry();
 
-  constructor(private readonly cap: number, tex: THREE.Texture) {
+  /** `additive` false = normal blending (smoke, dust) instead of glowing light. */
+  constructor(private readonly cap: number, tex: THREE.Texture, additive = true) {
     this.pos = new Float32Array(cap * 3);
     this.col = new Float32Array(cap * 4);
     this.size = new Float32Array(cap);
@@ -84,9 +85,9 @@ class ParticlePool {
         varying vec4 vColor;
         void main() {
           vec4 t = texture2D(map, gl_PointCoord);
-          gl_FragColor = vec4(vColor.rgb * t.a * vColor.a, 1.0);
+          ${additive ? "gl_FragColor = vec4(vColor.rgb * t.a * vColor.a, 1.0);" : "gl_FragColor = vec4(vColor.rgb, t.a * vColor.a);"}
         }`,
-      blending: THREE.AdditiveBlending,
+      blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending,
       depthWrite: false,
       transparent: true,
     });

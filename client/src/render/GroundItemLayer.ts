@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { storeyY, type BuildingIndex, type GroundItem, type Heightmap, type ItemDef, type Rarity } from "@levi/shared";
-import { itemGraphic } from "../ui/itemIcons.js";
+import { itemImageUrl } from "../ui/itemIcons.js";
 import type { BuildingLayer } from "./BuildingLayer.js";
 
 const TEX_PX = 128;
@@ -59,12 +59,8 @@ export class GroundItemLayer {
     icon.colorSpace = glow.colorSpace = THREE.SRGBColorSpace;
     this.icons.set(key, icon);
     this.glows.set(key, glow);
-    const svg = itemGraphic(def);
-    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    svg.setAttribute("width", String(TEX_PX));
-    svg.setAttribute("height", String(TEX_PX));
     const img = new Image();
-    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(svg))}`;
+    img.src = itemImageUrl(def);
     const pad = 14;
     void img.decode().then(() => {
       const ic = iconCanvas.getContext("2d")!;

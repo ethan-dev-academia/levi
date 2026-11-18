@@ -209,7 +209,7 @@ export class BuildingIndex {
 
   private blockers(): Blocker[] {
     // Wandering NPCs don't pin a tile (they move around); stationary ones do.
-    return [...this.propList.filter((p) => p.solid), ...this.npcList.filter((n) => n.wander === "none" && n.visibleWhen.length === 0)];
+    return [...this.propList.filter((p) => p.solid && !p.visibleWhen?.length), ...this.npcList.filter((n) => n.wander === "none" && n.visibleWhen.length === 0)];
   }
 
   /** Replace all props; upper-storey grids are re-derived (props can block). */

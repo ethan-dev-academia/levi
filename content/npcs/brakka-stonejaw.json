@@ -110,7 +110,7 @@
       "id": "strike-the-earth-ok",
       "speaker": "npc",
       "text": "Then let's begin.",
-      "next": null,
+      "next": "strike-the-earth-lesson",
       "options": [],
       "effects": [],
       "pos": {

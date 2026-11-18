@@ -1,0 +1,8 @@
+{
+  "id": "cart",
+  "name": "Cart",
+  "model": "prop-cart",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

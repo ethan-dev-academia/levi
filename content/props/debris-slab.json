@@ -1,0 +1,10 @@
+{
+  "id": "debris-slab",
+  "name": "Fallen Slab",
+  "model": "nature-debris-slab",
+  "solid": true,
+  "readable": false,
+  "category": "nature",
+  "fade": false,
+  "canopy": 1.0
+}

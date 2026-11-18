@@ -60,6 +60,8 @@ export const PlayerSaveSchema = z.object({
   friends: z.array(z.string().regex(PLAYER_NAME)).max(200).default([]),
   /** Coins: a wallet, not a bag item. */
   coins: z.number().int().min(0).max(2_000_000_000).default(0),
+  /** Map regions this player has been to ("map:regionId"); the rest stay dark on the world map. */
+  discovered: z.array(z.string().max(160)).max(4096).default([]),
   /** Ground items this player already picked up ("map:groundId"). */
   pickedUp: z.array(z.string().max(160)).max(100_000).default([]),
   /** Quests pinned to the on-screen tracker (max 2). */

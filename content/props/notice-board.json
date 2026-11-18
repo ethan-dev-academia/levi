@@ -1,0 +1,8 @@
+{
+  "id": "notice-board",
+  "name": "Notice Board",
+  "model": "prop-notice-board",
+  "solid": true,
+  "readable": true,
+  "category": "decor"
+}

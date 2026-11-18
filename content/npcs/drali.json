@@ -297,7 +297,7 @@
       "id": "the-first-dungeon-ok",
       "speaker": "npc",
       "text": "Meet me there.",
-      "next": null,
+      "next": "stairs",
       "options": [],
       "effects": [],
       "pos": {

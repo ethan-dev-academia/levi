@@ -66,6 +66,7 @@ export function newCharacter(name: string, map: string, spawn: { x: number; z: n
     containers: {},
     coins: 0,
     pickedUp: [],
+    discovered: [],
     pinned: [],
     nextUid: 1,
   };

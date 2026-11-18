@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { BuildingsFileSchema } from "./building.js";
+import { ConditionSchema } from "./npc.js";
 
 const finite = z.number().finite();
 
@@ -17,12 +18,26 @@ export const RegionSchema = z
   .object({
     id: z.string().regex(CONTENT_ID),
     name: z.string().min(1).max(64),
+    /** Shown under the name on the title card when you arrive. */
+    subtitle: z.string().max(100).optional(),
     kind: z.enum(["island", "sky", "zone"]),
     bounds: z.object({ x0: finite, z0: finite, x1: finite, z1: finite }),
     /** Ground altitude of a floating island (set by "Float region"). */
     altitude: finite.optional(),
   })
   .refine((r) => r.bounds.x1 > r.bounds.x0 && r.bounds.z1 > r.bounds.z0, "bounds must have positive size");
+
+/**
+ * Where a knocked-out player wakes: the first entry whose conditions all pass
+ * (e.g. the Cathedral once the prologue is over), else the map spawn.
+ */
+export const RespawnSchema = z.object({
+  id: z.string().regex(CONTENT_ID),
+  name: z.string().min(1).max(64),
+  x: finite,
+  z: finite,
+  when: z.array(ConditionSchema).max(8).default([]),
+});
 
 /**
  * Map metadata: content/maps/<id>/map.json
@@ -46,6 +61,7 @@ export const MapDefSchema = z
     /** Keys ("kx_kz") of chunk files that exist on disk. */
     chunks: z.array(z.string().regex(CHUNK_KEY)).default([]),
     regions: z.array(RegionSchema).default([]),
+    respawns: z.array(RespawnSchema).max(64).default([]),
   })
   .superRefine((m, ctx) => {
     if (m.cols % m.chunkCells !== 0 || m.rows % m.chunkCells !== 0) {
@@ -86,5 +102,6 @@ export const SaveMapRequestSchema = z.object({
 
 export type MapDef = z.infer<typeof MapDefSchema>;
 export type Region = z.infer<typeof RegionSchema>;
+export type Respawn = z.infer<typeof RespawnSchema>;
 export type MapChunk = z.infer<typeof MapChunkSchema>;
 export type SaveMapRequest = z.infer<typeof SaveMapRequestSchema>;

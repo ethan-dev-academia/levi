@@ -1,0 +1,8 @@
+{
+  "id": "pillar",
+  "name": "Pillar",
+  "model": "prop-pillar",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

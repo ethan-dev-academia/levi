@@ -110,7 +110,7 @@
       "id": "first-catch-ok",
       "speaker": "npc",
       "text": "Then let's begin.",
-      "next": null,
+      "next": "first-catch-lesson",
       "options": [],
       "effects": [],
       "pos": {

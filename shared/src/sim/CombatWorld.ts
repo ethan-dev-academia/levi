@@ -75,6 +75,8 @@ export interface EnemyState {
   /** Seconds until respawn (dead) / since last hit (dummies). */
   timer: number;
   walker: NpcWalker<EnemySpawn>;
+  /** Moved by a story encounter, not by the enemy AI (and not tied to a map spawn). */
+  scripted?: boolean;
 }
 
 export type CombatEvent =
@@ -169,7 +171,7 @@ export class CombatWorld {
       }
       this.enemies.set(s.id, this.fresh(s, def));
     }
-    for (const [id, e] of [...this.enemies]) if (!e.zone && !keep.has(id)) this.enemies.delete(id);
+    for (const [id, e] of [...this.enemies]) if (!e.zone && !e.scripted && !keep.has(id)) this.enemies.delete(id);
   }
 
   /** A zone enemy on a random walkable cell of its zone. */
@@ -196,9 +198,21 @@ export class CombatWorld {
     };
   }
 
+  /** An enemy a story encounter places and moves itself (a boss). */
+  addScripted(id: string, def: EnemyDef, x: number, z: number): EnemyState {
+    const spawn: EnemySpawn = { id, enemy: def.id, x: Math.floor(x), z: Math.floor(z), rot: 0, storey: 0, wander: "none", radius: 1, route: [] };
+    const e = this.fresh(spawn, def);
+    e.x = e.prevX = x;
+    e.z = e.prevZ = z;
+    e.scripted = true;
+    this.enemies.set(id, e);
+    return e;
+  }
+
   /** Enemy definitions were edited: swap them in (spawns that lost their def disappear). */
   refreshDefs(): void {
     for (const [id, e] of [...this.enemies]) {
+      if (e.scripted) continue;
       const def = this.defs.get(e.spawn.enemy);
       if (!def) {
         this.enemies.delete(id);
@@ -367,6 +381,7 @@ export class CombatWorld {
   }
 
   private tickEnemy(e: EnemyState, dt: number, grid: WalkGrid, pl: CombatPlayer, damagePlayer: (amount: number, crit: boolean) => void): void {
+    if (e.scripted) return;
     e.prevX = e.x;
     e.prevZ = e.z;
     for (const [k, v] of e.cooldowns) e.cooldowns.set(k, Math.max(0, v - dt));

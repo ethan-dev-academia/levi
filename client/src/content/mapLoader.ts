@@ -7,11 +7,16 @@ async function fetchJson(url: string): Promise<unknown> {
 }
 
 /** Fetch a designed map: metadata + every authored chunk + buildings, schema-validated. */
-export async function loadMap(id: string): Promise<MapData> {
+export async function loadMap(id: string, onProgress?: (fraction: number) => void): Promise<MapData> {
   const base = `/content/maps/${encodeURIComponent(id)}`;
   const def = MapDefSchema.parse(await fetchJson(`${base}/map.json`));
+  let got = 0;
   const chunks: MapChunk[] = await Promise.all(
-    def.chunks.map(async (key) => MapChunkSchema.parse(await fetchJson(`${base}/chunks/${key}.json`))),
+    def.chunks.map(async (key) => {
+      const c = MapChunkSchema.parse(await fetchJson(`${base}/chunks/${key}.json`));
+      onProgress?.(++got / def.chunks.length);
+      return c;
+    }),
   );
   const buildings = BuildingsFileSchema.parse(await fetchJson(`${base}/buildings.json`));
   const data = loadMapData(def, chunks, buildings.buildings, buildings.props, buildings.npcs, buildings.groundItems, buildings.enemies);

@@ -83,6 +83,11 @@ export const BuildingSchema = z
     storeys: z.array(StoreySchema).min(1).max(8),
     stairs: z.array(StairSchema).max(64).default([]),
     roof: RoofSchema.default({}),
+    /**
+     * Buildings that make up one structure (a cathedral's nave, aisles and
+     * towers): step inside any of them and all of them open up together.
+     */
+    group: z.string().regex(CONTENT_ID).max(64).optional(),
   })
   .superRefine((b, ctx) => {
     const ids = new Set<string>();

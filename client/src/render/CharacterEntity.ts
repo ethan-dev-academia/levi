@@ -36,6 +36,13 @@ export class CharacterEntity {
   private actT = Infinity;
   private actKind: "thrust" | "swing" = "thrust";
   private lastZ = NaN;
+  /** Extra height above the ground (flying, hovering, thrown through the air). */
+  lift = 0;
+  /** 0 = upright … 1 = flat on its back. */
+  tilt = 0;
+  /** Held story pose layered over the walk. */
+  pose: "none" | "channel" | "kneel" = "none";
+  private poseW = 0;
   /** Sole vertices of each foot mesh (mesh-local), checked against the ground. */
   private readonly soles: Array<{ mesh: THREE.Object3D; points: THREE.Vector3[] }> = [];
 
@@ -47,6 +54,7 @@ export class CharacterEntity {
     }
     const geom = new THREE.CircleGeometry(0.42, 16);
     geom.rotateX(-Math.PI / 2);
+    this.model.root.rotation.order = "YXZ";
     this.shadow = new THREE.Mesh(
       geom,
       new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }),
@@ -117,9 +125,15 @@ export class CharacterEntity {
     if (j.head) j.head.rotation.x = -0.06 * this.gait;
     this.actT += dt;
     if (this.actT < 0.42) this.castPose(this.actT / 0.42);
-    root.position.y += this.groundPenetration(heightAt);
+    this.storyPose(dt);
+    if (this.lift <= 0 && this.tilt <= 0.01 && this.poseW < 0.05) root.position.y += this.groundPenetration(heightAt);
+    root.rotation.x = -this.tilt * 1.45;
+    root.position.y += this.lift + this.tilt * 0.22;
 
     this.shadow.position.set(x, ground + 0.04, z);
+    const sh = 1 / (1 + Math.max(0, this.lift) * 0.12);
+    this.shadow.scale.setScalar(sh);
+    (this.shadow.material as THREE.MeshBasicMaterial).opacity = 0.28 * sh;
   }
 
   /** Overlay the right arm (and a torso twist) on the walk for the cast pose. t: 0 → 1. */
@@ -141,6 +155,39 @@ export class CharacterEntity {
       if (j.torso) j.torso.rotation.y = (t < 0.18 ? 0.3 : 0.3 - 0.6 * Math.min(1, (t - 0.18) / 0.25)) * fade;
     }
   }
+
+  /** Channel (both hands raised toward the target) or kneel, eased in and out. */
+  private storyPose(dt: number): void {
+    const on = this.pose !== "none";
+    this.poseW += ((on ? 1 : 0) - this.poseW) * (1 - Math.exp(-dt * 8));
+    if (this.pose !== "none") this.poseKind = this.pose;
+    const w = this.poseW;
+    if (w < 0.01) return;
+    const j = this.model.joints;
+    const mix = (o: THREE.Object3D | undefined, v: number): void => {
+      if (o) o.rotation.x = o.rotation.x * (1 - w) + v * w;
+    };
+    if (this.poseKind === "channel") {
+      mix(j.armL, -1.7);
+      mix(j.armR, -1.85);
+      mix(j.forearmL, -0.2);
+      mix(j.forearmR, -0.15);
+      mix(j.torso, -0.08);
+    } else {
+      // One knee down, head bowed.
+      mix(j.legL, -1.35);
+      mix(j.shinL, 1.45);
+      mix(j.legR, 0.25);
+      mix(j.shinR, 1.6);
+      mix(j.torso, 0.3);
+      mix(j.head, 0.35);
+      mix(j.armL, 0.3);
+      mix(j.armR, -0.5);
+      this.model.root.position.y -= 0.42 * w;
+    }
+  }
+
+  private poseKind: "channel" | "kneel" = "channel";
 
   /** How far the lowest sole point sits below the terrain under it (≥ 0). */
   private groundPenetration(heightAt: (x: number, z: number) => number): number {

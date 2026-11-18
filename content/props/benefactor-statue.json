@@ -1,0 +1,8 @@
+{
+  "id": "benefactor-statue",
+  "name": "Statue of the Benefactor",
+  "model": "prop-benefactor-statue",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}
