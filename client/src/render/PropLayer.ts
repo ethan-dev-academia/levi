@@ -97,6 +97,9 @@ export class PropLayer {
   private readonly raycaster = new THREE.Raycaster();
   /** Baked nature models, shared by every placement of that model. */
   private readonly baked = new Map<string, THREE.BufferGeometry>();
+  /** Baked furniture models, shared by every placement (rebaked if the model is edited). */
+  private readonly statics = new Map<string, { def: ModelDef; geom: THREE.BufferGeometry }>();
+  private readonly staticMat = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
 
   constructor(
     private readonly index: BuildingIndex,
@@ -137,13 +140,29 @@ export class PropLayer {
         this.placeNature(inst, def, modelDef);
         continue;
       }
-      const model = buildModel(modelDef);
+      const model = this.placeStatic(modelDef);
       model.root.position.set(inst.x + 0.5, this.baseY(inst), inst.z + 0.5);
       model.root.rotation.y = (-inst.rot * Math.PI) / 2;
       model.root.userData = { propId: inst.id };
       this.group.add(model.root);
       this.placed.push({ inst, model });
     }
+  }
+
+  /**
+   * Furniture, lamps, signs: the model baked once into one vertex-coloured
+   * mesh and shared by every placement (a town is hundreds of these).
+   */
+  private placeStatic(modelDef: ModelDef): BuiltModel {
+    let s = this.statics.get(modelDef.id);
+    if (!s || s.def !== modelDef) {
+      s?.geom.dispose();
+      s = { def: modelDef, geom: bakeModel(modelDef) };
+      this.statics.set(modelDef.id, s);
+    }
+    const root = new THREE.Group();
+    root.add(new THREE.Mesh(s.geom, this.staticMat));
+    return { root, joints: {}, dispose: () => {} };
   }
 
   /**

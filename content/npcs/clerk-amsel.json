@@ -1,0 +1,56 @@
+{
+  "id": "clerk-amsel",
+  "name": "Amsel Coyne",
+  "title": "Clerk of the Reserve",
+  "location": "The Tricode Reserve",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#efd2b6",
+    "hair": "#3a3a3a",
+    "top": "#2e3f55",
+    "topTrim": "#c49a4a",
+    "legs": "#23262e",
+    "boots": "#1e1e22",
+    "belt": "#5a4630"
+  },
+  "scale": 1.0,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "clerk-amsel-0"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "clerk-amsel-0",
+      "speaker": "npc",
+      "text": "Welcome to the Tricode Reserve. Coin goes in, coin comes out, and nothing is lost in between. Mostly.",
+      "next": "clerk-amsel-1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "clerk-amsel-1",
+      "speaker": "npc",
+      "text": "The vault is set into the old ley stone. Not even the Emperors have cracked it. Not that they've tried. That we know of.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 260,
+        "y": 0
+      }
+    }
+  ],
+  "chatter": [
+    "Next, please.",
+    "Counting is a form of prayer, if you do it right.",
+    "Please don't lean on the counter."
+  ]
+}

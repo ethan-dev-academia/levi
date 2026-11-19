@@ -29,6 +29,7 @@ export class DialogueBox {
   private readonly options = document.createElement("div");
   private readonly hint = document.createElement("div");
   private shown: DialogueView | null = null;
+  private held = false;
 
   constructor(host: HTMLElement, private readonly handlers: DialogueHandlers) {
     this.root.className = "dialogue";
@@ -41,7 +42,7 @@ export class DialogueBox {
     this.root.append(this.name, this.title, this.text, this.options, this.hint);
     this.root.addEventListener("pointerdown", (e) => e.stopPropagation());
     this.root.addEventListener("click", (e) => {
-      if ((e.target as HTMLElement).closest(".dl-opt")) return;
+      if (this.held || (e.target as HTMLElement).closest(".dl-opt")) return;
       if (this.shown && this.shown.options.length === 0) this.handlers.choose(-1);
     });
     host.append(this.root);
@@ -52,6 +53,13 @@ export class DialogueBox {
       (e) => {
         if (!this.shown || (e.target instanceof HTMLInputElement) || (e.target instanceof HTMLTextAreaElement)) return;
         const s = this.shown;
+        if (this.held) {
+          if (e.code === "Space" || e.code === "Escape" || /^Digit[1-6]$/.test(e.code)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }
+          return;
+        }
         let handled = true;
         if (e.code === "Space" && s.options.length === 0) this.handlers.choose(-1);
         else if (e.code === "Escape") this.handlers.end();
@@ -66,6 +74,12 @@ export class DialogueBox {
       },
       { capture: true },
     );
+  }
+
+  /** Hidden and deaf for a moment (a cutscene the line can't skip); comes back as it was. */
+  setHeld(on: boolean): void {
+    this.held = on;
+    this.root.classList.toggle("held", on);
   }
 
   get isOpen(): boolean {

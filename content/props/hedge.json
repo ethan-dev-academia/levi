@@ -1,0 +1,8 @@
+{
+  "id": "hedge",
+  "name": "Hedge",
+  "model": "prop-hedge",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

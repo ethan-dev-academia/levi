@@ -2,7 +2,7 @@
   "id": "cook-1",
   "name": "Brom",
   "title": "Cook",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#6e4630",
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "More onions. Always more onions.",
+    "Hungry? Everyone's hungry.",
+    "Who ordered the 'surprise'?"
   ]
 }

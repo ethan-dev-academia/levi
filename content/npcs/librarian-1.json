@@ -2,7 +2,7 @@
   "id": "librarian-1",
   "name": "Rook",
   "title": "Librarian",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#c98e64",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Quietly, please.",
+      "text": "The Hall's records go back three hundred years. Quietly, please.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Quietly, please.",
+    "Someone has dog-eared the city charter.",
+    "Shh."
   ]
 }

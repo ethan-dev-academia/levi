@@ -2,7 +2,7 @@
   "id": "myrie",
   "name": "Myrie",
   "title": "Guide of the Cathedral Town",
-  "location": "First city",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#e0b494",
@@ -45,16 +45,40 @@
       "start": "townsquare-o0"
     },
     {
-      "id": "tour",
-      "label": "Townsquare: tour",
+      "id": "tour-market",
+      "label": "Tour: market",
       "when": [
         {
           "kind": "questStep",
           "quest": "townsquare",
-          "step": "tour"
+          "step": "market"
         }
       ],
       "start": "tour-market"
+    },
+    {
+      "id": "tour-crafts",
+      "label": "Tour: workshops",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "townsquare",
+          "step": "crafts"
+        }
+      ],
+      "start": "tour-crafts"
+    },
+    {
+      "id": "tour-gate",
+      "label": "Tour: gate",
+      "when": [
+        {
+          "kind": "questStep",
+          "quest": "townsquare",
+          "step": "gate"
+        }
+      ],
+      "start": "tour-gate"
     },
     {
       "id": "rat-problem-offer",
@@ -356,8 +380,8 @@
     {
       "id": "townsquare-ok",
       "speaker": "npc",
-      "text": "Follow me!",
-      "next": "tour-market",
+      "text": "Follow me! Market first. It's just north, past the Cathedral. Try to keep up!",
+      "next": null,
       "options": [],
       "effects": [],
       "pos": {
@@ -368,8 +392,8 @@
     {
       "id": "tour-market",
       "speaker": "npc",
-      "text": "This is the market. Food, tools, gossip: if it's for sale, it's here. Penwick's bookshop is on the corner.",
-      "next": "tour-crafts",
+      "text": "This is the market. Food, tools, gossip: if it's for sale, it's here. Penwick's bookshop is on the corner, and the Gilded Cog does the best stew in Trifectia.",
+      "next": "tour-market-2",
       "options": [],
       "effects": [],
       "pos": {
@@ -381,7 +405,7 @@
       "id": "tour-crafts",
       "speaker": "npc",
       "text": "The workshops. Fishing, cooking, mining, smithing, crafting, gathering: there's a teacher for each, if you're willing to get your hands dirty.",
-      "next": "tour-gate",
+      "next": "tour-crafts-2",
       "options": [],
       "effects": [],
       "pos": {
@@ -404,7 +428,7 @@
     {
       "id": "tour-end",
       "speaker": "npc",
-      "text": "That's the town! If you need work, come find me. There's always something.",
+      "text": "That's Tricode! If you need work, come find me by the fountains. There's always something.",
       "next": null,
       "options": [],
       "effects": [],
@@ -1010,6 +1034,30 @@
       "effects": [],
       "pos": {
         "x": 5040,
+        "y": 0
+      }
+    },
+    {
+      "id": "tour-market-2",
+      "speaker": "npc",
+      "text": "That big tower's the Hall clock. The blue lamps? Ley crystals. Tilda at the Ley-Works keeps them going. Workshops next: South Row, past the Cathedral!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 760,
+        "y": 0
+      }
+    },
+    {
+      "id": "tour-crafts-2",
+      "speaker": "npc",
+      "text": "Dorran runs the forge, Ysolde's in Thread & Timber, Hilde bakes by the market, Rowan's in the gardens and Old Finn fishes off the docks. One more stop: the East Gate!",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 760,
         "y": 0
       }
     }

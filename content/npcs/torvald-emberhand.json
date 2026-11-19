@@ -2,7 +2,7 @@
   "id": "torvald-emberhand",
   "name": "Torvald Emberhand",
   "title": "Master Smith",
-  "location": "Forge",
+  "location": "Anvilsong Forge",
   "model": "humanoid",
   "palette": {
     "skin": "#b9835f",

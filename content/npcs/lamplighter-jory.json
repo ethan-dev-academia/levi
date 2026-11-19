@@ -1,0 +1,56 @@
+{
+  "id": "lamplighter-jory",
+  "name": "Jory",
+  "title": "Lamplighter",
+  "location": "Tricode City",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#e2b48e",
+    "hair": "#2e2420",
+    "top": "#2f5f6a",
+    "topTrim": "#6fe6dc",
+    "legs": "#3b2a1d",
+    "boots": "#3b2a1d",
+    "belt": "#5a3c22"
+  },
+  "scale": 0.92,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "lamplighter-jory-0"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "lamplighter-jory-0",
+      "speaker": "npc",
+      "text": "Evening! Or morning. I lose track. The ley lamps don't need lighting, strictly, but they do need tapping. Gently.",
+      "next": "lamplighter-jory-1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "lamplighter-jory-1",
+      "speaker": "npc",
+      "text": "My gran lit oil lamps on this street. I tap crystals. Someday someone'll just wave at them, I expect.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 260,
+        "y": 0
+      }
+    }
+  ],
+  "chatter": [
+    "Tap, tap. There you go.",
+    "This one's sulking.",
+    "High Street, done. Only the rest of the city to go."
+  ]
+}

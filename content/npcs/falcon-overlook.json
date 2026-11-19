@@ -30,13 +30,18 @@
     {
       "id": "secret-tell",
       "speaker": "npc",
-      "text": "You came. Good. Sit. Look out there: past the clouds, that's the Layland. Every road, every city, every Cathedral.",
+      "text": "You came. Good. Sit. Look out there: past the clouds, that's the Layland. Every road, every city, every Cathedral. That spire's Tricode, where the Grand Cathedral stands.",
       "next": "secret-2",
       "options": [],
       "effects": [],
       "pos": {
         "x": 0,
         "y": 0
+      },
+      "vista": {
+        "x": 1005,
+        "y": 40,
+        "z": 470
       }
     },
     {

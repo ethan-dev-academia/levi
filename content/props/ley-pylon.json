@@ -1,0 +1,8 @@
+{
+  "id": "ley-pylon",
+  "name": "Ley Pylon",
+  "model": "prop-ley-pylon",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

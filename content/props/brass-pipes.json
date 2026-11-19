@@ -1,0 +1,8 @@
+{
+  "id": "brass-pipes",
+  "name": "Brass Pipes",
+  "model": "prop-brass-pipes",
+  "solid": false,
+  "readable": false,
+  "category": "decor"
+}

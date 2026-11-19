@@ -2,7 +2,7 @@
   "id": "penwick",
   "name": "Penwick",
   "title": "Bookseller",
-  "location": "First city market",
+  "location": "Penwick's Books",
   "model": "humanoid",
   "palette": {
     "skin": "#d8b090",

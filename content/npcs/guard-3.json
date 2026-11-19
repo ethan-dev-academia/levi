@@ -2,7 +2,7 @@
   "id": "guard-3",
   "name": "Orrin",
   "title": "Guard",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#d9a582",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Move along, citizen.",
+      "text": "East Gate. The mines are up the road, past the hills. Watch for rats. Big ones.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "East Gate, all quiet.",
+    "Keep to the road past the walls.",
+    "Move along, citizen."
   ]
 }

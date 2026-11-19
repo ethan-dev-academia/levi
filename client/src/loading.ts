@@ -42,6 +42,11 @@ const LORE: readonly Lore[] = [
     text: "Seat of the Benefactor in the Layland. Heroes who fall in battle wake on its altar, whole again. The sisters say this is a gift. The Archive notes that no one has ever asked for the price.",
   },
   {
+    image: "tricode",
+    title: "Tricode City",
+    text: "Three ley lines cross beneath the Grand Cathedral, and Tricode grew up around them: stone walls, a clock that strikes when it pleases, and lamps that burn blue without oil. The Hall says the crystals are a public utility. The Sisters say they are a blessing. The lamplighters just tap them.",
+  },
+  {
     image: "arena",
     title: "The Seven Emperors",
     text: "Eta, Zeta, Epsilon, Delta, Gamma, Beta and Alpha. Small, swift and terrible, each a master of sword, bow and spell alike. Every age has its Emperors. The Archive has never recorded one dying of old age.",
@@ -67,6 +72,8 @@ const TIPS: readonly string[] = [
   "Notice boards and signs can be read. Click them.",
   "Middle-drag or use the arrow keys to turn the camera. The wheel zooms.",
   "Gear is where your strength comes from. Check your bag after every fight.",
+  "Tricode's teachers can start you on smithing, crafting, cooking, gathering and fishing. Myrie knows where they all are.",
+  "Press D to sprint. It costs a little energy, or mana if you carry a staff.",
 ];
 
 const LAST_KEY = "levi.loading.last";

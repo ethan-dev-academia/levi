@@ -68,14 +68,17 @@ export class ChunkedTerrain {
   }
 
   /** Call every frame with the camera focus. `force` builds everything in range now (first frame). */
-  update(focusX: number, focusZ: number, force = false): void {
+  update(focusX: number, focusZ: number, force = false, also?: { x: number; z: number }): void {
     const size = CHUNK_CELLS * this.hm.cellSize;
     const fx = Math.floor(focusX / size);
     const fz = Math.floor(focusZ / size);
+    // A second place to keep built (a cutscene looking far away).
+    const ax = also ? Math.floor(also.x / size) : fx;
+    const az = also ? Math.floor(also.z / size) : fz;
 
     for (const [key, mesh] of this.chunks) {
       const [kx, kz] = key.split(",").map(Number) as [number, number];
-      if (Math.max(Math.abs(kx - fx), Math.abs(kz - fz)) > UNLOAD_RADIUS) {
+      if (Math.max(Math.abs(kx - fx), Math.abs(kz - fz)) > UNLOAD_RADIUS && Math.max(Math.abs(kx - ax), Math.abs(kz - az)) > UNLOAD_RADIUS) {
         this.group.remove(mesh);
         mesh.geometry.dispose();
         this.chunks.delete(key);
@@ -84,21 +87,46 @@ export class ChunkedTerrain {
 
     // Nearest-first build queue.
     const wanted: Array<[number, number, number]> = [];
-    for (let dz = -LOAD_RADIUS; dz <= LOAD_RADIUS; dz++) {
-      for (let dx = -LOAD_RADIUS; dx <= LOAD_RADIUS; dx++) {
-        const kx = fx + dx;
-        const kz = fz + dz;
-        if (kx < 0 || kz < 0 || kx >= this.chunksX || kz >= this.chunksZ) continue;
-        if (this.chunks.has(`${kx},${kz}`)) continue;
-        wanted.push([kx, kz, dx * dx + dz * dz]);
+    const seen = new Set<string>();
+    const centres: Array<[number, number]> = also ? [[fx, fz], [ax, az]] : [[fx, fz]];
+    for (const [cx, cz] of centres) {
+      for (let dz = -LOAD_RADIUS; dz <= LOAD_RADIUS; dz++) {
+        for (let dx = -LOAD_RADIUS; dx <= LOAD_RADIUS; dx++) {
+          const kx = cx + dx;
+          const kz = cz + dz;
+          const key = `${kx},${kz}`;
+          if (kx < 0 || kz < 0 || kx >= this.chunksX || kz >= this.chunksZ) continue;
+          if (this.chunks.has(key) || seen.has(key)) continue;
+          seen.add(key);
+          wanted.push([kx, kz, dx * dx + dz * dz]);
+        }
       }
     }
     wanted.sort((a, b) => a[2] - b[2]);
-    const budget = force ? wanted.length : BUILDS_PER_FRAME;
+    // While a cutscene flies, build one at a time: a smooth camera beats fast pop-in.
+    const budget = force ? wanted.length : also ? 1 : BUILDS_PER_FRAME;
     for (let i = 0; i < Math.min(budget, wanted.length); i++) {
       const [kx, kz] = wanted[i]!;
       this.buildChunk(kx, kz);
     }
+  }
+
+  /** Largest ring (≤ max) of chunks around the focus that is fully built. */
+  builtRing(focusX: number, focusZ: number, max: number): number {
+    const size = CHUNK_CELLS * this.hm.cellSize;
+    const fx = Math.floor(focusX / size);
+    const fz = Math.floor(focusZ / size);
+    for (let r = 0; r <= max; r++) {
+      for (let dz = -r; dz <= r; dz++) {
+        for (let dx = -r; dx <= r; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+          const kx = fx + dx, kz = fz + dz;
+          if (kx < 0 || kz < 0 || kx >= this.chunksX || kz >= this.chunksZ) continue;
+          if (!this.chunks.has(`${kx},${kz}`)) return r - 1;
+        }
+      }
+    }
+    return max;
   }
 
   /** Rebuild loaded chunks overlapping a cell rectangle (for the sculptor). */

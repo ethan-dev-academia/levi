@@ -1,0 +1,8 @@
+{
+  "id": "sky-barge",
+  "name": "Sky-barge",
+  "model": "prop-sky-barge",
+  "solid": false,
+  "readable": false,
+  "category": "decor"
+}

@@ -1,0 +1,68 @@
+{
+  "id": "tilda-brasswick",
+  "name": "Tilda Brasswick",
+  "title": "Ley-wright",
+  "location": "Brasswick Ley-Works",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#d9a882",
+    "hair": "#b5562e",
+    "top": "#4a3a2a",
+    "topTrim": "#c49a4a",
+    "legs": "#3a3430",
+    "boots": "#2a2420",
+    "belt": "#c49a4a"
+  },
+  "scale": 0.95,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "tilda-brasswick-0"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "tilda-brasswick-0",
+      "speaker": "npc",
+      "text": "Mind the bench, that crystal's still humming. Tilda Brasswick, ley-wright. I keep the city lit.",
+      "next": "tilda-brasswick-1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "tilda-brasswick-1",
+      "speaker": "npc",
+      "text": "Every lamp, pump and clock in Tricode drinks from the ley lines under our feet. Three of them cross right beneath the Cathedral. That's the whole reason the city's here.",
+      "next": "tilda-brasswick-2",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 260,
+        "y": 0
+      }
+    },
+    {
+      "id": "tilda-brasswick-2",
+      "speaker": "npc",
+      "text": "The Sisters call it the Benefactor's gift. I call it a very old, very large power line. Both of us are probably right.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 520,
+        "y": 0
+      }
+    }
+  ],
+  "chatter": [
+    "Who keeps unscrewing the lamp on Brass Lane?",
+    "Blue means good. Bright blue means stand back.",
+    "The clock's four minutes fast again. Or the sun's slow."
+  ]
+}

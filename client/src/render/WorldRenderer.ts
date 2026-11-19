@@ -5,7 +5,9 @@ export interface AtmosphereOptions {
   fogDensity: number;
 }
 
-const DEFAULT_ATMOSPHERE: AtmosphereOptions = { skyColor: 0xa9bfcc, fogDensity: 0.012 };
+const DEFAULT_ATMOSPHERE: AtmosphereOptions = { skyColor: 0xa9bfcc, fogDensity: 0.0085 };
+/** Default far plane: past full fog; the horizon mesh fills in beyond the detailed chunks. */
+const FAR = 420;
 
 /** Owns the WebGL renderer, scene, camera, lights and fog. */
 export class WorldRenderer {
@@ -13,6 +15,7 @@ export class WorldRenderer {
   readonly scene = new THREE.Scene();
   readonly camera: THREE.PerspectiveCamera;
   private readonly resizeObserver: ResizeObserver;
+  private readonly baseFog: number;
 
   constructor(
     private readonly canvas: HTMLCanvasElement,
@@ -21,12 +24,12 @@ export class WorldRenderer {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Far plane sits just past full fog; chunk streaming radius covers it.
-    this.camera = new THREE.PerspectiveCamera(50, 1, 0.1, 260);
+    this.camera = new THREE.PerspectiveCamera(50, 1, 0.1, FAR);
 
     const sky = new THREE.Color(atmosphere.skyColor);
     this.scene.background = sky;
     this.scene.fog = new THREE.FogExp2(sky, atmosphere.fogDensity);
+    this.baseFog = atmosphere.fogDensity;
 
     // Warm key light + cool sky fill: strong facet contrast on flat-shaded hills.
     const hemi = new THREE.HemisphereLight(0xdfeeff, 0x4a3b28, 1.4);
@@ -46,6 +49,20 @@ export class WorldRenderer {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
+  }
+
+  /**
+   * How far you can see: 0 = everyday, 1 = a cutscene looking across the
+   * world (thin fog, distant far plane).
+   */
+  setOpenness(w: number): void {
+    const fog = this.scene.fog as THREE.FogExp2;
+    fog.density = this.baseFog + (0.0018 - this.baseFog) * w;
+    const far = FAR + (1400 - FAR) * w;
+    if (Math.abs(this.camera.far - far) > 0.5) {
+      this.camera.far = far;
+      this.camera.updateProjectionMatrix();
+    }
   }
 
   render(): void {

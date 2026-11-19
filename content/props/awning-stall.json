@@ -1,0 +1,8 @@
+{
+  "id": "awning-stall",
+  "name": "Awning Stall",
+  "model": "prop-awning-stall",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

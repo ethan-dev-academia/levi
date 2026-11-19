@@ -2,7 +2,7 @@
   "id": "traveler-3",
   "name": "Ebba",
   "title": "Traveler",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#a06e4a",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Have you seen the clouds from the edge? Unsettling.",
+      "text": "The barges fly the ley lines like rivers. Saves a week of walking.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Have you seen the clouds from the edge? Unsettling.",
+    "The skyport's never quiet.",
+    "Next barge leaves when it leaves."
   ]
 }

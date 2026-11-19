@@ -2,7 +2,7 @@
   "id": "innkeeper-1",
   "name": "Holt",
   "title": "Innkeeper",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#b9835f",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Room's two coins a night. Breakfast is extra.",
+      "text": "The Gilded Cog. Room's two coins a night, breakfast is extra, and the stew is always on.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Stew's on!",
+    "Boots off the tables, please.",
+    "Rooms upstairs, quiet hours after the clock strikes ten."
   ]
 }

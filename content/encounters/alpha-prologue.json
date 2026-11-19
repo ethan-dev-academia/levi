@@ -21,7 +21,7 @@
   "rescueHp": 40,
   "bulletDamage": 8,
   "hitGrace": 0.55,
-  "exit": { "x": 1051.5, "z": 470.0 },
+  "exit": { "x": 1040.5, "z": 470.0 },
   "exitMessage": "Light, then cold stone. You wake on the altar of a vast cathedral.",
   "speakers": { "falcon": "Falcon", "alpha": "Alpha", "you": "You" },
   "barks": [

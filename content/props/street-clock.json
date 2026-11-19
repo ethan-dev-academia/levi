@@ -1,0 +1,8 @@
+{
+  "id": "street-clock",
+  "name": "Street Clock",
+  "model": "prop-street-clock",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

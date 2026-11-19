@@ -53,6 +53,11 @@ export const DialogueNodeSchema = z.object({
   options: z.array(DialogueOptionSchema).max(6).default([]),
   /** Applied when this line is shown. */
   effects: z.array(EffectSchema).default([]),
+  /**
+   * While this line is shown, the camera pans out over the world to look at
+   * this point (a city, a mountain...), then comes back when the line ends.
+   */
+  vista: z.object({ x: z.number().finite(), y: z.number().finite(), z: z.number().finite() }).optional(),
   /** Editor layout only. */
   pos: z.object({ x: z.number(), y: z.number() }).optional(),
 });

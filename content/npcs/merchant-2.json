@@ -2,7 +2,7 @@
   "id": "merchant-2",
   "name": "Pell",
   "title": "Merchant",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#b9835f",
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Silks from Argon! Spices from the coast!",
+    "Everything has a price.",
+    "Look, don't touch. Unless you're buying."
   ]
 }

@@ -2,7 +2,7 @@
   "id": "guard-4",
   "name": "Finch",
   "title": "Guard",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#f1c9a5",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Keep to the paths.",
+      "text": "West Gate. The docks are down the bank. Old Finn will talk your ear off about fish.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "West Gate, all quiet.",
+    "Mind the bank, it's steep.",
+    "Keep to the paths."
   ]
 }

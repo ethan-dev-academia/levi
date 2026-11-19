@@ -1,0 +1,8 @@
+{
+  "id": "ley-lamp",
+  "name": "Ley Lamp",
+  "model": "prop-ley-lamp",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

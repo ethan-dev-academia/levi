@@ -1,0 +1,8 @@
+{
+  "id": "workbench",
+  "name": "Workbench",
+  "model": "prop-workbench",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

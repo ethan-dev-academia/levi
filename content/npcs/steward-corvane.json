@@ -1,0 +1,56 @@
+{
+  "id": "steward-corvane",
+  "name": "Steward Corvane",
+  "title": "Steward of Tricode",
+  "location": "Tricode Hall",
+  "model": "humanoid",
+  "palette": {
+    "skin": "#c99a78",
+    "hair": "#d8d4cc",
+    "top": "#5d2e3a",
+    "topTrim": "#d9b04a",
+    "legs": "#2b2430",
+    "boots": "#1f1a1e",
+    "belt": "#d9b04a"
+  },
+  "scale": 1.02,
+  "entries": [
+    {
+      "id": "default",
+      "label": "Default",
+      "when": [],
+      "start": "steward-corvane-0"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "steward-corvane-0",
+      "speaker": "npc",
+      "text": "Another of the Benefactor's heroes. Welcome to Tricode, the finest city in Trifectia, whatever Argon says.",
+      "next": "steward-corvane-1",
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "steward-corvane-1",
+      "speaker": "npc",
+      "text": "The Hall keeps the roads, the walls and the lamps. The Cathedral keeps everything else. Try to stay on the right side of both.",
+      "next": null,
+      "options": [],
+      "effects": [],
+      "pos": {
+        "x": 260,
+        "y": 0
+      }
+    }
+  ],
+  "chatter": [
+    "Has anyone seen the minutes from the last council?",
+    "Mind the clock. It strikes louder than you think.",
+    "Taxes are a civic virtue."
+  ]
+}

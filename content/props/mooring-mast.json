@@ -1,0 +1,8 @@
+{
+  "id": "mooring-mast",
+  "name": "Mooring Mast",
+  "model": "prop-mooring-mast",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

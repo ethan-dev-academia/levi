@@ -273,6 +273,37 @@ export class Sound {
     this.play([...this.roll(0, [N.G2, N.D3, N.Fs3, N.B3, N.Cs4, N.Fs4], 0.38, 0.11), [0.95, N.A4, 0.3]]);
   }
 
+  /**
+   * Seeing the world from on high: sparse notes climbing in fourths over an
+   * open fifth, a G lydian colour and an A suspension that hang... and then,
+   * as the city comes into view, everything comes home to D.
+   * Timed to the camera's flight (the resolve lands about 12.5 s in).
+   */
+  vista(): void {
+    this.play([
+      [0, N.D2, 0.34],
+      [0.06, N.A2, 0.28],
+      [0.9, N.A4, 0.26],
+      [1.7, N.D5, 0.28],
+      [2.5, N.E5, 0.3],
+      [3.3, N.A5, 0.28],
+      ...this.roll(4.8, [N.G2, N.D3, N.A3, N.B3, N.Cs4], 0.3, 0.13),
+      [6.0, N.Fs5, 0.25],
+      [6.8, N.E5, 0.23],
+      [7.6, N.B4, 0.22],
+      ...this.roll(9.2, [N.A2, N.E3, N.A3, N.D4, N.E4], 0.3, 0.12),
+      [10.3, N.E5, 0.26],
+      [11.2, N.D5, 0.24],
+      [11.8, N.E5, 0.27],
+      ...this.roll(12.5, [N.D2, N.A2, N.D3, N.Fs3, N.A3, N.D4], 0.42, 0.09),
+      [12.62, N.Fs5, 0.42],
+      [13.5, N.A5, 0.32],
+      [14.8, N.D6, 0.3],
+      [16.6, N.A5, 0.18],
+      [18.0, N.Fs5, 0.16],
+    ]);
+  }
+
   /** Story beats get their own chords: none of them resolve. */
   story(beat: "arrival" | "dread" | "fight" | "rescue" | "farewell"): void {
     switch (beat) {

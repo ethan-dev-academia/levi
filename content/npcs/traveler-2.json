@@ -2,7 +2,7 @@
   "id": "traveler-2",
   "name": "Corra",
   "title": "Traveler",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#e2b58e",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Just passing through. Lovely view.",
+      "text": "Just off the barge from the coast. Three days in the air and I still can't feel my knees.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Bigger than I expected.",
+    "Where's a decent inn?",
+    "So many lamps."
   ]
 }

@@ -2,7 +2,7 @@
   "id": "old-finn",
   "name": "Old Finn",
   "title": "Fisherman",
-  "location": "Docks",
+  "location": "The Docks",
   "model": "humanoid",
   "palette": {
     "skin": "#c89070",

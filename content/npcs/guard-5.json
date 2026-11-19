@@ -2,7 +2,7 @@
   "id": "guard-5",
   "name": "Willa",
   "title": "Guard",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#d9a582",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "All quiet. For now.",
+      "text": "The forest's south of here. Hunters go in. Mostly they come back.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "All quiet. For now.",
+    "Don't go into the woods after dark.",
+    "Gate closes at midnight. It doesn't, but you should be home."
   ]
 }

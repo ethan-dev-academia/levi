@@ -1,0 +1,8 @@
+{
+  "id": "counter",
+  "name": "Counter",
+  "model": "prop-counter",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

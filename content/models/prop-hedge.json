@@ -1,0 +1,57 @@
+{
+ "id": "prop-hedge",
+ "scale": 1,
+ "palette": {
+  "leaf": "#4d7a34",
+  "leafHi": "#5f8f40"
+ },
+ "parts": [
+  {
+   "id": "body",
+   "color": "$leaf",
+   "sides": 4,
+   "twist": true,
+   "phase": 45,
+   "rings": [
+    [
+     0,
+     0.62,
+     0.62
+    ],
+    [
+     0.55,
+     0.72,
+     0.72
+    ],
+    [
+     0.95,
+     0.6,
+     0.6
+    ]
+   ]
+  },
+  {
+   "id": "top",
+   "color": "$leafHi",
+   "sides": 5,
+   "twist": true,
+   "rings": [
+    [
+     0.9,
+     0.55,
+     0.55
+    ],
+    [
+     1.1,
+     0.3,
+     0.3
+    ],
+    [
+     1.15,
+     0,
+     0
+    ]
+   ]
+  }
+ ]
+}

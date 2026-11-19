@@ -2,7 +2,7 @@
   "id": "merchant-4",
   "name": "Sable",
   "title": "Merchant",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#8a5a3c",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Finest goods on the Landing!",
+      "text": "Brass & Barrel, finest goods in Tricode! Rope, oil, boots, bread. And ley-shards, for the adventurous.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Fresh bread from Hilde's, just next door.",
+    "Everything you need before you leave the walls.",
+    "No refunds on crystals."
   ]
 }

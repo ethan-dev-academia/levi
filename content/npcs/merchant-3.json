@@ -2,7 +2,7 @@
   "id": "merchant-3",
   "name": "Dell",
   "title": "Merchant",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#f1c9a5",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Shop's not open yet. Come back soon.",
+      "text": "Stall's open! Fruit, nuts and things that might be fruit.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Fresh off the sky-barge!",
+    "Two for one, today only. Every day.",
+    "Apples! Crunchy, mostly."
   ]
 }

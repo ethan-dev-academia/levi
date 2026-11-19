@@ -1,0 +1,8 @@
+{
+  "id": "oven",
+  "name": "Oven",
+  "model": "prop-oven",
+  "solid": true,
+  "readable": false,
+  "category": "furniture"
+}

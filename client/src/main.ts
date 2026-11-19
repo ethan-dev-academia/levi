@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import { ABILITY_SLOTS, buildWalkGrid, Character, lerp, regionAt, storeyY, type AbilitySlot, type EnemyDef, type ItemDef, type ItemSlot, type NpcDef, type QuestDef, type Region } from "@levi/shared";
 import { OrbitCamera } from "./camera/OrbitCamera.js";
+import { Vista, VISTA_FADE } from "./camera/Vista.js";
+import { HorizonTerrain } from "./render/HorizonTerrain.js";
 import { loadMap } from "./content/mapLoader.js";
 import { loadingDone, loadingFailed, loadingProgress, loadingStage } from "./loading.js";
 import { getOrThrow, loadContent } from "./content/registry.js";
@@ -118,6 +120,9 @@ async function boot(): Promise<void> {
   const groundItems = new GroundItemLayer(data.buildings, hm, content.items);
   const enemyLayer = new EnemyLayer(data.buildings, hm, content.models, stage);
   const combatFx = new CombatFx((x, z) => data.buildings.groundHeight(hm, x, z), stage);
+  // The land past the detailed chunks, out to the horizon.
+  const horizon = new HorizonTerrain(data, walk);
+  world.scene.add(horizon.mesh);
   world.scene.add(terrain.group, water, clouds.group, buildings.group, props.group, npcLayer.group, groundItems.group, enemyLayer.group, combatFx.group);
   // Story encounters: one view, playing whichever encounter is running (Falcon's look comes from his NPC).
   const encounterDef = [...content.encounters.values()][0];
@@ -133,7 +138,8 @@ async function boot(): Promise<void> {
   const ambience = new Ambience((ax, az) => data.buildings.groundHeight(hm, ax, az), [
     { x: 520, y: 112, z: 300, radius: 70, count: 9 },
     { x: 540, y: 98, z: 372, radius: 26, count: 6 },
-    { x: 1010, y: 62, z: 470, radius: 50, count: 11 },
+    { x: 1005, y: 55, z: 470, radius: 50, count: 11 },
+    { x: 1040, y: 50, z: 410, radius: 45, count: 7 },
   ]);
   world.scene.add(ambience.group);
   const story = new StoryOverlay(stage);
@@ -321,7 +327,7 @@ async function boot(): Promise<void> {
 
   const pointer = new PointerInput(canvas, {
     onMoveCommand: (ndc, initial) => {
-      if (intro.active) return;
+      if (intro.active || vista.active) return;
       if (initial) {
         attackPress = false;
         const hitGround = picker.pick(ndc.x, ndc.y);
@@ -423,7 +429,7 @@ async function boot(): Promise<void> {
   let aiming: AbilitySlot | null = null;
   for (const [code, slot] of castKeys) {
     keys.bind(code, () => {
-      if (intro.active) return;
+      if (intro.active || vista.active) return;
       const b = sim.character.barSlot(slot);
       if (b?.usable && b.skill.cast.kind === "line") {
         aiming = slot;
@@ -581,6 +587,11 @@ async function boot(): Promise<void> {
 
   // --- Loop ---------------------------------------------------------
   const focus = new THREE.Vector3();
+  const vista = new Vista();
+  let vistaKey: string | null = null;
+  let vistaFading = false;
+  /** Everyday view distance: further when you're up on a sky island looking out. */
+  let skyOpen = 0;
   terrain.update(sim.player.x, sim.player.z, true);
   startGameLoop({
     tick: () => sim.tick(),
@@ -616,6 +627,34 @@ async function boot(): Promise<void> {
       hero.lift = heroLift;
       hero.tilt = heroTilt;
       const introShot = intro.update(dt);
+      // A dialogue line that looks out over the world ("past the clouds, that's the Layland"):
+      // an unskippable flight there and a white-out back. The line plays as a subtitle meanwhile.
+      const talkNow = sim.talk;
+      const vistaPoint = talkNow?.node.vista;
+      const vistaNode = vistaPoint ? `${talkNow!.spawn.id}:${talkNow!.node.id}` : null;
+      if (vistaNode && vistaNode !== vistaKey && !vista.active) {
+        vista.start(world.camera.position, { x, y: surfaceAt(x, z) + 1.4, z }, vistaPoint!);
+        vistaFading = false;
+        dialogue.setHeld(true);
+        story.setCinematic(true);
+        sound.vista();
+        story.bark("falcon", talkNow!.npc.name, talkNow!.node.text);
+      }
+      vistaKey = vistaNode;
+      vista.update(dt);
+      if (vista.active && !vistaFading && vista.time >= vista.fadeAt) {
+        vistaFading = true;
+        story.whiteFlash(VISTA_FADE.in, VISTA_FADE.hold, VISTA_FADE.out);
+      }
+      if (vista.landed) {
+        vista.stop();
+        dialogue.setHeld(false);
+        story.setCinematic(false);
+      }
+      clouds.setFade(vista.cloudFade);
+      const onSky = data.def.regions.some((r) => r.kind === "sky" && x >= r.bounds.x0 && x < r.bounds.x1 && z >= r.bounds.z0 && z < r.bounds.z1);
+      skyOpen += ((onSky ? 0.62 : 0) - skyOpen) * (1 - Math.exp(-dt * 0.8));
+      world.setOpenness(Math.max(skyOpen, vista.openness));
       const cut = introShot
         ? { shot: introShot, focus: { x, y: surfaceAt(x, z) + 1.2, z } }
         : storyCamera(enc, alpha, { x, z }, (sx, sz) => data.buildings.groundHeight(hm, sx, sz), heroLift);
@@ -625,12 +664,24 @@ async function boot(): Promise<void> {
         cameraOverride.update(dt);
         const f = cameraOverride.focus();
         terrain.update(f.x, f.z);
+        horizon.update([{ x: f.x, z: f.z, ring: terrain.builtRing(f.x, f.z, 3) }], data.def.cellSize);
       } else {
         orbit.rotateByKeys(keys.axis("ArrowRight", "ArrowLeft"), keys.axis("ArrowDown", "ArrowUp"), dt);
         if (cut) focus.set(cut.focus.x, cut.focus.y, cut.focus.z);
         else focus.set(x, surfaceAt(x, z) + 1.2, z);
         orbit.update(dt, focus);
-        terrain.update(x, z);
+        // A vista flies the camera itself (straight along its path, no orbit easing).
+        if (vista.active) {
+          world.camera.position.copy(vista.cam);
+          world.camera.lookAt(vista.look);
+        }
+        // During a vista, build the land over there as well as around you.
+        const far = vista.active ? vista.target : null;
+        terrain.update(x, z, false, far ?? undefined);
+        horizon.update([
+          { x, z, ring: terrain.builtRing(x, z, 3) },
+          ...(far ? [{ x: far.x, z: far.z, ring: terrain.builtRing(far.x, far.z, 3) }] : []),
+        ], data.def.cellSize);
       }
 
       // Character UI: bars every frame, menus only when something changed.
@@ -756,7 +807,7 @@ async function boot(): Promise<void> {
       announcer.update(dt);
       // High winds up on the sky island, a breeze below.
       sound.setWind(data.def.regions.some((r) => r.kind === "sky" && x >= r.bounds.x0 && x < r.bounds.x1 && z >= r.bounds.z0 && z < r.bounds.z1) ? 1 : 0.45);
-      sound.update(dt, p.storey === 0 && !p.building && !sim.encounter && !intro.active);
+      sound.update(dt, p.storey === 0 && !p.building && !sim.encounter && !intro.active && !vista.active);
       tipCheck -= dt;
       if (tipCheck <= 0 && !intro.active) {
         tipCheck = 0.5;

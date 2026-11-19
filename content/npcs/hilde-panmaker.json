@@ -2,7 +2,7 @@
   "id": "hilde-panmaker",
   "name": "Hilde Panmaker",
   "title": "Baker and Cook",
-  "location": "Bakery",
+  "location": "Panmaker's Bakery",
   "model": "humanoid",
   "palette": {
     "skin": "#e0b090",

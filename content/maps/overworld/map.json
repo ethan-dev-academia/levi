@@ -661,14 +661,26 @@
       "subtitle": "The lands beyond the Cathedral"
     },
     {
+      "id": "tricode-city",
+      "name": "Tricode City",
+      "kind": "zone",
+      "bounds": {
+        "x0": 880,
+        "z0": 376,
+        "x1": 1120,
+        "z1": 584
+      },
+      "subtitle": "Where three ley lines cross"
+    },
+    {
       "id": "grand-cathedral",
       "name": "The Grand Cathedral",
       "kind": "zone",
       "bounds": {
-        "x0": 880,
-        "z0": 360,
-        "x1": 1140,
-        "z1": 590
+        "x0": 966,
+        "z0": 439,
+        "x1": 1048,
+        "z1": 501
       },
       "subtitle": "Seat of the Benefactor"
     },
@@ -749,7 +761,7 @@
     {
       "id": "grand-cathedral",
       "name": "the Grand Cathedral",
-      "x": 1051.5,
+      "x": 1040.5,
       "z": 470.0,
       "when": [
         {

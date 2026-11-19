@@ -2,7 +2,7 @@
   "id": "villager-4",
   "name": "Vale",
   "title": "Villager",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#c98e64",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Morning!",
+      "text": "Morning! First time in Tricode? Everyone stares at the Cathedral. It's fine. We all did.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Morning!",
+    "Mind the pigeons, they're brave here.",
+    "Lovely day."
   ]
 }

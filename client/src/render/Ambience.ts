@@ -4,11 +4,22 @@ import { ParticlePool, glowTexture } from "./SpellFx.js";
 
 type GroundAt = (x: number, z: number) => number;
 
-/** Where a prop's light sits, relative to its cell centre before rotation: [x, y, z, glow size]. */
-const LIGHTS: Record<string, [number, number, number, number]> = {
+/** Ley-crystal light: Tricode's lamps, pylons and clocks. */
+const LEY = 0x6fe6dc;
+
+/** Where a prop's light sits, relative to its cell centre before rotation: [x, y, z, glow size, colour?]. */
+const LIGHTS: Record<string, [number, number, number, number, number?]> = {
   "lantern-post": [0.42, 1.72, 0, 1.4],
   candle: [0, 0.55, 0, 0.7],
   campfire: [0, 0.5, 0, 2.4],
+  oven: [0, 0.7, 0.45, 0.9],
+  "ley-lamp": [0, 2.83, 0, 1.3, LEY],
+  "ley-pylon": [0, 4.6, 0, 2.6, LEY],
+  "mana-pump": [0, 1.43, -0.35, 0.6, LEY],
+  "mooring-mast": [0, 11.55, 0, 2.2, LEY],
+  "gate-arch": [0, 6.45, 0, 1.8, LEY],
+  "clock-face": [0, 3.52, 0.6, 1.3, LEY],
+  "sky-barge": [0, 13.05, 2.2, 1.0, LEY],
 };
 
 const WARM = new THREE.Color(1, 0.72, 0.32);
@@ -49,7 +60,7 @@ export class Ambience {
     const tex = glowTexture();
     this.glows = new ParticlePool(1400, tex);
     this.smoke = new ParticlePool(700, tex, false);
-    this.lightMat = new THREE.PointsMaterial({ map: tex, color: WARM, size: 1.4, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
+    this.lightMat = new THREE.PointsMaterial({ map: tex, vertexColors: true, size: 1.4, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true });
     this.lightPoints = new THREE.Points(new THREE.BufferGeometry(), this.lightMat);
     this.lightPoints.frustumCulled = false;
     this.group.add(this.glows.points, this.smoke.points, this.lightPoints);
@@ -85,6 +96,8 @@ export class Ambience {
     if (props === this.source) return;
     this.source = props;
     const pos: number[] = [];
+    const col: number[] = [];
+    const c = new THREE.Color();
     this.fires = [];
     for (const p of props) {
       const l = LIGHTS[p.prop];
@@ -96,10 +109,13 @@ export class Ambience {
       const z = p.z + 0.5 + oz;
       const y = storeyY(p) + l[1];
       pos.push(x, y, z);
+      c.set(l[4] ?? WARM);
+      col.push(c.r, c.g, c.b);
       if (p.prop === "campfire") this.fires.push({ x, y: y - 0.4, z });
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
     this.lightPoints.geometry.dispose();
     this.lightPoints.geometry = g;
   }

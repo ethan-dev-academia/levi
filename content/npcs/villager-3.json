@@ -2,7 +2,7 @@
   "id": "villager-3",
   "name": "Nell",
   "title": "Villager",
-  "location": "",
+  "location": "Tricode City",
   "model": "humanoid",
   "palette": {
     "skin": "#a06e4a",
@@ -26,7 +26,7 @@
     {
       "id": "hello",
       "speaker": "npc",
-      "text": "Did you hear about the Warden? No? Never mind then.",
+      "text": "Did you hear? The steward's clock struck thirteen last night. Nobody will admit to winding it.",
       "next": null,
       "options": [],
       "effects": [],
@@ -35,5 +35,10 @@
         "y": 0
       }
     }
+  ],
+  "chatter": [
+    "Lovely day for the market.",
+    "Did you see the light over the Cathedral?",
+    "Have you tried Hilde's honey rolls?"
   ]
 }

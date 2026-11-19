@@ -1,0 +1,8 @@
+{
+  "id": "crystal-crate",
+  "name": "Crystal Crate",
+  "model": "prop-crystal-crate",
+  "solid": true,
+  "readable": false,
+  "category": "storage"
+}

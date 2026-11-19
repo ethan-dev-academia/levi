@@ -179,6 +179,12 @@ export class Clouds {
   }
 
   /** Hide the high drifting clouds (a camera flying through them is just a white screen). */
+  /** 1 = as normal, 0 = gone (a cutscene that wants the view). */
+  setFade(f: number): void {
+    this.material.opacity = 0.55 * f;
+    this.group.visible = f > 0.01;
+  }
+
   setDriftersVisible(v: boolean): void {
     for (const d of this.drifters) d.mesh.visible = v;
   }

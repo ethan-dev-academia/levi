@@ -1,0 +1,8 @@
+{
+  "id": "mana-pump",
+  "name": "Ley Pump",
+  "model": "prop-mana-pump",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}

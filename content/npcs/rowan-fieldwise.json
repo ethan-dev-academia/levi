@@ -2,7 +2,7 @@
   "id": "rowan-fieldwise",
   "name": "Rowan Fieldwise",
   "title": "Forager",
-  "location": "Fields",
+  "location": "City gardens",
   "model": "humanoid",
   "palette": {
     "skin": "#c8a080",

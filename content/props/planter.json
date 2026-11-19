@@ -1,0 +1,8 @@
+{
+  "id": "planter",
+  "name": "Planter",
+  "model": "prop-planter",
+  "solid": true,
+  "readable": false,
+  "category": "decor"
+}
