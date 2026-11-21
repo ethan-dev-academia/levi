@@ -22,6 +22,28 @@ const UNDER_ROCK = new THREE.Color(0x4a4643);
 const UNDER_ROCK_DEEP = new THREE.Color(0x36383d);
 
 const DOWN = new THREE.Vector3(0, -1, 0);
+const N_POS_X = new THREE.Vector3(1, 0, 0);
+const N_NEG_X = new THREE.Vector3(-1, 0, 0);
+const N_POS_Z = new THREE.Vector3(0, 0, 1);
+const N_NEG_Z = new THREE.Vector3(0, 0, -1);
+
+/** Painted material id for cobblestone (sculpted into individual stones). */
+const COBBLE = 10;
+const FLOWERS = [0xf2e6a0, 0xe7a3c0, 0xa8c4f0, 0xf4f1ea, 0xe8b65a].map((c) => new THREE.Color(c));
+
+/** Deterministic 0..1 hash of three integers. */
+function hash01(a: number, b: number, c: number): number {
+  let h = Math.imul(a | 0, 374761393) ^ Math.imul(b | 0, 668265263) ^ Math.imul(c | 0, 2246822519);
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+/** Grass painted, or unpainted ground that the palette makes grass. */
+function isGrassy(paint: number, a: number, b: number, c: number, d: number, water: number, maxStep: number): boolean {
+  if (paint >= 1 && paint <= 3) return true;
+  if (paint !== 0) return false;
+  return (a + b + c + d) / 4 - water >= 0.6 && Math.max(a, b, c, d) - Math.min(a, b, c, d) <= maxStep;
+}
 
 /**
  * Streams flat-shaded terrain chunks around a focus point.
@@ -177,6 +199,9 @@ export class ChunkedTerrain {
     const C: number[] = [];
     const base = new THREE.Color();
     const col = new THREE.Color();
+    const mortar = new THREE.Color();
+    const stoneCol = new THREE.Color();
+    const side = new THREE.Color();
     const a = new THREE.Vector3();
     const b = new THREE.Vector3();
     const c = new THREE.Vector3();
@@ -213,9 +238,79 @@ export class ChunkedTerrain {
         const h01 = hm.vertex(cx, cz + 1);
         const h11 = hm.vertex(cx + 1, cz + 1);
         cellColor(data, this.walk, cx, cz, base, this.palette);
+        const paint = data.paint[ci] ?? 0;
+        const covered = data.buildings.containing(cx, cz) !== null;
+        const cobbled = paint === COBBLE && !covered;
+        // Cobbled cells: the ground between stones is dark mortar.
+        const ground = cobbled ? mortar.copy(base).offsetHSL(0, -0.03, -0.17) : base;
 
-        tri(x0, h00, z0, x0, h01, z1, x1, h10, z0, col.copy(base).offsetHSL(0, 0, (valueNoise2(cx * 0.9, cz * 0.9, 7) - 0.5) * 0.06));
-        tri(x1, h11, z1, x1, h10, z0, x0, h01, z1, col.copy(base).offsetHSL(0, 0, (valueNoise2(cx * 0.9 + 0.5, cz * 0.9, 7) - 0.5) * 0.06));
+        tri(x0, h00, z0, x0, h01, z1, x1, h10, z0, col.copy(ground).offsetHSL(0, 0, (valueNoise2(cx * 0.9, cz * 0.9, 7) - 0.5) * 0.06));
+        tri(x1, h11, z1, x1, h10, z0, x0, h01, z1, col.copy(ground).offsetHSL(0, 0, (valueNoise2(cx * 0.9 + 0.5, cz * 0.9, 7) - 0.5) * 0.06));
+
+        // Ground height inside the cell, matching the two top triangles.
+        const hAt = (u: number, v: number): number =>
+          u + v <= 1 ? h00 + (h10 - h00) * u + (h01 - h00) * v : h11 + (h01 - h11) * (1 - u) + (h10 - h11) * (1 - v);
+        if (cobbled) {
+          // Stones: two staggered rows per cell, each stone raised with bevelled sides.
+          const stone = (u0: number, v0: number, u1: number, v1: number, n: number): void => {
+            const r = hash01(cx, cz, n);
+            const ins = 0.03 + r * 0.012;
+            const ua = u0 + ins, ub = u1 - ins, va = v0 + ins, vb = v1 - ins;
+            if (ub - ua < 0.05) return;
+            const lift = 0.04 + r * 0.035;
+            const tilt = (hash01(cz, cx, n + 9) - 0.5) * 0.03;
+            const cl = stoneCol.copy(base).offsetHSL((r - 0.5) * 0.02, (hash01(cx, n, cz) - 0.5) * 0.05, (hash01(n, cz, cx) - 0.5) * 0.14 + 0.02);
+            const pt = (u: number, v: number, top: boolean): THREE.Vector3 =>
+              new THREE.Vector3(x0 + u * cs, hAt(u, v) + (top ? lift + tilt * (u - (ua + ub) / 2) * 4 : -0.01), z0 + v * cs);
+            const t00 = pt(ua, va, true), t01 = pt(ua, vb, true), t11 = pt(ub, vb, true), t10 = pt(ub, va, true);
+            tri(t00.x, t00.y, t00.z, t01.x, t01.y, t01.z, t10.x, t10.y, t10.z, cl);
+            tri(t11.x, t11.y, t11.z, t10.x, t10.y, t10.z, t01.x, t01.y, t01.z, cl);
+            side.copy(cl).offsetHSL(0, 0, -0.08);
+            const sideQuad = (p: THREE.Vector3, q: THREE.Vector3, pu: number, pv: number, qu: number, qv: number, out: THREE.Vector3): void => {
+              const pb = pt(pu, pv, false), qb = pt(qu, qv, false);
+              a.copy(p); b.copy(q); c.copy(pb); facing(out, side);
+              a.copy(q); b.copy(qb); c.copy(pb); facing(out, side);
+            };
+            sideQuad(t00, t10, ua, va, ub, va, N_NEG_Z);
+            sideQuad(t01, t11, ua, vb, ub, vb, N_POS_Z);
+            sideQuad(t00, t01, ua, va, ua, vb, N_NEG_X);
+            sideQuad(t10, t11, ub, va, ub, vb, N_POS_X);
+          };
+          const j = (k: number): number => (hash01(cx, cz, k) - 0.5) * 0.12;
+          const m1 = 0.5 + j(1);
+          stone(0, 0, m1, 0.5, 0);
+          stone(m1, 0, 1, 0.5, 1);
+          const m2 = 0.25 + j(2), m3 = 0.75 + j(3);
+          stone(0, 0.5, m2, 1, 2);
+          stone(m2, 0.5, m3, 1, 3);
+          stone(m3, 0.5, 1, 1, 4);
+        } else if (!covered && isGrassy(paint, h00, h10, h01, h11, data.def.waterLevel, data.def.maxStep)) {
+          // Tufts of grass and the odd flower.
+          const r = hash01(cx, cz, 21);
+          if (r < 0.24) {
+            const u = 0.15 + hash01(cz, cx, 22) * 0.7, v = 0.15 + hash01(cx, cz, 23) * 0.7;
+            const gx = x0 + u * cs, gz = z0 + v * cs, gy = hAt(u, v) - 0.02;
+            const blade = side.copy(base).offsetHSL(0.012, 0.06, 0.07 + r * 0.25);
+            for (let k = 0; k < 3; k++) {
+              const ang = hash01(cx, cz, 30 + k) * Math.PI * 2;
+              const hgt = 0.26 + hash01(cz, cx, 40 + k) * 0.22;
+              const lean = 0.08 + hash01(cx, k, cz) * 0.1;
+              const dx = Math.cos(ang), dz = Math.sin(ang);
+              const bx = gx + dz * 0.04, bz = gz - dx * 0.04, ex = gx - dz * 0.04, ez = gz + dx * 0.04;
+              const tx = gx + dx * lean, tz = gz + dz * lean, ty = gy + hgt;
+              tri(bx, gy, bz, ex, gy, ez, tx, ty, tz, blade);
+              tri(ex, gy, ez, bx, gy, bz, tx, ty, tz, blade);
+            }
+            if (r < 0.03) {
+              const fl = FLOWERS[Math.floor(hash01(cz, cx, 50) * FLOWERS.length)]!;
+              const fy = gy + 0.3;
+              tri(gx - 0.06, fy, gz, gx + 0.06, fy, gz, gx, fy + 0.07, gz + 0.01, fl);
+              tri(gx + 0.06, fy, gz, gx - 0.06, fy, gz, gx, fy + 0.07, gz + 0.01, fl);
+              tri(gx, fy, gz - 0.06, gx, fy, gz + 0.06, gx + 0.01, fy + 0.07, gz, fl);
+              tri(gx, fy, gz + 0.06, gx, fy, gz - 0.06, gx + 0.01, fy + 0.07, gz, fl);
+            }
+          }
+        }
 
         if (topo.floating[ci] !== 1) continue;
 

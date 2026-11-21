@@ -13,6 +13,7 @@ import { PointerInput } from "./input/PointerInput.js";
 import { TerrainPicker } from "./input/TerrainPicker.js";
 import { LocalIntentSink } from "./net/IntentSink.js";
 import { BuildingLayer } from "./render/BuildingLayer.js";
+import { setWindowGlow } from "./render/BuildingMesh.js";
 import { CharacterEntity } from "./render/CharacterEntity.js";
 import { ClickMarker } from "./render/ClickMarker.js";
 import { PropLayer } from "./render/PropLayer.js";
@@ -670,6 +671,7 @@ async function boot(): Promise<void> {
         if (cut) focus.set(cut.focus.x, cut.focus.y, cut.focus.z);
         else focus.set(x, surfaceAt(x, z) + 1.2, z);
         orbit.update(dt, focus);
+        world.setFocus(focus.x, focus.y, focus.z);
         // A vista flies the camera itself (straight along its path, no orbit easing).
         if (vista.active) {
           world.camera.position.copy(vista.cam);
@@ -721,6 +723,9 @@ async function boot(): Promise<void> {
       encounterView.setViewport(stage.getBoundingClientRect().height);
       encounterView.update(enc, alpha, dt);
       ambience.setViewport(stage.getBoundingClientRect().height);
+      const night = world.skyState.night;
+      setWindowGlow(night);
+      ambience.setNight(night);
       ambience.update(dt, { x, z }, data.buildings.props, (pp) => props.baseY(pp));
       const phase = enc?.phase ?? null;
       if (phase !== lastPhase) {

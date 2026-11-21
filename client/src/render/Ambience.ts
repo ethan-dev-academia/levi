@@ -22,6 +22,9 @@ const LIGHTS: Record<string, [number, number, number, number, number?]> = {
   "sky-barge": [0, 13.05, 2.2, 1.0, LEY],
 };
 
+/** Real lights shared out to the lamps nearest the player. */
+const LAMP_POOL = 6;
+
 const WARM = new THREE.Color(1, 0.72, 0.32);
 const FLAME = new THREE.Color(1, 0.55, 0.15);
 const SMOKE = new THREE.Color(0.32, 0.31, 0.3);
@@ -51,6 +54,11 @@ export class Ambience {
   private source: readonly PropInstance[] | null = null;
   private readonly flocks: Flock[] = [];
   private t = 0;
+  private night = 0;
+  /** Every lamp: x, y, z, then r, g, b. */
+  private lampList: number[] = [];
+  /** The few lamps nearest you light the ground for real after dark. */
+  private readonly pool: THREE.PointLight[] = [];
 
   constructor(
     private readonly groundAt: GroundAt,
@@ -64,6 +72,12 @@ export class Ambience {
     this.lightPoints = new THREE.Points(new THREE.BufferGeometry(), this.lightMat);
     this.lightPoints.frustumCulled = false;
     this.group.add(this.glows.points, this.smoke.points, this.lightPoints);
+    for (let i = 0; i < LAMP_POOL; i++) {
+      const l = new THREE.PointLight(0xffffff, 0, 11, 1.7);
+      l.castShadow = false;
+      this.pool.push(l);
+      this.group.add(l);
+    }
 
     const wingGeom = new THREE.BufferGeometry();
     wingGeom.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, -0.12, 0, 0, 0.18, 0.55, 0.02, 0.02], 3));
@@ -84,6 +98,41 @@ export class Ambience {
       }
       this.flocks.push(flock);
     }
+  }
+
+  /** 0 = day, 1 = night: lamps glow brighter and light the ground. */
+  setNight(n: number): void {
+    this.night = n;
+  }
+
+  private placeLamps(player: { x: number; z: number }): void {
+    const L = this.lampList;
+    const best: Array<[number, number]> = [];
+    if (this.night > 0.02) {
+      for (let i = 0; i < L.length; i += 6) {
+        const d = (L[i]! - player.x) ** 2 + (L[i + 2]! - player.z) ** 2;
+        if (d > 50 * 50) continue;
+        if (best.length < LAMP_POOL) best.push([d, i]);
+        else {
+          let w = 0;
+          for (let k = 1; k < best.length; k++) if (best[k]![0] > best[w]![0]) w = k;
+          if (d < best[w]![0]) best[w] = [d, i];
+        }
+      }
+    }
+    this.pool.forEach((l, k) => {
+      const b = best[k];
+      if (!b) {
+        l.intensity = 0;
+        return;
+      }
+      const i = b[1];
+      l.position.set(L[i]!, L[i + 1]!, L[i + 2]!);
+      l.color.setRGB(L[i + 3]!, L[i + 4]!, L[i + 5]!);
+      // Fade with distance so lights don't pop as the nearest set changes.
+      const fade = 1 - THREE.MathUtils.smoothstep(Math.sqrt(b[0]), 34, 50);
+      l.intensity = 9 * this.night * fade * (1 + Math.sin(this.t * 6.1 + i) * 0.04);
+    });
   }
 
   setViewport(h: number): void {
@@ -118,14 +167,18 @@ export class Ambience {
     g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
     this.lightPoints.geometry.dispose();
     this.lightPoints.geometry = g;
+    this.lampList = [];
+    for (let i = 0; i < pos.length; i += 3) this.lampList.push(pos[i]!, pos[i + 1]!, pos[i + 2]!, col[i]!, col[i + 1]!, col[i + 2]!);
   }
 
   update(dt: number, player: { x: number; z: number }, props: readonly PropInstance[], propY: (p: PropInstance) => number): void {
     this.t += dt;
     this.syncLights(props, propY);
-    // Lights breathe.
-    this.lightMat.opacity = 0.72 + Math.sin(this.t * 7.3) * 0.06 + Math.sin(this.t * 13.1) * 0.04;
-    this.lightMat.size = 1.35 + Math.sin(this.t * 5.7) * 0.08;
+    // Lights breathe; by day they're faint, after dark they bloom.
+    const n = this.night;
+    this.lightMat.opacity = (0.4 + n * 0.5) * (1 + Math.sin(this.t * 7.3) * 0.07 + Math.sin(this.t * 13.1) * 0.05);
+    this.lightMat.size = (1.1 + n * 0.7) * (1 + Math.sin(this.t * 5.7) * 0.06);
+    this.placeLamps(player);
 
     for (const f of this.fires) {
       if (Math.abs(f.x - player.x) > 60 || Math.abs(f.z - player.z) > 60) continue;
